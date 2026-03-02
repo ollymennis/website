@@ -1,22 +1,24 @@
-// --- Accordion ---
-const toggles = document.querySelectorAll('.accordion-toggle');
+// --- Nav / Tab system ---
+const navBtns = document.querySelectorAll('.nav-btn');
+const panels = document.querySelectorAll('.content-panel');
 
-toggles.forEach(toggle => {
-  toggle.addEventListener('click', () => {
-    const item = toggle.parentElement;
-    const content = item.querySelector('.accordion-content');
-    const indicator = toggle.querySelector('.accordion-indicator');
-    const isOpen = content.classList.contains('open');
+function switchSection(name) {
+  navBtns.forEach(btn => {
+    const isActive = btn.dataset.section === name;
+    btn.classList.toggle('active', isActive);
+    btn.querySelector('.nav-indicator').innerHTML = isActive ? '[&minus;]' : '[+]';
+    const label = btn.dataset.section;
+    btn.dataset.text = isActive ? `[-] ${label}` : `[+] ${label}`;
+  });
 
-    if (isOpen) {
-      content.classList.remove('open');
-      toggle.setAttribute('aria-expanded', 'false');
-      indicator.innerHTML = '[+]';
-    } else {
-      content.classList.add('open');
-      toggle.setAttribute('aria-expanded', 'true');
-      indicator.innerHTML = '[&minus;]';
-    }
+  panels.forEach(panel => {
+    panel.classList.toggle('active', panel.dataset.panel === name);
+  });
+}
+
+navBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    switchSection(btn.dataset.section);
   });
 });
 
@@ -51,14 +53,14 @@ function gotoSlide(index) {
   currentEl.textContent = currentSlide + 1;
 }
 
-function isWorkOpen() {
-  const workContent = document.querySelector('[data-section="work"] .accordion-content');
-  return workContent && workContent.classList.contains('open');
+function isWorkActive() {
+  const workPanel = document.querySelector('[data-panel="work"]');
+  return workPanel && workPanel.classList.contains('active');
 }
 
 document.addEventListener('keydown', (e) => {
   if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-  if (!isWorkOpen()) return;
+  if (!isWorkActive()) return;
 
   if (e.code === 'ArrowRight') {
     e.preventDefault();

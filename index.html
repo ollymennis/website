@@ -10,56 +10,53 @@
   <main>
     <h1 class="name">molly ennis</h1>
 
-    <nav class="accordion">
-      <div class="accordion-item" data-section="about">
-        <button class="accordion-toggle" aria-expanded="true">
-          <span class="accordion-indicator">[&minus;]</span> about
-        </button>
-        <div class="accordion-content open">
-          <p>this is the paragraph about me that will be other words but not this</p>
-        </div>
-      </div>
-
-      <div class="accordion-item" data-section="work">
-        <button class="accordion-toggle" aria-expanded="false">
-          <span class="accordion-indicator">[+]</span> work
-        </button>
-        <div class="accordion-content">
-          <div class="work-slides">
-            <div class="work-slide active" data-slide="0">
-              <h3>icon system</h3>
-              <p>an open-source icon package built for modern interfaces. hand-crafted svg icons with consistent stroke weights and optical alignment.</p>
-            </div>
-            <div class="work-slide" data-slide="1">
-              <h3>design tooling</h3>
-              <p>custom build pipelines for design tokens, automated icon manifests, and component documentation generators.</p>
-            </div>
-            <div class="work-slide" data-slide="2">
-              <h3>interface engineering</h3>
-              <p>keyboard-first navigation systems, accessible component libraries, and precision css architectures for product teams.</p>
-            </div>
-          </div>
-          <div class="work-nav">
-            <span class="work-counter"><span id="work-current">1</span> / <span id="work-total">3</span></span>
-            <span class="work-hint">&larr; &rarr;</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="accordion-item" data-section="contact">
-        <button class="accordion-toggle" aria-expanded="false">
-          <span class="accordion-indicator">[+]</span> contact
-        </button>
-        <div class="accordion-content">
-          <div class="contact-list">
-            <a href="#">github</a>
-            <a href="#">twitter / x</a>
-            <a href="#">email</a>
-            <a href="#">linkedin</a>
-          </div>
-        </div>
-      </div>
+    <nav class="nav">
+      <button class="nav-btn active" data-section="about" data-text="[-] about">
+        <span class="nav-indicator">[&minus;]</span> about
+      </button>
+      <button class="nav-btn" data-section="work" data-text="[+] work">
+        <span class="nav-indicator">[+]</span> work
+      </button>
+      <button class="nav-btn" data-section="contact" data-text="[+] contact">
+        <span class="nav-indicator">[+]</span> contact
+      </button>
     </nav>
+
+    <div class="content-area">
+      <div class="content-panel active" data-panel="about">
+        <p>this is the paragraph about me that will be other words but not this</p>
+      </div>
+
+      <div class="content-panel" data-panel="work">
+        <div class="work-slides">
+          <div class="work-slide active" data-slide="0">
+            <h3>icon system</h3>
+            <p>an open-source icon package built for modern interfaces. hand-crafted svg icons with consistent stroke weights and optical alignment.</p>
+          </div>
+          <div class="work-slide" data-slide="1">
+            <h3>design tooling</h3>
+            <p>custom build pipelines for design tokens, automated icon manifests, and component documentation generators.</p>
+          </div>
+          <div class="work-slide" data-slide="2">
+            <h3>interface engineering</h3>
+            <p>keyboard-first navigation systems, accessible component libraries, and precision css architectures for product teams.</p>
+          </div>
+        </div>
+        <div class="work-nav">
+          <span class="work-counter"><span id="work-current">1</span> / <span id="work-total">3</span></span>
+          <span class="work-hint">&larr; &rarr;</span>
+        </div>
+      </div>
+
+      <div class="content-panel" data-panel="contact">
+        <div class="contact-list">
+          <a href="#">github</a>
+          <a href="#">twitter / x</a>
+          <a href="#">email</a>
+          <a href="#">linkedin</a>
+        </div>
+      </div>
+    </div>
   </main>
 
   <script type="module" src="/main.js"></script>

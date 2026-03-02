@@ -72,7 +72,7 @@ a:hover {
 
 /* --- Layout --- */
 main {
-  padding: 3rem 3rem 3rem calc(3rem + 1.75rem);
+  padding: 3rem;
   max-width: 600px;
 }
 
@@ -84,14 +84,13 @@ main {
   margin-bottom: 2rem;
 }
 
-/* --- Accordion --- */
-.accordion {
+/* --- Nav --- */
+.nav {
   display: flex;
   flex-direction: column;
-  gap: 0;
 }
 
-.accordion-toggle {
+.nav-btn {
   display: block;
   background: none;
   border: none;
@@ -102,32 +101,60 @@ main {
   cursor: pointer;
   text-align: left;
   padding: 0.35rem 0;
-  margin-left: -1.75rem;
+  position: relative;
 }
 
-.accordion-toggle:hover {
-  color: var(--fg-muted);
+.nav-btn:hover {
+  transform: translateX(1px);
 }
 
-.accordion-indicator {
-  display: inline;
+.nav-btn::before,
+.nav-btn::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0.35rem;
+  left: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: none;
 }
 
-/* --- Accordion Content --- */
-.accordion-content {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 300ms ease;
+.nav-btn::before {
+  color: var(--fg);
+  clip-path: inset(0 0 60% 0);
 }
 
-.accordion-content.open {
-  max-height: 800px;
+.nav-btn::after {
+  color: var(--fg);
+  clip-path: inset(40% 0 0 0);
 }
 
-.accordion-content p {
+.nav-btn:hover::before {
+  opacity: 1;
+  transform: translateX(-1.5px);
+}
+
+.nav-btn:hover::after {
+  opacity: 1;
+  transform: translateX(1.5px);
+}
+
+/* --- Content Area --- */
+.content-area {
+  margin-top: 1.5rem;
+}
+
+.content-panel {
+  display: none;
+}
+
+.content-panel.active {
+  display: block;
+}
+
+.content-panel p {
   font-size: 1rem;
   line-height: 1.5;
-  padding: 1rem 0 0.5rem 0;
   max-width: 280px;
 }
 
