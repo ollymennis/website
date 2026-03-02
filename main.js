@@ -1,14 +1,16 @@
 // --- Nav / Tab system ---
-const navBtns = document.querySelectorAll('.nav-btn');
+const navBtns = Array.from(document.querySelectorAll('.nav-btn'));
 const panels = document.querySelectorAll('.content-panel');
+const sections = navBtns.map(btn => btn.dataset.section);
+let currentNav = 0;
 
-function switchSection(name) {
-  navBtns.forEach(btn => {
-    const isActive = btn.dataset.section === name;
+function switchSection(index) {
+  currentNav = index;
+  const name = sections[index];
+
+  navBtns.forEach((btn, i) => {
+    const isActive = i === index;
     btn.classList.toggle('active', isActive);
-    btn.querySelector('.nav-indicator').innerHTML = isActive ? '[&minus;]' : '[+]';
-    const label = btn.dataset.section;
-    btn.dataset.text = isActive ? `[-] ${label}` : `[+] ${label}`;
   });
 
   panels.forEach(panel => {
@@ -16,20 +18,18 @@ function switchSection(name) {
   });
 }
 
-navBtns.forEach(btn => {
+navBtns.forEach((btn, i) => {
   btn.addEventListener('click', () => {
-    switchSection(btn.dataset.section);
+    switchSection(i);
+    btn.blur();
   });
 });
 
 // --- Work Slides ---
 const slides = document.querySelectorAll('.work-slide');
 const currentEl = document.getElementById('work-current');
-const totalEl = document.getElementById('work-total');
 let currentSlide = 0;
 let transitioning = false;
-
-totalEl.textContent = slides.length;
 
 function gotoSlide(index) {
   if (transitioning) return;
@@ -50,23 +50,51 @@ function gotoSlide(index) {
     transitioning = false;
   }, 250);
 
-  currentEl.textContent = currentSlide + 1;
+  currentEl.textContent = String(currentSlide + 1).padStart(2, '0');
 }
 
 function isWorkActive() {
-  const workPanel = document.querySelector('[data-panel="work"]');
-  return workPanel && workPanel.classList.contains('active');
+  return sections[currentNav] === 'work';
 }
 
+// --- Keyboard navigation ---
 document.addEventListener('keydown', (e) => {
   if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-  if (!isWorkActive()) return;
 
-  if (e.code === 'ArrowRight') {
+  const key = e.code;
+
+  // Up/Down and W/S: navigate main nav
+  if (key === 'ArrowUp' || key === 'KeyW') {
     e.preventDefault();
-    gotoSlide(currentSlide + 1);
-  } else if (e.code === 'ArrowLeft') {
+    switchSection(Math.max(0, currentNav - 1));
+    return;
+  }
+  if (key === 'ArrowDown' || key === 'KeyS') {
     e.preventDefault();
-    gotoSlide(currentSlide - 1);
+    switchSection(Math.min(sections.length - 1, currentNav + 1));
+    return;
+  }
+
+  // Left/Right and A/D: work slides (only when work is active)
+  if (isWorkActive()) {
+    if (key === 'ArrowRight' || key === 'KeyD') {
+      e.preventDefault();
+      gotoSlide(currentSlide + 1);
+      return;
+    }
+    if (key === 'ArrowLeft' || key === 'KeyA') {
+      e.preventDefault();
+      gotoSlide(currentSlide - 1);
+      return;
+    }
+    // Number keys 1-9 for work slides
+    const num = key.match(/^Digit(\d)$/);
+    if (num) {
+      const idx = parseInt(num[1], 10) - 1;
+      if (idx >= 0 && idx < slides.length) {
+        e.preventDefault();
+        gotoSlide(idx);
+      }
+    }
   }
 });
