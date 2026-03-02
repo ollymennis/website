@@ -31,37 +31,48 @@ navBtns.forEach((btn, i) => {
   });
 });
 
-// --- Work Slides ---
-const slides = document.querySelectorAll('.work-slide');
-const currentEl = document.getElementById('work-current');
-let currentSlide = 0;
-let transitioning = false;
+// --- Slide System (shared by both work sections) ---
+function createSlideController(panelSelector, counterId) {
+  const panel = document.querySelector(panelSelector);
+  const slides = Array.from(panel.querySelectorAll('.work-slide'));
+  const counterEl = document.getElementById(counterId);
+  let current = 0;
+  let transitioning = false;
 
-function gotoSlide(index) {
-  if (transitioning) return;
-  if (index === currentSlide) return;
-  if (index < 0 || index >= slides.length) return;
+  return {
+    slides,
+    goto(index) {
+      if (transitioning || index === current || index < 0 || index >= slides.length) return;
+      const prev = current;
+      current = index;
 
-  const prev = currentSlide;
-  currentSlide = index;
+      slides[prev].classList.remove('active');
+      const exitClass = index > prev ? 'exit-left' : 'exit-right';
+      slides[prev].classList.add(exitClass);
+      slides[current].classList.add('active');
 
-  slides[prev].classList.remove('active');
-  const exitClass = index > prev ? 'exit-left' : 'exit-right';
-  slides[prev].classList.add(exitClass);
+      transitioning = true;
+      setTimeout(() => {
+        slides[prev].classList.remove(exitClass);
+        transitioning = false;
+      }, 250);
 
-  slides[currentSlide].classList.add('active');
-
-  transitioning = true;
-  setTimeout(() => {
-    slides[prev].classList.remove(exitClass);
-    transitioning = false;
-  }, 250);
-
-  currentEl.textContent = String(currentSlide + 1).padStart(2, '0');
+      counterEl.textContent = String(current + 1).padStart(2, '0');
+    },
+    next() { this.goto(current + 1); },
+    prev() { this.goto(current - 1); },
+    get current() { return current; },
+  };
 }
 
-function isWorkActive() {
-  return sections[currentNav] === 'work';
+const workSlides = createSlideController('[data-panel="work-work"]', 'work-current');
+const indieSlides = createSlideController('[data-panel="independent-work"]', 'indie-current');
+
+function getActiveSlideController() {
+  const name = sections[currentNav];
+  if (name === 'work-work') return workSlides;
+  if (name === 'independent-work') return indieSlides;
+  return null;
 }
 
 // --- Keyboard navigation ---
@@ -93,25 +104,25 @@ document.addEventListener('keydown', (e) => {
     return;
   }
 
-  // Left/Right and A/D: work slides (only when work is active)
-  if (isWorkActive()) {
+  // Left/Right: work slides (only when a work section is active)
+  const slider = getActiveSlideController();
+  if (slider) {
     if (key === 'ArrowRight') {
       e.preventDefault();
-      gotoSlide(currentSlide + 1);
+      slider.next();
       return;
     }
     if (key === 'ArrowLeft') {
       e.preventDefault();
-      gotoSlide(currentSlide - 1);
+      slider.prev();
       return;
     }
-    // Number keys 1-9 for work slides
     const num = key.match(/^Digit(\d)$/);
     if (num) {
       const idx = parseInt(num[1], 10) - 1;
-      if (idx >= 0 && idx < slides.length) {
+      if (idx >= 0 && idx < slider.slides.length) {
         e.preventDefault();
-        gotoSlide(idx);
+        slider.goto(idx);
       }
     }
   }

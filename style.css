@@ -73,7 +73,16 @@ body {
   color: var(--fg);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  cursor: url('/icons/mouse.svg'), auto;
 }
+
+.nav-btn:active,
+.contact-item:active,
+a:active,
+button:active {
+  cursor: url('/icons/mouse-click.svg'), pointer !important;
+}
+
 
 a {
   color: var(--fg);
@@ -108,6 +117,7 @@ main {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  gap: 0.25rem;
 }
 
 .nav-btn {
@@ -118,7 +128,7 @@ main {
   font-size: 1rem;
   font-weight: 400;
   color: var(--fg);
-  cursor: pointer;
+  cursor: url('/icons/mouse-hover.svg'), pointer;
   text-align: left;
   padding: 0.1rem 0.2rem;
   margin-left: -0.2rem;
@@ -156,7 +166,7 @@ main {
   margin-top: 1.5rem;
   font-size: 1rem;
   line-height: 1.5;
-  max-width: 320px;
+  max-width: 480px;
 }
 
 .content-panel {
@@ -267,7 +277,7 @@ main {
   text-decoration: none;
   background: none;
   border: none;
-  cursor: pointer;
+  cursor: url('/icons/mouse-hover.svg'), pointer;
   padding: 0;
   text-align: left;
 }
@@ -330,7 +340,7 @@ main {
   border: none;
   font-size: 1.25rem;
   color: var(--fg-muted);
-  cursor: pointer;
+  cursor: url('/icons/mouse-hover.svg'), pointer;
   padding: 0;
   line-height: 1;
 }
@@ -360,7 +370,7 @@ main {
   background: none;
   border: 1px solid var(--border);
   color: var(--fg);
-  cursor: pointer;
+  cursor: url('/icons/mouse-hover.svg'), pointer;
 }
 
 .canvas-btn:hover {
