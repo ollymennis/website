@@ -1,0 +1,201 @@
+/* --- Font --- */
+@font-face {
+  font-family: 'Commit Mono';
+  src: url('/fonts/CommitMonoV143/CommitMono-400-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Commit Mono';
+  src: url('/fonts/CommitMonoV143/CommitMono-400-Italic.otf') format('opentype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Commit Mono';
+  src: url('/fonts/CommitMonoV143/CommitMono-700-Regular.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Commit Mono';
+  src: url('/fonts/CommitMonoV143/CommitMono-700-Italic.otf') format('opentype');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* --- Reset --- */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* --- Custom Properties --- */
+:root {
+  --bg: #f5f4f1;
+  --fg: #1a1a18;
+  --fg-muted: #6b6b68;
+  --border: #d4d3d0;
+  --surface: #eceae6;
+  --mono: 'Commit Mono', 'SF Mono', 'Fira Code', monospace;
+}
+
+/* --- Base --- */
+html {
+  font-size: 16px;
+}
+
+body {
+  font-family: var(--mono);
+  background: var(--bg);
+  color: var(--fg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: var(--fg);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* --- Layout --- */
+main {
+  padding: 3rem 3rem 3rem calc(3rem + 1.75rem);
+  max-width: 600px;
+}
+
+/* --- Name --- */
+.name {
+  font-family: var(--mono);
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+}
+
+/* --- Accordion --- */
+.accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.accordion-toggle {
+  display: block;
+  background: none;
+  border: none;
+  font-family: var(--mono);
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--fg);
+  cursor: pointer;
+  text-align: left;
+  padding: 0.35rem 0;
+  margin-left: -1.75rem;
+}
+
+.accordion-toggle:hover {
+  color: var(--fg-muted);
+}
+
+.accordion-indicator {
+  display: inline;
+}
+
+/* --- Accordion Content --- */
+.accordion-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 300ms ease;
+}
+
+.accordion-content.open {
+  max-height: 800px;
+}
+
+.accordion-content p {
+  font-size: 1rem;
+  line-height: 1.5;
+  padding: 1rem 0 0.5rem 0;
+  max-width: 280px;
+}
+
+/* --- Work Slides --- */
+.work-slides {
+  position: relative;
+  padding: 1rem 0 0 0;
+  min-height: 120px;
+}
+
+.work-slide {
+  opacity: 0;
+  position: absolute;
+  top: 1rem;
+  left: 0;
+  transition: opacity 250ms ease, transform 250ms ease;
+  transform: translateX(20px);
+  pointer-events: none;
+}
+
+.work-slide.active {
+  opacity: 1;
+  position: relative;
+  top: auto;
+  left: auto;
+  transform: translateX(0);
+  pointer-events: all;
+}
+
+.work-slide.exit-left {
+  transform: translateX(-20px);
+  opacity: 0;
+}
+
+.work-slide h3 {
+  font-size: 1rem;
+  font-weight: 400;
+  margin-bottom: 0.25rem;
+}
+
+.work-slide p {
+  padding: 0;
+  font-size: 0.875rem;
+  color: var(--fg-muted);
+  line-height: 1.5;
+  max-width: 320px;
+}
+
+.work-nav {
+  padding: 1rem 0 0.5rem 0;
+  display: flex;
+  gap: 1rem;
+  font-size: 0.8rem;
+  color: var(--fg-muted);
+}
+
+.work-hint {
+  opacity: 0.5;
+}
+
+/* --- Contact --- */
+.contact-list {
+  padding: 1rem 0 0.5rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.contact-list a {
+  font-size: 1rem;
+}
