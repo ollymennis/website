@@ -89,7 +89,7 @@ document.addEventListener('keydown', (e) => {
   }
   if (modalOpen && e.code === 'Space') {
     e.preventDefault();
-    cvModal.scrollBy(0, e.shiftKey ? -200 : 200);
+    cvModal.querySelector('.cv-modal-inner').scrollBy(0, e.shiftKey ? -200 : 200);
     return;
   }
 
@@ -256,6 +256,8 @@ cvLink.addEventListener('click', (e) => {
   if (modalOpen) closeModal();
   else openModal();
 });
+
+document.getElementById('cv-close').addEventListener('click', () => closeModal());
 
 contactItems.forEach(item => {
   if (item === cvLink) return;

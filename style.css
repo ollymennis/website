@@ -376,18 +376,34 @@ main {
   left: 600px;
   bottom: 3rem;
   z-index: 50;
-  padding: 3rem 3rem 3rem;
   max-width: 500px;
   font-family: var(--mono);
   font-size: 1rem;
   line-height: 1.5;
   color: var(--fg);
-  overflow-y: auto;
   border: 2px solid var(--fg);
+}
+
+.cv-modal-inner {
+  height: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 3rem;
 }
 
 .cv-modal.active {
   display: block;
+}
+
+.cv-close {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: none;
+  border: none;
+  cursor: url('/icons/mouse-hover.svg'), pointer;
+  padding: 0;
+  line-height: 0;
 }
 
 .cv-name {
@@ -441,6 +457,8 @@ main {
     max-width: none;
     margin-top: 2.5rem;
     max-height: 60vh;
+  }
+  .cv-modal-inner {
     padding: 1rem;
   }
 }
