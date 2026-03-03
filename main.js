@@ -395,7 +395,7 @@ window.addEventListener('resize', resizeScribble);
 let stickerDragging = false;
 
 function startScribble(x, y) {
-  if (stickerDragging) return;
+  if (stickerDragging || modalOpen) return;
   scribbling = true;
   strokes.push({ points: [{ x, y, t: Date.now() }] });
 }
@@ -410,7 +410,7 @@ function endScribble() {
 }
 
 function isInteractive(el) {
-  return el.closest('button, a, .nav-btn, .contact-item, .sticker');
+  return el.closest('button, a, .nav-btn, .contact-item, .sticker, .cv-modal');
 }
 
 document.addEventListener('mousedown', (e) => { if (!isInteractive(e.target)) startScribble(e.clientX, e.clientY); });
