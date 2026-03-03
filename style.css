@@ -368,6 +368,81 @@ main {
   text-underline-offset: 3px;
 }
 
+/* --- CV Modal --- */
+.cv-modal {
+  display: none;
+  position: fixed;
+  top: 3rem;
+  left: 600px;
+  bottom: 0;
+  z-index: 150;
+  padding: 0 3rem 3rem;
+  max-width: 500px;
+  font-family: var(--mono);
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--fg);
+  overflow-y: auto;
+  border: 2px solid var(--fg);
+}
+
+.cv-modal.active {
+  display: block;
+}
+
+.cv-name {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.cv-subtitle {
+  color: var(--fg-muted);
+  margin-bottom: 1.5rem;
+}
+
+.cv-summary {
+  margin-bottom: 2rem;
+}
+
+.cv-role {
+  margin-bottom: 1.5rem;
+}
+
+.cv-role-header {
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.cv-role ul {
+  list-style: none;
+  padding: 0;
+}
+
+.cv-role li {
+  padding-left: 1rem;
+  text-indent: -1rem;
+  margin-bottom: 0.35rem;
+  color: var(--fg-muted);
+}
+
+.cv-role li::before {
+  content: '+ ';
+}
+
+.cv-education {
+  font-weight: 700;
+}
+
+@media (max-width: 1100px) {
+  .cv-modal {
+    position: static;
+    max-width: none;
+    margin-top: 2.5rem;
+    max-height: 60vh;
+    padding: 1rem;
+  }
+}
+
 /* --- Stickers --- */
 .sticker {
   position: fixed;

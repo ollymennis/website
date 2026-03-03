@@ -81,8 +81,8 @@ function getActiveSlideController() {
 // --- Keyboard navigation ---
 document.addEventListener('keydown', (e) => {
   if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-  if (canvasOpen) {
-    if (e.code === 'Escape') closeCanvas();
+  if (modalOpen && e.code === 'Escape') {
+    closeModal();
     return;
   }
 
@@ -225,6 +225,28 @@ function toggleDarkMode() {
 }
 
 let canvasOpen = false;
+
+// --- CV Modal ---
+const cvModal = document.getElementById('cv-modal');
+const cvLink = document.querySelector('[data-default="03 cv"]');
+
+let modalOpen = false;
+
+function openModal() {
+  cvModal.classList.add('active');
+  modalOpen = true;
+}
+
+function closeModal() {
+  cvModal.classList.remove('active');
+  modalOpen = false;
+}
+
+cvLink.addEventListener('click', (e) => {
+  e.preventDefault();
+  if (modalOpen) closeModal();
+  else openModal();
+});
 
 // --- Snake Loader ---
 const snakeSvg = document.getElementById('snake-loader');
