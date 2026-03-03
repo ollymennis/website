@@ -235,7 +235,7 @@ document.querySelectorAll('.sticker').forEach(sticker => {
   // Randomize position: right half of viewport, spread vertically
   const vw = window.innerWidth;
   const vh = window.innerHeight;
-  const minX = Math.min(650, vw * 0.5);
+  const minX = Math.min(450, vw * 0.35);
   const maxX = vw - 100;
   const minY = 40;
   const maxY = vh - 100;
