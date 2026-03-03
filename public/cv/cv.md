@@ -2,7 +2,7 @@
 
 designer, new york
 
-designer and builder with 12 years shipping across mobile, web, brand, and dev tools. spent 5 years on cash app's systems & standards team — owning component architecture, icon design, and token pipelines. most recently built an mcp server connecting asset token libraries to internal ai agents, automating the full experience from request through svg generation.
+designer and builder with 12 years shipping across mobile, web, brand, hardware, and dev tools. spent 5 years on cash app's systems & standards team — owning component architecture, icon design, and token pipelines. most recently built an mcp server connecting asset token libraries to internal ai agents, automating the full experience from request through svg generation.
 
 ## cash app (block) · senior designer, systems & standards · 2021–2026
 
@@ -11,7 +11,7 @@ designer and builder with 12 years shipping across mobile, web, brand, and dev t
 - built an mcp server connecting token libraries to internal ai agents leveraging semantic search through image and text embeddings; benchmarked across embedding models using structured evals to optimize retrieval accuracy
 - led interaction and motion efforts to establish the foundational elements of cash app's motion system; translated cel animations and complex files into tokenized, prototype-ready animated components
 - second among 500 design team members across block to ship production prs; ranked top 10 on the company leaderboard for both pr volume (8th) and repo diversity (3rd)
-- championed designer-to-production culture, mentoring teammates to open their first prs and leading systems & standards to become the first team at block in which 100% of designers shipped to production
+- championed designer-to-production culture, mentoring teammates to open their first prs and pushing systems & standards to become the first team at block in which 100% of designers shipped to production
 - fostered early adoption of ai tools to accelerate design workflows; led a rapid creative asset sprint using image generation tools, defining a new asset style and visual language for brand studio partners
 - illustrated digital assets for cash app visa partnerships and custom card designs (339.4 million social media impressions across super bowl activations in 2023, 12% increase in sign-ups in early 2025)
 - created the face of moneybot, cash app's ai-powered financial assistant (launching to 57 million mau)

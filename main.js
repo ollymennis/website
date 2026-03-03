@@ -441,38 +441,42 @@ const scribbleCanvas = document.getElementById('scribble-canvas');
 const scribbleCtx = scribbleCanvas.getContext('2d');
 const strokes = [];
 let scribbling = false;
+let stickerDragging = false;
+const ERASE_DELAY = 600;
 
 function resizeScribble() {
   const dpr = window.devicePixelRatio || 1;
   scribbleCanvas.width = window.innerWidth * dpr;
   scribbleCanvas.height = window.innerHeight * dpr;
-  scribbleCtx.scale(dpr, dpr);
+  scribbleCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
 }
 resizeScribble();
 window.addEventListener('resize', resizeScribble);
 
-let stickerDragging = false;
+let fgColor = getComputedStyle(document.documentElement).getPropertyValue('--fg').trim();
+const fgObserver = new MutationObserver(() => {
+  fgColor = getComputedStyle(document.documentElement).getPropertyValue('--fg').trim();
+});
+fgObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 
 function startScribble(x, y) {
   if (stickerDragging || modalOpen) return;
   scribbling = true;
-  strokes.push({ points: [{ x, y, t: Date.now() }] });
+  document.body.classList.add('drawing');
+  strokes.push({ points: [{ x, y }], endTime: null });
 }
 
 function moveScribble(x, y) {
   if (!scribbling) return;
-  const now = Date.now();
-  const current = strokes[strokes.length - 1];
-  current.points.push({ x, y, t: now });
-
-  // Split into a new sub-stroke so old segments expire cleanly
-  if (now - current.points[0].t > ERASE_DELAY * 0.5) {
-    strokes.push({ points: [{ x, y, t: now }] });
-  }
+  strokes[strokes.length - 1].points.push({ x, y });
 }
 
 function endScribble() {
+  if (scribbling && strokes.length > 0) {
+    strokes[strokes.length - 1].endTime = Date.now();
+  }
   scribbling = false;
+  document.body.classList.remove('drawing');
 }
 
 function isInteractive(el) {
@@ -483,46 +487,37 @@ document.addEventListener('mousedown', (e) => { if (!isInteractive(e.target)) st
 document.addEventListener('mousemove', (e) => moveScribble(e.clientX, e.clientY));
 document.addEventListener('mouseup', endScribble);
 
-if (!isTouchDevice) {
-  document.addEventListener('touchstart', (e) => { if (!isInteractive(e.target)) { e.preventDefault(); startScribble(e.touches[0].clientX, e.touches[0].clientY); } }, { passive: false });
-  document.addEventListener('touchmove', (e) => { if (scribbling) { e.preventDefault(); moveScribble(e.touches[0].clientX, e.touches[0].clientY); } }, { passive: false });
-  document.addEventListener('touchend', endScribble);
-}
-
-
-// Render loop: erase points from front after 5s per point
-const ERASE_DELAY = 1500;
-const style = getComputedStyle(document.documentElement);
+document.addEventListener('touchstart', (e) => { if (!isInteractive(e.target)) { e.preventDefault(); startScribble(e.touches[0].clientX, e.touches[0].clientY); } }, { passive: false });
+document.addEventListener('touchmove', (e) => { if (scribbling) { e.preventDefault(); moveScribble(e.touches[0].clientX, e.touches[0].clientY); } }, { passive: false });
+document.addEventListener('touchend', endScribble);
 
 function renderScribble() {
   scribbleCtx.clearRect(0, 0, scribbleCanvas.width, scribbleCanvas.height);
   const now = Date.now();
 
   for (let i = strokes.length - 1; i >= 0; i--) {
-    const pts = strokes[i].points;
-    // Remove expired points from the front
-    while (pts.length > 0 && now - pts[0].t > ERASE_DELAY) {
-      pts.shift();
-    }
-    // Remove empty strokes
-    if (pts.length < 2) {
+    const stroke = strokes[i];
+    if (stroke.endTime && now - stroke.endTime > ERASE_DELAY) {
       strokes.splice(i, 1);
       continue;
     }
+    if (stroke.points.length < 2) continue;
 
-    scribbleCtx.globalAlpha = 1;
-    scribbleCtx.strokeStyle = style.getPropertyValue('--fg').trim();
+    const alpha = stroke.endTime ? Math.max(0, 1 - (now - stroke.endTime) / ERASE_DELAY) : 1;
+    scribbleCtx.globalAlpha = alpha;
+    scribbleCtx.strokeStyle = fgColor;
     scribbleCtx.lineWidth = 2;
     scribbleCtx.lineCap = 'square';
     scribbleCtx.lineJoin = 'miter';
     scribbleCtx.beginPath();
-    scribbleCtx.moveTo(pts[0].x, pts[0].y);
-    for (let j = 1; j < pts.length; j++) {
-      scribbleCtx.lineTo(pts[j].x, pts[j].y);
+    scribbleCtx.moveTo(stroke.points[0].x, stroke.points[0].y);
+    for (let j = 1; j < stroke.points.length; j++) {
+      scribbleCtx.lineTo(stroke.points[j].x, stroke.points[j].y);
     }
     scribbleCtx.stroke();
   }
 
+  scribbleCtx.globalAlpha = 1;
   requestAnimationFrame(renderScribble);
 }
 requestAnimationFrame(renderScribble);
