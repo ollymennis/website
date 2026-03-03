@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="/style.css" />
 </head>
 <body>
+  <canvas id="scribble-canvas"></canvas>
   <main>
     <nav class="nav">
       <button class="nav-btn active" data-section="about" data-text="[-] about">
@@ -59,22 +60,7 @@ information
           <button class="contact-item" data-index="0" id="copy-email" data-default="01 email" data-hover="01 copy email"><span class="contact-text">01 email</span></button>
           <a href="https://github.com/ollymennis" target="_blank" rel="noopener" class="contact-item" data-index="1" data-default="02 github" data-hover="02 open github"><span class="contact-text">02 github</span></a>
           <a href="#" class="contact-item" data-index="2" data-default="03 cv" data-hover="03 this is empty"><span class="contact-text">03 cv</span></a>
-          <!-- <button class="contact-item" data-index="3" id="open-canvas" data-default="04 draw something" data-hover="04 open canvas"><span class="contact-text">04 draw something</span></button> -->
-        </div>
-      </div>
 
-      <!-- Drawing modal -->
-      <div class="canvas-modal" id="canvas-modal" hidden>
-        <div class="canvas-modal-inner">
-          <div class="canvas-header">
-            <span>draw something</span>
-            <button class="canvas-close" id="canvas-close">&times;</button>
-          </div>
-          <canvas id="draw-canvas" width="500" height="500"></canvas>
-          <div class="canvas-footer">
-            <button class="canvas-btn" id="canvas-clear">clear</button>
-            <button class="canvas-btn canvas-btn-primary" id="canvas-send">send</button>
-          </div>
         </div>
       </div>
     </div>

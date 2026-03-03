@@ -22,6 +22,7 @@ function switchSection(index) {
     highlightedContact = -1;
     contactItems.forEach(item => item.classList.remove('highlighted'));
   }
+
 }
 
 navBtns.forEach((btn, i) => {
@@ -213,62 +214,7 @@ function toggleDarkMode() {
   document.documentElement.setAttribute('data-theme', darkMode ? 'dark' : '');
 }
 
-// --- Drawing Canvas ---
-const modal = document.getElementById('canvas-modal');
-const canvas = document.getElementById('draw-canvas');
-const ctx = canvas.getContext('2d');
 let canvasOpen = false;
-let drawing = false;
-
-function openCanvas() {
-  modal.removeAttribute('hidden');
-  canvasOpen = true;
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.strokeStyle = '#1a1a18';
-  ctx.lineWidth = 2;
-  ctx.lineCap = 'round';
-  ctx.lineJoin = 'round';
-}
-
-function closeCanvas() {
-  modal.setAttribute('hidden', '');
-  canvasOpen = false;
-}
-
-const openCanvasBtn = document.getElementById('open-canvas');
-if (openCanvasBtn) openCanvasBtn.addEventListener('click', openCanvas);
-document.getElementById('canvas-close').addEventListener('click', closeCanvas);
-document.getElementById('canvas-clear').addEventListener('click', () => {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-});
-
-modal.addEventListener('click', (e) => {
-  if (e.target === modal) closeCanvas();
-});
-
-canvas.addEventListener('mousedown', (e) => {
-  drawing = true;
-  ctx.beginPath();
-  ctx.moveTo(e.offsetX, e.offsetY);
-});
-
-canvas.addEventListener('mousemove', (e) => {
-  if (!drawing) return;
-  ctx.lineTo(e.offsetX, e.offsetY);
-  ctx.stroke();
-});
-
-canvas.addEventListener('mouseup', () => { drawing = false; });
-canvas.addEventListener('mouseleave', () => { drawing = false; });
-
-document.getElementById('canvas-send').addEventListener('click', () => {
-  const dataURL = canvas.toDataURL('image/png');
-  const link = document.createElement('a');
-  link.download = 'message.png';
-  link.href = dataURL;
-  link.click();
-  closeCanvas();
-});
 
 // --- Snake Loader ---
 const snakeSvg = document.getElementById('snake-loader');
@@ -357,6 +303,7 @@ document.querySelectorAll('.sticker').forEach(sticker => {
     offsetX = clientX - sticker.getBoundingClientRect().left;
     offsetY = clientY - sticker.getBoundingClientRect().top;
     sticker.style.cursor = "url('/icons/mouse-click.svg'), grabbing";
+    stickerDragging = true;
   }
 
   function moveDrag(clientX, clientY) {
@@ -368,6 +315,7 @@ document.querySelectorAll('.sticker').forEach(sticker => {
   function endDrag() {
     if (!dragging) return;
     dragging = false;
+    stickerDragging = false;
     sticker.style.cursor = "url('/icons/mouse-hover.svg'), grab";
   }
 
@@ -381,3 +329,84 @@ document.querySelectorAll('.sticker').forEach(sticker => {
   document.addEventListener('touchmove', (e) => { if (dragging) { e.preventDefault(); moveDrag(e.touches[0].clientX, e.touches[0].clientY); } }, { passive: false });
   document.addEventListener('touchend', endDrag);
 });
+
+// --- Scribble Canvas ---
+const scribbleCanvas = document.getElementById('scribble-canvas');
+const scribbleCtx = scribbleCanvas.getContext('2d');
+const strokes = [];
+let scribbling = false;
+
+function resizeScribble() {
+  const dpr = window.devicePixelRatio || 1;
+  scribbleCanvas.width = window.innerWidth * dpr;
+  scribbleCanvas.height = window.innerHeight * dpr;
+  scribbleCtx.scale(dpr, dpr);
+}
+resizeScribble();
+window.addEventListener('resize', resizeScribble);
+
+let stickerDragging = false;
+
+function startScribble(x, y) {
+  if (stickerDragging) return;
+  scribbling = true;
+  strokes.push({ points: [{ x, y, t: Date.now() }] });
+}
+
+function moveScribble(x, y) {
+  if (!scribbling) return;
+  strokes[strokes.length - 1].points.push({ x, y, t: Date.now() });
+}
+
+function endScribble() {
+  scribbling = false;
+}
+
+function isInteractive(el) {
+  return el.closest('button, a, .nav-btn, .contact-item, .sticker');
+}
+
+document.addEventListener('mousedown', (e) => { if (!isInteractive(e.target)) startScribble(e.clientX, e.clientY); });
+document.addEventListener('mousemove', (e) => moveScribble(e.clientX, e.clientY));
+document.addEventListener('mouseup', endScribble);
+
+document.addEventListener('touchstart', (e) => { if (!isInteractive(e.target)) startScribble(e.touches[0].clientX, e.touches[0].clientY); }, { passive: true });
+document.addEventListener('touchmove', (e) => { if (scribbling) moveScribble(e.touches[0].clientX, e.touches[0].clientY); }, { passive: true });
+document.addEventListener('touchend', endScribble);
+
+// Render loop: erase points from front after 5s per point
+const ERASE_DELAY = 1500;
+const style = getComputedStyle(document.documentElement);
+
+function renderScribble() {
+  scribbleCtx.clearRect(0, 0, scribbleCanvas.width, scribbleCanvas.height);
+  const now = Date.now();
+
+  for (let i = strokes.length - 1; i >= 0; i--) {
+    const pts = strokes[i].points;
+    // Remove expired points from the front
+    while (pts.length > 0 && now - pts[0].t > ERASE_DELAY) {
+      pts.shift();
+    }
+    // Remove empty strokes
+    if (pts.length < 2) {
+      strokes.splice(i, 1);
+      continue;
+    }
+
+    scribbleCtx.globalAlpha = 1;
+    scribbleCtx.strokeStyle = style.getPropertyValue('--fg').trim();
+    scribbleCtx.lineWidth = 2;
+    scribbleCtx.lineCap = 'square';
+    scribbleCtx.lineJoin = 'miter';
+    scribbleCtx.beginPath();
+    scribbleCtx.moveTo(pts[0].x, pts[0].y);
+    for (let j = 1; j < pts.length; j++) {
+      scribbleCtx.lineTo(pts[j].x, pts[j].y);
+    }
+    scribbleCtx.stroke();
+  }
+
+  requestAnimationFrame(renderScribble);
+}
+requestAnimationFrame(renderScribble);
