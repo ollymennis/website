@@ -391,6 +391,21 @@ main {
   overflow-y: auto;
   overscroll-behavior: contain;
   padding: 3rem;
+  scrollbar-width: none;
+  scrollbar-color: var(--fg) transparent;
+}
+
+.cv-modal-inner::-webkit-scrollbar {
+  width: 2px;
+}
+
+.cv-modal-inner::-webkit-scrollbar-track {
+  background: transparent;
+  margin-top: 24px;
+}
+
+.cv-modal-inner::-webkit-scrollbar-thumb {
+  background: var(--fg);
 }
 
 .cv-modal.active {
