@@ -264,6 +264,65 @@ contactItems.forEach(item => {
   item.addEventListener('click', () => { if (modalOpen) closeModal(); });
 });
 
+// --- Load CV from markdown ---
+fetch('/cv/cv.md')
+  .then(r => r.text())
+  .then(md => {
+    const lines = md.split('\n');
+    let html = '';
+    let inList = false;
+
+    for (const line of lines) {
+      // Skip h1 (name) and the line right after (subtitle) — already shown on site
+      if (line.startsWith('# ')) {
+        const name = line.slice(2).trim();
+        html += `<h2 class="cv-name">${name}</h2>`;
+        continue;
+      }
+
+      // h2 — role headers or education header
+      if (line.startsWith('## ')) {
+        if (inList) { html += '</ul></div>'; inList = false; }
+        const heading = line.slice(3).trim();
+        if (heading.toLowerCase() === 'education') continue;
+        html += `<div class="cv-role"><p class="cv-role-header">${heading.replace(/ · /g, ' \u00b7 ').replace(/–/g, '\u2013')}</p>`;
+        continue;
+      }
+
+      // List items
+      if (line.startsWith('- ')) {
+        if (!inList) { html += '<ul>'; inList = true; }
+        html += `<li>${line.slice(2).replace(/—/g, '\u2014')}</li>`;
+        continue;
+      }
+
+      // Plain text lines (subtitle, summary, education)
+      const trimmed = line.trim();
+      if (!trimmed) {
+        if (inList) { html += '</ul></div>'; inList = false; }
+        continue;
+      }
+
+      // Subtitle line (comes right after name)
+      if (html.includes('cv-name') && !html.includes('cv-subtitle')) {
+        html += `<p class="cv-subtitle">${trimmed}</p>`;
+        continue;
+      }
+
+      // Summary paragraph (before first h2)
+      if (!html.includes('cv-role')) {
+        html += `<p class="cv-summary">${trimmed.replace(/—/g, '\u2014')}</p>`;
+        continue;
+      }
+
+      // Education line
+      html += `<p class="cv-education">${trimmed.replace(/ · /g, ' \u00b7 ').replace(/–/g, '\u2013')}</p>`;
+    }
+
+    if (inList) html += '</ul></div>';
+    document.getElementById('cv-content').innerHTML = html;
+  });
+
 // --- Snake Loader ---
 const snakeSvg = document.getElementById('snake-loader');
 if (snakeSvg) {
