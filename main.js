@@ -219,3 +219,41 @@ document.getElementById('canvas-send').addEventListener('click', () => {
   link.click();
   closeCanvas();
 });
+
+// --- Draggable Stickers ---
+let stickerZ = 100;
+
+document.querySelectorAll('.sticker').forEach(sticker => {
+  // Convert initial right/top inline styles to left/top
+  const rect = sticker.getBoundingClientRect();
+  sticker.style.left = rect.left + 'px';
+  sticker.style.top = rect.top + 'px';
+  sticker.style.right = '';
+
+  let dragging = false;
+  let offsetX = 0;
+  let offsetY = 0;
+
+  sticker.addEventListener('mousedown', (e) => {
+    e.preventDefault();
+    dragging = true;
+    stickerZ++;
+    sticker.style.zIndex = stickerZ;
+    // Account for 0.5 scale: mouse position maps to 2x in the element's coordinate space
+    offsetX = e.clientX - sticker.getBoundingClientRect().left;
+    offsetY = e.clientY - sticker.getBoundingClientRect().top;
+    sticker.style.cursor = "url('/icons/mouse-click.svg'), grabbing";
+  });
+
+  document.addEventListener('mousemove', (e) => {
+    if (!dragging) return;
+    sticker.style.left = (e.clientX - offsetX) + 'px';
+    sticker.style.top = (e.clientY - offsetY) + 'px';
+  });
+
+  document.addEventListener('mouseup', () => {
+    if (!dragging) return;
+    dragging = false;
+    sticker.style.cursor = "url('/icons/mouse-hover.svg'), grab";
+  });
+});

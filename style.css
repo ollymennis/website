@@ -388,3 +388,15 @@ main {
 .canvas-btn-primary:hover {
   opacity: 0.8;
 }
+
+/* --- Stickers --- */
+.sticker {
+  position: fixed;
+  max-width: 50px;
+  max-height: 50px;
+  width: auto;
+  height: auto;
+  z-index: 100;
+  user-select: none;
+  cursor: url('/icons/mouse-hover.svg'), grab;
+}
