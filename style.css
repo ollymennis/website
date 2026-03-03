@@ -475,8 +475,16 @@ main {
     max-width: none;
     margin-top: 2.5rem;
     max-height: 60vh;
+    overflow: hidden;
+  }
+  .cv-close {
+    position: sticky;
+    top: 4px;
+    float: right;
+    z-index: 1;
   }
   .cv-modal-inner {
+    max-height: 60vh;
     padding: 1rem;
   }
 }
