@@ -242,7 +242,7 @@ contactItems.forEach(item => {
           prevText.textContent = primedItem.dataset.default;
           primedItem.classList.remove('highlighted');
         }
-        text.textContent = item.dataset.hover + '?';
+        text.textContent = item.dataset.hover;
         item.classList.add('highlighted');
         primedItem = item;
       } else {
@@ -362,7 +362,7 @@ projectItems.forEach(item => {
           prevText.textContent = primedItem.dataset.default;
           primedItem.classList.remove('highlighted');
         }
-        text.textContent = item.dataset.hover + '?';
+        text.textContent = item.dataset.hover;
         item.classList.add('highlighted');
         primedItem = item;
       } else {
@@ -456,7 +456,7 @@ window.addEventListener('resize', resizeScribble);
 let stickerDragging = false;
 
 function startScribble(x, y) {
-  if (stickerDragging) return;
+  if (stickerDragging || activeModalType) return;
   scribbling = true;
   strokes.push({ points: [{ x, y, t: Date.now() }] });
 }
