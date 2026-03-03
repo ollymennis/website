@@ -88,6 +88,13 @@ document.addEventListener('keydown', (e) => {
 
   const key = e.code;
 
+  // / : toggle dark mode
+  if (key === 'Slash') {
+    e.preventDefault();
+    toggleDarkMode();
+    return;
+  }
+
   // Up/Down and W/S: navigate main nav
   if (key === 'ArrowUp' || key === 'KeyW') {
     e.preventDefault();
@@ -258,13 +265,12 @@ if (snakeSvg) {
     // Hide all first
     rects.forEach(r => r.setAttribute('opacity', '0'));
 
-    // Draw trail with fading opacity
+    // Draw trail at full opacity in #ABC8D6
     for (let i = 0; i < trail.length; i++) {
-      const opacity = 0.6 - (trail.length - 1 - i) * 0.07;
-      if (opacity <= 0) continue;
       rects[i].setAttribute('x', trail[i][0] * STEP);
       rects[i].setAttribute('y', trail[i][1] * STEP);
-      rects[i].setAttribute('opacity', Math.max(0, opacity));
+      rects[i].setAttribute('fill', '#ABC8D6');
+      rects[i].setAttribute('opacity', '1');
     }
 
     // Head at full opacity
@@ -373,9 +379,6 @@ document.addEventListener('mousedown', (e) => { if (!isInteractive(e.target)) st
 document.addEventListener('mousemove', (e) => moveScribble(e.clientX, e.clientY));
 document.addEventListener('mouseup', endScribble);
 
-document.addEventListener('touchstart', (e) => { if (!isInteractive(e.target)) startScribble(e.touches[0].clientX, e.touches[0].clientY); }, { passive: true });
-document.addEventListener('touchmove', (e) => { if (scribbling) moveScribble(e.touches[0].clientX, e.touches[0].clientY); }, { passive: true });
-document.addEventListener('touchend', endScribble);
 
 // Render loop: erase points from front after 5s per point
 const ERASE_DELAY = 1500;
