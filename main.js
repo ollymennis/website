@@ -88,13 +88,6 @@ document.addEventListener('keydown', (e) => {
 
   const key = e.code;
 
-  // D: toggle dark mode
-  if (key === 'KeyD') {
-    e.preventDefault();
-    toggleDarkMode();
-    return;
-  }
-
   // Up/Down and W/S: navigate main nav
   if (key === 'ArrowUp' || key === 'KeyW') {
     e.preventDefault();
@@ -110,12 +103,12 @@ document.addEventListener('keydown', (e) => {
   // Left/Right: work slides (only when a work section is active)
   const slider = getActiveSlideController();
   if (slider) {
-    if (key === 'ArrowRight') {
+    if (key === 'ArrowRight' || key === 'KeyD') {
       e.preventDefault();
       slider.next();
       return;
     }
-    if (key === 'ArrowLeft') {
+    if (key === 'ArrowLeft' || key === 'KeyA') {
       e.preventDefault();
       slider.prev();
       return;
@@ -130,8 +123,18 @@ document.addEventListener('keydown', (e) => {
     }
   }
 
-  // Number keys for information items (highlight)
+  // Information items: arrow keys cycle, number keys select, enter activates
   if (sections[currentNav] === 'information') {
+    if (key === 'ArrowRight' || key === 'KeyD') {
+      e.preventDefault();
+      highlightContact(Math.min(contactItems.length - 1, highlightedContact + 1));
+      return;
+    }
+    if (key === 'ArrowLeft' || key === 'KeyA') {
+      e.preventDefault();
+      highlightContact(Math.max(0, highlightedContact - 1));
+      return;
+    }
     const num = key.match(/^Digit(\d)$/);
     if (num) {
       const idx = parseInt(num[1], 10) - 1;
