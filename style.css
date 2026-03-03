@@ -334,6 +334,7 @@ main {
 .contact-list {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   gap: 0.25rem;
 }
 
@@ -541,6 +542,23 @@ main {
     font-size: 1.5rem;
     padding: 0.15rem 0;
   }
+}
+
+/* --- Drawing state: disable hovers --- */
+body.drawing .nav-btn:hover::after {
+  display: none;
+}
+
+body.drawing .contact-item:hover .contact-arrow {
+  opacity: 0;
+}
+
+body.drawing .contact-item:hover .contact-text {
+  text-decoration: none;
+}
+
+body.drawing a:hover {
+  text-decoration: none;
 }
 
 /* --- Stickers --- */
