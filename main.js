@@ -200,9 +200,9 @@ contactItems.forEach(item => {
 
 document.getElementById('copy-email').addEventListener('click', () => {
   navigator.clipboard.writeText('ollymennis@gmail.com');
-  const msg = document.querySelector('.copied-msg');
-  msg.removeAttribute('hidden');
-  setTimeout(() => msg.setAttribute('hidden', ''), 2000);
+  const emailText = document.querySelector('#copy-email .contact-text');
+  emailText.innerHTML = '01 <span style="opacity: 0.5;">copied ✓</span>';
+  setTimeout(() => { emailText.textContent = '01 email'; }, 2000);
 });
 
 // --- Dark mode ---

@@ -36,6 +36,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  cursor: inherit;
 }
 
 /* --- Custom Properties --- */
@@ -65,6 +66,7 @@
 /* --- Base --- */
 html {
   font-size: 16px;
+  cursor: url('/icons/mouse.svg'), auto;
 }
 
 body {
