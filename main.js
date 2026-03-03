@@ -200,7 +200,7 @@ contactItems.forEach(item => {
           prevText.textContent = primedItem.dataset.default;
           primedItem.classList.remove('highlighted');
         }
-        text.textContent = item.dataset.hover + '?';
+        text.textContent = item.dataset.hover;
         item.classList.add('highlighted');
         primedItem = item;
       } else {
