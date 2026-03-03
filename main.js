@@ -23,6 +23,8 @@ function switchSection(index) {
     contactItems.forEach(item => item.classList.remove('highlighted'));
   }
 
+  if (modalOpen) closeModal();
+
 }
 
 navBtns.forEach((btn, i) => {
@@ -83,6 +85,11 @@ document.addEventListener('keydown', (e) => {
   if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
   if (modalOpen && e.code === 'Escape') {
     closeModal();
+    return;
+  }
+  if (modalOpen && e.code === 'Space') {
+    e.preventDefault();
+    cvModal.scrollBy(0, e.shiftKey ? -200 : 200);
     return;
   }
 
@@ -205,15 +212,17 @@ contactItems.forEach(item => {
     });
   } else {
     item.addEventListener('mouseenter', () => { text.textContent = item.dataset.hover; });
-    item.addEventListener('mouseleave', () => { text.textContent = item.dataset.default; });
+    item.addEventListener('mouseleave', () => { if (!emailCopied || item.id !== 'copy-email') text.textContent = item.dataset.default; });
   }
 });
 
+let emailCopied = false;
 document.getElementById('copy-email').addEventListener('click', () => {
   navigator.clipboard.writeText('ollymennis@gmail.com');
   const emailText = document.querySelector('#copy-email .contact-text');
-  emailText.innerHTML = '01 <span style="opacity: 0.5;">copied ✓</span>';
-  setTimeout(() => { emailText.textContent = '01 email'; }, 2000);
+  emailText.innerHTML = '01 <span style="opacity: 0.5;">copied ollymennis@gmail.com</span>';
+  emailCopied = true;
+  setTimeout(() => { emailText.textContent = '01 email'; emailCopied = false; }, 3000);
 });
 
 // --- Dark mode ---
@@ -246,6 +255,11 @@ cvLink.addEventListener('click', (e) => {
   e.preventDefault();
   if (modalOpen) closeModal();
   else openModal();
+});
+
+contactItems.forEach(item => {
+  if (item === cvLink) return;
+  item.addEventListener('click', () => { if (modalOpen) closeModal(); });
 });
 
 // --- Snake Loader ---
