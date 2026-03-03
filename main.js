@@ -23,21 +23,7 @@ function switchSection(index) {
     contactItems.forEach(item => item.classList.remove('highlighted'));
   }
 
-  // Clear project highlight when leaving work-work
-  if (name !== 'work-work') {
-    highlightedProject = -1;
-    projectItems.forEach(item => item.classList.remove('highlighted'));
-  }
-
-  // Reset primed item
-  if (primedItem) {
-    const prevText = primedItem.querySelector('.contact-text');
-    prevText.textContent = primedItem.dataset.default;
-    primedItem.classList.remove('highlighted');
-    primedItem = null;
-  }
-
-  if (activeModalType) closeModal();
+  if (modalOpen) closeModal();
 
 }
 
@@ -84,26 +70,26 @@ function createSlideController(panelSelector, counterId) {
   };
 }
 
+const workSlides = createSlideController('[data-panel="work-work"]', 'work-current');
 const indieSlides = createSlideController('[data-panel="independent-work"]', 'indie-current');
 
 function getActiveSlideController() {
-  if (sections[currentNav] === 'independent-work') return indieSlides;
+  const name = sections[currentNav];
+  if (name === 'work-work') return workSlides;
+  if (name === 'independent-work') return indieSlides;
   return null;
 }
 
 // --- Keyboard navigation ---
 document.addEventListener('keydown', (e) => {
   if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-  if (activeModalType && e.code === 'Escape') {
-    closeAnyModal();
+  if (modalOpen && e.code === 'Escape') {
+    closeModal();
     return;
   }
-  if (activeModalType && e.code === 'Space') {
+  if (modalOpen && e.code === 'Space') {
     e.preventDefault();
-    const inner = activeModalType === 'cv'
-      ? cvModal.querySelector('.cv-modal-inner')
-      : projectModal.querySelector('.project-modal-inner');
-    inner.scrollBy(0, e.shiftKey ? -200 : 200);
+    cvModal.querySelector('.cv-modal-inner').scrollBy(0, e.shiftKey ? -200 : 200);
     return;
   }
 
@@ -126,34 +112,6 @@ document.addEventListener('keydown', (e) => {
     e.preventDefault();
     switchSection(Math.min(sections.length - 1, currentNav + 1));
     return;
-  }
-
-  // Work-work project items: arrow keys cycle, number keys select, enter activates
-  if (sections[currentNav] === 'work-work') {
-    if (key === 'ArrowRight' || key === 'KeyD') {
-      e.preventDefault();
-      highlightProject(Math.min(projectItems.length - 1, highlightedProject + 1));
-      return;
-    }
-    if (key === 'ArrowLeft' || key === 'KeyA') {
-      e.preventDefault();
-      highlightProject(Math.max(0, highlightedProject - 1));
-      return;
-    }
-    const projNum = key.match(/^Digit(\d)$/);
-    if (projNum) {
-      const idx = parseInt(projNum[1], 10) - 1;
-      if (idx >= 0 && idx < projectItems.length) {
-        e.preventDefault();
-        highlightProject(idx);
-      }
-      return;
-    }
-    if (key === 'Enter' && highlightedProject >= 0) {
-      e.preventDefault();
-      openProjectModal(parseInt(projectItems[highlightedProject].dataset.project, 10));
-      return;
-    }
   }
 
   // Left/Right: work slides (only when a work section is active)
@@ -197,9 +155,9 @@ document.addEventListener('keydown', (e) => {
       if (idx >= 0 && idx < contactItems.length) {
         e.preventDefault();
         highlightContact(idx);
+        contactItems[idx].click();
       }
     }
-    // Enter triggers the highlighted item
     if (key === 'Enter' && highlightedContact >= 0) {
       e.preventDefault();
       contactItems[highlightedContact].click();
@@ -208,7 +166,7 @@ document.addEventListener('keydown', (e) => {
 });
 
 // --- Information keyboard nav ---
-const contactItems = Array.from(document.querySelectorAll('.contact-item:not(.project-item)'));
+const contactItems = Array.from(document.querySelectorAll('.contact-item'));
 let highlightedContact = -1;
 
 function highlightContact(index) {
@@ -277,110 +235,150 @@ function toggleDarkMode() {
 
 let canvasOpen = false;
 
-// --- Modal System (CV + Project) ---
+// --- CV Modal ---
 const cvModal = document.getElementById('cv-modal');
 const cvLink = document.querySelector('[data-default="03 cv"]');
-const projectModal = document.getElementById('project-modal');
-const projectContents = document.querySelectorAll('.project-content');
 
-let activeModalType = null; // 'cv' | 'project' | null
-let activeProjectNum = null;
+let modalOpen = false;
 
-function openCvModal() {
-  closeAnyModal();
+function openModal() {
   cvModal.classList.add('active');
-  activeModalType = 'cv';
-}
-
-function openProjectModal(num) {
-  if (activeModalType === 'project' && activeProjectNum === num) {
-    closeAnyModal();
-    return;
-  }
-  closeAnyModal();
-  projectContents.forEach(el => {
-    el.classList.toggle('active', el.dataset.projectContent === String(num));
-  });
-  projectModal.classList.add('active');
-  activeModalType = 'project';
-  activeProjectNum = num;
-}
-
-function closeAnyModal() {
-  cvModal.classList.remove('active');
-  projectModal.classList.remove('active');
-  projectContents.forEach(el => el.classList.remove('active'));
-  activeModalType = null;
-  activeProjectNum = null;
+  modalOpen = true;
 }
 
 function closeModal() {
-  closeAnyModal();
+  cvModal.classList.remove('active');
+  modalOpen = false;
 }
 
 cvLink.addEventListener('click', (e) => {
   e.preventDefault();
-  if (activeModalType === 'cv') closeAnyModal();
-  else openCvModal();
+  if (modalOpen) closeModal();
+  else openModal();
 });
 
-document.getElementById('cv-close').addEventListener('click', () => closeAnyModal());
-document.getElementById('project-close').addEventListener('click', () => closeAnyModal());
+document.getElementById('cv-close').addEventListener('click', () => closeModal());
 
 contactItems.forEach(item => {
   if (item === cvLink) return;
-  item.addEventListener('click', () => { if (activeModalType) closeAnyModal(); });
+  item.addEventListener('click', () => { if (modalOpen) closeModal(); });
 });
 
-// --- Project Items ---
-const projectItems = Array.from(document.querySelectorAll('.project-item'));
-let highlightedProject = -1;
+// --- Load CV from markdown ---
+fetch('/cv/cv.md')
+  .then(r => r.text())
+  .then(md => {
+    const lines = md.split('\n');
+    let html = '';
+    let inList = false;
 
-function highlightProject(index) {
-  highlightedProject = index;
-  projectItems.forEach((item, i) => {
-    const text = item.querySelector('.contact-text');
-    const isActive = i === index;
-    item.classList.toggle('highlighted', isActive);
-    if (text && item.dataset.hover) {
-      text.textContent = isActive ? item.dataset.hover : item.dataset.default;
-    }
-  });
-}
-
-// Project hover text swap
-projectItems.forEach(item => {
-  if (!item.dataset.hover) return;
-  const text = item.querySelector('.contact-text');
-
-  if (isTouchDevice) {
-    item.addEventListener('click', (e) => {
-      if (primedItem !== item) {
-        e.preventDefault();
-        if (primedItem) {
-          const prevText = primedItem.querySelector('.contact-text');
-          prevText.textContent = primedItem.dataset.default;
-          primedItem.classList.remove('highlighted');
-        }
-        text.textContent = item.dataset.hover;
-        item.classList.add('highlighted');
-        primedItem = item;
-      } else {
-        text.textContent = item.dataset.default;
-        item.classList.remove('highlighted');
-        primedItem = null;
-        openProjectModal(parseInt(item.dataset.project, 10));
+    for (const line of lines) {
+      // Skip h1 (name) and the line right after (subtitle) — already shown on site
+      if (line.startsWith('# ')) {
+        const name = line.slice(2).trim();
+        html += `<h2 class="cv-name">${name}</h2>`;
+        continue;
       }
-    });
-  } else {
-    item.addEventListener('mouseenter', () => { text.textContent = item.dataset.hover; });
-    item.addEventListener('mouseleave', () => { text.textContent = item.dataset.default; });
-    item.addEventListener('click', () => {
-      openProjectModal(parseInt(item.dataset.project, 10));
-    });
-  }
-});
 
+      // h2 — role headers or education header
+      if (line.startsWith('## ')) {
+        if (inList) { html += '</ul></div>'; inList = false; }
+        const heading = line.slice(3).trim();
+        if (heading.toLowerCase() === 'education') continue;
+        html += `<div class="cv-role"><p class="cv-role-header">${heading.replace(/ · /g, ' \u00b7 ').replace(/–/g, '\u2013')}</p>`;
+        continue;
+      }
+
+      // List items
+      if (line.startsWith('- ')) {
+        if (!inList) { html += '<ul>'; inList = true; }
+        html += `<li>${line.slice(2).replace(/—/g, '\u2014')}</li>`;
+        continue;
+      }
+
+      // Plain text lines (subtitle, summary, education)
+      const trimmed = line.trim();
+      if (!trimmed) {
+        if (inList) { html += '</ul></div>'; inList = false; }
+        continue;
+      }
+
+      // Subtitle line (comes right after name)
+      if (html.includes('cv-name') && !html.includes('cv-subtitle')) {
+        html += `<p class="cv-subtitle">${trimmed}</p>`;
+        continue;
+      }
+
+      // Summary paragraph (before first h2)
+      if (!html.includes('cv-role')) {
+        html += `<p class="cv-summary">${trimmed.replace(/—/g, '\u2014')}</p>`;
+        continue;
+      }
+
+      // Education line
+      html += `<p class="cv-education">${trimmed.replace(/ · /g, ' \u00b7 ').replace(/–/g, '\u2013')}</p>`;
+    }
+
+    if (inList) html += '</ul></div>';
+    document.getElementById('cv-content').innerHTML = html;
+  });
+
+// --- Snake Loader ---
+const snakeSvg = document.getElementById('snake-loader');
+if (snakeSvg) {
+  const CELL = 6;
+  const STEP = 6;
+  const TRAIL_LEN = 8;
+  const INTERVAL = 120;
+
+  // 3x3 snake path: L→R, R→L, L→R, then reverse back up the middle
+  const path = [
+    [0,0], [1,0], [2,0],   // row 0 →
+    [2,1], [1,1], [0,1],   // row 1 ←
+    [0,2], [1,2], [2,2],   // row 2 →
+    [2,1], [1,1], [0,1],   // reverse back up
+  ];
+
+  let step = 0;
+  const trail = [];
+
+  // Pre-create rect elements for trail + head
+  const rects = [];
+  for (let i = 0; i < TRAIL_LEN + 1; i++) {
+    const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    rect.setAttribute('width', CELL);
+    rect.setAttribute('height', CELL);
+    rect.setAttribute('fill', 'currentColor');
+    rect.setAttribute('opacity', '0');
+    snakeSvg.appendChild(rect);
+    rects.push(rect);
+  }
+
+  setInterval(() => {
+    const pos = path[step % path.length];
+    trail.push(pos);
+    if (trail.length > TRAIL_LEN) trail.shift();
+
+    // Hide all first
+    rects.forEach(r => r.setAttribute('opacity', '0'));
+
+    // Draw trail at full opacity in #ABC8D6
+    for (let i = 0; i < trail.length; i++) {
+      rects[i].setAttribute('x', trail[i][0] * STEP);
+      rects[i].setAttribute('y', trail[i][1] * STEP);
+      rects[i].setAttribute('fill', '#ABC8D6');
+      rects[i].setAttribute('opacity', '1');
+    }
+
+    // Head at full opacity
+    const head = rects[trail.length];
+    head.setAttribute('x', pos[0] * STEP);
+    head.setAttribute('y', pos[1] * STEP);
+    head.setAttribute('opacity', '1');
+
+    step++;
+  }, INTERVAL);
+}
 
 // --- Draggable Stickers ---
 let stickerZ = 100;
@@ -456,14 +454,21 @@ window.addEventListener('resize', resizeScribble);
 let stickerDragging = false;
 
 function startScribble(x, y) {
-  if (stickerDragging || activeModalType) return;
+  if (stickerDragging || modalOpen) return;
   scribbling = true;
   strokes.push({ points: [{ x, y, t: Date.now() }] });
 }
 
 function moveScribble(x, y) {
   if (!scribbling) return;
-  strokes[strokes.length - 1].points.push({ x, y, t: Date.now() });
+  const now = Date.now();
+  const current = strokes[strokes.length - 1];
+  current.points.push({ x, y, t: now });
+
+  // Split into a new sub-stroke so old segments expire cleanly
+  if (now - current.points[0].t > ERASE_DELAY * 0.5) {
+    strokes.push({ points: [{ x, y, t: now }] });
+  }
 }
 
 function endScribble() {
@@ -471,16 +476,18 @@ function endScribble() {
 }
 
 function isInteractive(el) {
-  return el.closest('button, a, .nav-btn, .contact-item, .sticker, .project-modal, .cv-modal');
+  return el.closest('button, a, .nav-btn, .contact-item, .sticker, .cv-modal');
 }
 
 document.addEventListener('mousedown', (e) => { if (!isInteractive(e.target)) startScribble(e.clientX, e.clientY); });
 document.addEventListener('mousemove', (e) => moveScribble(e.clientX, e.clientY));
 document.addEventListener('mouseup', endScribble);
 
-document.addEventListener('touchstart', (e) => { if (!isInteractive(e.target)) { e.preventDefault(); startScribble(e.touches[0].clientX, e.touches[0].clientY); } }, { passive: false });
-document.addEventListener('touchmove', (e) => { if (scribbling) { e.preventDefault(); moveScribble(e.touches[0].clientX, e.touches[0].clientY); } }, { passive: false });
-document.addEventListener('touchend', endScribble);
+if (!isTouchDevice) {
+  document.addEventListener('touchstart', (e) => { if (!isInteractive(e.target)) { e.preventDefault(); startScribble(e.touches[0].clientX, e.touches[0].clientY); } }, { passive: false });
+  document.addEventListener('touchmove', (e) => { if (scribbling) { e.preventDefault(); moveScribble(e.touches[0].clientX, e.touches[0].clientY); } }, { passive: false });
+  document.addEventListener('touchend', endScribble);
+}
 
 
 // Render loop: erase points from front after 5s per point
