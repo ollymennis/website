@@ -116,12 +116,6 @@ a.contact-item:hover {
   text-decoration: none;
 }
 
-.loading-icon {
-  width: 0.6em;
-  height: 0.6em;
-  vertical-align: baseline;
-}
-
 .caret-icon {
   width: 0.6em;
   height: 0.6em;
@@ -477,6 +471,91 @@ main {
     max-height: 60vh;
   }
   .cv-modal-inner {
+    padding: 1rem;
+  }
+}
+
+/* --- Project Modal --- */
+.project-modal {
+  display: none;
+  position: fixed;
+  top: 3rem;
+  left: 600px;
+  bottom: 3rem;
+  z-index: 50;
+  max-width: 700px;
+  font-family: var(--mono);
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--fg);
+  border: 2px solid var(--fg);
+}
+
+.project-modal-inner {
+  height: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 3rem;
+  scrollbar-width: none;
+  scrollbar-color: var(--fg) transparent;
+}
+
+.project-modal-inner::-webkit-scrollbar {
+  width: 2px;
+}
+
+.project-modal-inner::-webkit-scrollbar-track {
+  background: transparent;
+  margin-top: 24px;
+}
+
+.project-modal-inner::-webkit-scrollbar-thumb {
+  background: var(--fg);
+}
+
+.project-modal.active {
+  display: block;
+}
+
+.project-close {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: none;
+  border: none;
+  cursor: url('/icons/mouse-hover.svg'), pointer;
+  padding: 0;
+  line-height: 0;
+  color: var(--fg);
+}
+
+.project-content {
+  display: none;
+}
+
+.project-content.active {
+  display: block;
+}
+
+.project-content h2 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.project-content p {
+  color: var(--fg-muted);
+  font-size: 0.85rem;
+}
+
+@media (max-width: 1100px) {
+  .project-modal {
+    position: static;
+    max-width: none;
+    margin-top: 2.5rem;
+    max-height: 70vh;
+  }
+  .project-modal-inner {
     padding: 1rem;
   }
 }
