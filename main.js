@@ -164,11 +164,38 @@ function highlightContact(index) {
 }
 
 // --- Contact hover text swap ---
+const isTouchDevice = 'ontouchstart' in window;
+let primedItem = null;
+
 contactItems.forEach(item => {
   if (!item.dataset.hover) return;
   const text = item.querySelector('.contact-text');
-  item.addEventListener('mouseenter', () => { text.textContent = item.dataset.hover; });
-  item.addEventListener('mouseleave', () => { text.textContent = item.dataset.default; });
+
+  if (isTouchDevice) {
+    item.addEventListener('click', (e) => {
+      if (primedItem !== item) {
+        // First tap: show hover state with ?
+        e.preventDefault();
+        // Reset previous primed item
+        if (primedItem) {
+          const prevText = primedItem.querySelector('.contact-text');
+          prevText.textContent = primedItem.dataset.default;
+          primedItem.classList.remove('highlighted');
+        }
+        text.textContent = item.dataset.hover + '?';
+        item.classList.add('highlighted');
+        primedItem = item;
+      } else {
+        // Second tap: activate — let it through
+        text.textContent = item.dataset.default;
+        item.classList.remove('highlighted');
+        primedItem = null;
+      }
+    });
+  } else {
+    item.addEventListener('mouseenter', () => { text.textContent = item.dataset.hover; });
+    item.addEventListener('mouseleave', () => { text.textContent = item.dataset.default; });
+  }
 });
 
 document.getElementById('copy-email').addEventListener('click', () => {
