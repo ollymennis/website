@@ -305,15 +305,18 @@ if (snakeSvg) {
 let stickerZ = 100;
 
 document.querySelectorAll('.sticker').forEach(sticker => {
-  // Randomize position: right half of viewport, spread vertically
+  // Randomize position anywhere except the content box (top-left ~600x280)
   const vw = window.innerWidth;
   const vh = window.innerHeight;
-  const minX = Math.min(450, vw * 0.35);
-  const maxX = vw - 100;
-  const minY = 40;
-  const maxY = vh - 100;
-  sticker.style.left = (minX + Math.random() * (maxX - minX)) + 'px';
-  sticker.style.top = (minY + Math.random() * (maxY - minY)) + 'px';
+  const CONTENT_W = 600;
+  const CONTENT_H = 280;
+  let x, y;
+  do {
+    x = Math.random() * (vw - 80);
+    y = Math.random() * (vh - 80);
+  } while (x < CONTENT_W && y < CONTENT_H);
+  sticker.style.left = x + 'px';
+  sticker.style.top = y + 'px';
   sticker.style.visibility = 'visible';
 
   let dragging = false;

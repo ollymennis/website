@@ -142,8 +142,8 @@ main {
   color: var(--fg);
   cursor: url('/icons/mouse-hover.svg'), pointer;
   text-align: left;
-  padding: 0.1rem 0.2rem;
-  margin-left: -0.2rem;
+  padding: 0.1rem 0;
+  margin-left: 0;
   position: relative;
   outline: none;
   transition: background 80ms, color 80ms;
@@ -153,6 +153,8 @@ main {
 .nav-btn.active {
   background: var(--fg);
   color: var(--bg);
+  padding-left: 0.3rem;
+  padding-right: 0.3rem;
 }
 
 /* Hover: dot grid overlay */
@@ -179,6 +181,27 @@ main {
   font-size: 1rem;
   line-height: 1.5;
   max-width: 480px;
+}
+
+.bio-quote {
+  margin: 0;
+  padding: 0;
+}
+
+.bio-quotemark {
+  display: block;
+  font-size: 2rem;
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
+
+.bio-text {
+  font-style: italic;
+}
+
+.bio-attribution {
+  margin-top: 0.75rem;
+  font-style: normal;
 }
 
 .content-panel {
