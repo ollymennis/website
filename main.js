@@ -320,26 +320,34 @@ document.querySelectorAll('.sticker').forEach(sticker => {
   let offsetX = 0;
   let offsetY = 0;
 
-  sticker.addEventListener('mousedown', (e) => {
-    e.preventDefault();
+  function startDrag(clientX, clientY) {
     dragging = true;
     stickerZ++;
     sticker.style.zIndex = stickerZ;
-    // Account for 0.5 scale: mouse position maps to 2x in the element's coordinate space
-    offsetX = e.clientX - sticker.getBoundingClientRect().left;
-    offsetY = e.clientY - sticker.getBoundingClientRect().top;
+    offsetX = clientX - sticker.getBoundingClientRect().left;
+    offsetY = clientY - sticker.getBoundingClientRect().top;
     sticker.style.cursor = "url('/icons/mouse-click.svg'), grabbing";
-  });
+  }
 
-  document.addEventListener('mousemove', (e) => {
+  function moveDrag(clientX, clientY) {
     if (!dragging) return;
-    sticker.style.left = (e.clientX - offsetX) + 'px';
-    sticker.style.top = (e.clientY - offsetY) + 'px';
-  });
+    sticker.style.left = (clientX - offsetX) + 'px';
+    sticker.style.top = (clientY - offsetY) + 'px';
+  }
 
-  document.addEventListener('mouseup', () => {
+  function endDrag() {
     if (!dragging) return;
     dragging = false;
     sticker.style.cursor = "url('/icons/mouse-hover.svg'), grab";
-  });
+  }
+
+  // Mouse events
+  sticker.addEventListener('mousedown', (e) => { e.preventDefault(); startDrag(e.clientX, e.clientY); });
+  document.addEventListener('mousemove', (e) => { moveDrag(e.clientX, e.clientY); });
+  document.addEventListener('mouseup', endDrag);
+
+  // Touch events
+  sticker.addEventListener('touchstart', (e) => { e.preventDefault(); startDrag(e.touches[0].clientX, e.touches[0].clientY); }, { passive: false });
+  document.addEventListener('touchmove', (e) => { if (dragging) { e.preventDefault(); moveDrag(e.touches[0].clientX, e.touches[0].clientY); } }, { passive: false });
+  document.addEventListener('touchend', endDrag);
 });
