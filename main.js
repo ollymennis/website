@@ -155,9 +155,9 @@ document.addEventListener('keydown', (e) => {
       if (idx >= 0 && idx < contactItems.length) {
         e.preventDefault();
         highlightContact(idx);
+        contactItems[idx].click();
       }
     }
-    // Enter triggers the highlighted item
     if (key === 'Enter' && highlightedContact >= 0) {
       e.preventDefault();
       contactItems[highlightedContact].click();
