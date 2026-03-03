@@ -302,6 +302,21 @@ main {
   text-underline-offset: 3px;
 }
 
+.copied-msg {
+  position: absolute;
+  left: 100%;
+  top: 0;
+  white-space: nowrap;
+  color: var(--fg-muted);
+  font-size: 0.8rem;
+  margin-left: 0.5rem;
+  line-height: 1.5;
+}
+
+.copied-msg[hidden] {
+  display: none;
+}
+
 /* --- Drawing Modal --- */
 .canvas-modal {
   position: fixed;
@@ -399,4 +414,5 @@ main {
   z-index: 100;
   user-select: none;
   cursor: url('/icons/mouse-hover.svg'), grab;
+  visibility: hidden;
 }

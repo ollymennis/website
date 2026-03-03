@@ -156,6 +156,14 @@ function highlightContact(index) {
   });
 }
 
+// --- Copy email ---
+document.getElementById('copy-email').addEventListener('click', () => {
+  navigator.clipboard.writeText('ollymennis@gmail.com');
+  const msg = document.querySelector('.copied-msg');
+  msg.removeAttribute('hidden');
+  setTimeout(() => msg.setAttribute('hidden', ''), 2000);
+});
+
 // --- Dark mode ---
 let darkMode = false;
 
@@ -224,11 +232,16 @@ document.getElementById('canvas-send').addEventListener('click', () => {
 let stickerZ = 100;
 
 document.querySelectorAll('.sticker').forEach(sticker => {
-  // Convert initial right/top inline styles to left/top
-  const rect = sticker.getBoundingClientRect();
-  sticker.style.left = rect.left + 'px';
-  sticker.style.top = rect.top + 'px';
-  sticker.style.right = '';
+  // Randomize position: right half of viewport, spread vertically
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  const minX = Math.min(650, vw * 0.5);
+  const maxX = vw - 100;
+  const minY = 40;
+  const maxY = vh - 100;
+  sticker.style.left = (minX + Math.random() * (maxX - minX)) + 'px';
+  sticker.style.top = (minY + Math.random() * (maxY - minY)) + 'px';
+  sticker.style.visibility = 'visible';
 
   let dragging = false;
   let offsetX = 0;
