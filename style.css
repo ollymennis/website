@@ -393,6 +393,8 @@ main {
   padding: 3rem;
   scrollbar-width: none;
   scrollbar-color: var(--fg) transparent;
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
 }
 
 .cv-modal-inner::-webkit-scrollbar {
