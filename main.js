@@ -243,6 +243,64 @@ document.getElementById('canvas-send').addEventListener('click', () => {
   closeCanvas();
 });
 
+// --- Snake Loader ---
+const snakeSvg = document.getElementById('snake-loader');
+if (snakeSvg) {
+  const CELL = 6;
+  const STEP = 6;
+  const TRAIL_LEN = 8;
+  const INTERVAL = 120;
+
+  // 3x3 snake path: L→R, R→L, L→R, then reverse back up the middle
+  const path = [
+    [0,0], [1,0], [2,0],   // row 0 →
+    [2,1], [1,1], [0,1],   // row 1 ←
+    [0,2], [1,2], [2,2],   // row 2 →
+    [2,1], [1,1], [0,1],   // reverse back up
+  ];
+
+  let step = 0;
+  const trail = [];
+
+  // Pre-create rect elements for trail + head
+  const rects = [];
+  for (let i = 0; i < TRAIL_LEN + 1; i++) {
+    const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    rect.setAttribute('width', CELL);
+    rect.setAttribute('height', CELL);
+    rect.setAttribute('fill', 'currentColor');
+    rect.setAttribute('opacity', '0');
+    snakeSvg.appendChild(rect);
+    rects.push(rect);
+  }
+
+  setInterval(() => {
+    const pos = path[step % path.length];
+    trail.push(pos);
+    if (trail.length > TRAIL_LEN) trail.shift();
+
+    // Hide all first
+    rects.forEach(r => r.setAttribute('opacity', '0'));
+
+    // Draw trail with fading opacity
+    for (let i = 0; i < trail.length; i++) {
+      const opacity = 0.6 - (trail.length - 1 - i) * 0.07;
+      if (opacity <= 0) continue;
+      rects[i].setAttribute('x', trail[i][0] * STEP);
+      rects[i].setAttribute('y', trail[i][1] * STEP);
+      rects[i].setAttribute('opacity', Math.max(0, opacity));
+    }
+
+    // Head at full opacity
+    const head = rects[trail.length];
+    head.setAttribute('x', pos[0] * STEP);
+    head.setAttribute('y', pos[1] * STEP);
+    head.setAttribute('opacity', '1');
+
+    step++;
+  }, INTERVAL);
+}
+
 // --- Draggable Stickers ---
 let stickerZ = 100;
 
