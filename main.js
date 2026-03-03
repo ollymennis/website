@@ -417,9 +417,11 @@ document.addEventListener('mousedown', (e) => { if (!isInteractive(e.target)) st
 document.addEventListener('mousemove', (e) => moveScribble(e.clientX, e.clientY));
 document.addEventListener('mouseup', endScribble);
 
-document.addEventListener('touchstart', (e) => { if (sections[currentNav] === 'about' && !isInteractive(e.target)) { e.preventDefault(); startScribble(e.touches[0].clientX, e.touches[0].clientY); } }, { passive: false });
-document.addEventListener('touchmove', (e) => { if (scribbling) { e.preventDefault(); moveScribble(e.touches[0].clientX, e.touches[0].clientY); } }, { passive: false });
-document.addEventListener('touchend', endScribble);
+if (!isTouchDevice) {
+  document.addEventListener('touchstart', (e) => { if (!isInteractive(e.target)) { e.preventDefault(); startScribble(e.touches[0].clientX, e.touches[0].clientY); } }, { passive: false });
+  document.addEventListener('touchmove', (e) => { if (scribbling) { e.preventDefault(); moveScribble(e.touches[0].clientX, e.touches[0].clientY); } }, { passive: false });
+  document.addEventListener('touchend', endScribble);
+}
 
 
 // Render loop: erase points from front after 5s per point
