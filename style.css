@@ -374,7 +374,7 @@ main {
   position: fixed;
   top: 3rem;
   left: 600px;
-  bottom: 0;
+  bottom: 3rem;
   z-index: 50;
   padding: 3rem 3rem 3rem;
   max-width: 500px;
@@ -402,6 +402,7 @@ main {
 
 .cv-summary {
   margin-bottom: 2rem;
+  font-size: 0.75rem;
 }
 
 .cv-role {
@@ -423,6 +424,7 @@ main {
   text-indent: -1rem;
   margin-bottom: 0.35rem;
   color: var(--fg-muted);
+  font-size: 0.75rem;
 }
 
 .cv-role li::before {
