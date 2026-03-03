@@ -522,6 +522,7 @@ main {
   }
   .content-area {
     font-size: 1.5rem;
+    margin-left: 2rem;
   }
   .nav {
     gap: 1.25rem;
@@ -529,6 +530,9 @@ main {
   .nav-btn {
     font-size: 1.5rem;
     padding: 0.25rem 0;
+  }
+  .nav-btn.active {
+    padding-left: 2rem;
   }
   .contact-list {
     gap: 0.5rem;
