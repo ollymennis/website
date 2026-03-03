@@ -402,7 +402,14 @@ function startScribble(x, y) {
 
 function moveScribble(x, y) {
   if (!scribbling) return;
-  strokes[strokes.length - 1].points.push({ x, y, t: Date.now() });
+  const now = Date.now();
+  const current = strokes[strokes.length - 1];
+  current.points.push({ x, y, t: now });
+
+  // Split into a new sub-stroke so old segments expire cleanly
+  if (now - current.points[0].t > ERASE_DELAY * 0.5) {
+    strokes.push({ points: [{ x, y, t: now }] });
+  }
 }
 
 function endScribble() {
