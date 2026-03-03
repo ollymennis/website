@@ -375,8 +375,8 @@ main {
   top: 3rem;
   left: 600px;
   bottom: 0;
-  z-index: 150;
-  padding: 0 3rem 3rem;
+  z-index: 50;
+  padding: 3rem 3rem 3rem;
   max-width: 500px;
   font-family: var(--mono);
   font-size: 1rem;
