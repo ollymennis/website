@@ -34,7 +34,9 @@ navBtns.forEach((btn, i) => {
 // --- Slide System (shared by both work sections) ---
 function createSlideController(panelSelector, counterId) {
   const panel = document.querySelector(panelSelector);
+  if (!panel) return null;
   const slides = Array.from(panel.querySelectorAll('.work-slide'));
+  if (slides.length === 0) return null;
   const counterEl = document.getElementById(counterId);
   let current = 0;
   let transitioning = false;
@@ -152,11 +154,23 @@ let highlightedContact = -1;
 function highlightContact(index) {
   highlightedContact = index;
   contactItems.forEach((item, i) => {
-    item.classList.toggle('highlighted', i === index);
+    const text = item.querySelector('.contact-text');
+    const isActive = i === index;
+    item.classList.toggle('highlighted', isActive);
+    if (text && item.dataset.hover) {
+      text.textContent = isActive ? item.dataset.hover : item.dataset.default;
+    }
   });
 }
 
-// --- Copy email ---
+// --- Contact hover text swap ---
+contactItems.forEach(item => {
+  if (!item.dataset.hover) return;
+  const text = item.querySelector('.contact-text');
+  item.addEventListener('mouseenter', () => { text.textContent = item.dataset.hover; });
+  item.addEventListener('mouseleave', () => { text.textContent = item.dataset.default; });
+});
+
 document.getElementById('copy-email').addEventListener('click', () => {
   navigator.clipboard.writeText('ollymennis@gmail.com');
   const msg = document.querySelector('.copied-msg');
@@ -194,7 +208,8 @@ function closeCanvas() {
   canvasOpen = false;
 }
 
-document.getElementById('open-canvas').addEventListener('click', openCanvas);
+const openCanvasBtn = document.getElementById('open-canvas');
+if (openCanvasBtn) openCanvasBtn.addEventListener('click', openCanvas);
 document.getElementById('canvas-close').addEventListener('click', closeCanvas);
 document.getElementById('canvas-clear').addEventListener('click', () => {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
