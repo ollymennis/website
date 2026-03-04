@@ -29,8 +29,11 @@ function switchSection(index) {
     projectItems.forEach(item => item.classList.remove('highlighted'));
   }
 
-  if (activeModalType) closeAnyModal();
+  if (cvModalOpen) closeCvModal();
   primedItem = null;
+
+  // Enable page scroll when work-work is active (content may be tall)
+  document.documentElement.style.overflow = name === 'work-work' ? '' : 'hidden';
 
 }
 
@@ -90,16 +93,13 @@ function getActiveSlideController() {
 // --- Keyboard navigation ---
 document.addEventListener('keydown', (e) => {
   if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-  if (activeModalType && e.code === 'Escape') {
-    closeAnyModal();
+  if (cvModalOpen && e.code === 'Escape') {
+    closeCvModal();
     return;
   }
-  if (activeModalType && e.code === 'Space') {
+  if (cvModalOpen && e.code === 'Space') {
     e.preventDefault();
-    const scrollTarget = activeModalType === 'cv'
-      ? cvModal.querySelector('.cv-modal-inner')
-      : projectModal.querySelector('.project-modal-inner');
-    scrollTarget.scrollBy(0, e.shiftKey ? -200 : 200);
+    cvModal.querySelector('.cv-modal-inner').scrollBy(0, e.shiftKey ? -200 : 200);
     return;
   }
 
@@ -124,30 +124,31 @@ document.addEventListener('keydown', (e) => {
     return;
   }
 
-  // Work-work: arrow keys cycle projects, number keys + enter activate
+  // Work-work: arrow keys cycle projects, number keys switch directly
   if (sections[currentNav] === 'work-work') {
     if (key === 'ArrowRight' || key === 'KeyD') {
       e.preventDefault();
-      highlightProject(Math.min(projectItems.length - 1, highlightedProject + 1));
+      const nextNum = Math.min(projectItems.length, activeProjectNum + 1);
+      switchProject(nextNum);
       return;
     }
     if (key === 'ArrowLeft' || key === 'KeyA') {
       e.preventDefault();
-      highlightProject(Math.max(0, highlightedProject - 1));
+      const prevNum = Math.max(1, activeProjectNum - 1);
+      switchProject(prevNum);
       return;
     }
     const num = key.match(/^Digit(\d)$/);
     if (num) {
-      const idx = parseInt(num[1], 10) - 1;
-      if (idx >= 0 && idx < projectItems.length) {
+      const idx = parseInt(num[1], 10);
+      if (idx >= 1 && idx <= projectItems.length) {
         e.preventDefault();
-        highlightProject(idx);
-        projectItems[idx].click();
+        switchProject(idx);
       }
     }
     if (key === 'Enter' && highlightedProject >= 0) {
       e.preventDefault();
-      projectItems[highlightedProject].click();
+      switchProject(highlightedProject + 1);
     }
     return;
   }
@@ -250,66 +251,42 @@ function toggleDarkMode() {
 
 let canvasOpen = false;
 
-// --- Modal System (CV + Project) ---
+// --- CV Modal ---
 const cvModal = document.getElementById('cv-modal');
-const projectModal = document.getElementById('project-modal');
 const cvLink = document.querySelector('[data-default="03 cv"]');
-const projectContents = document.querySelectorAll('.project-content');
-
-let activeModalType = null; // 'cv' | 'project' | null
-let activeProjectNum = null;
+let cvModalOpen = false;
 
 function openCvModal() {
-  if (activeModalType === 'project') projectModal.classList.remove('active');
   cvModal.classList.add('active');
-  activeModalType = 'cv';
-  activeProjectNum = null;
+  cvModalOpen = true;
 }
 
-function openProjectModal(num) {
-  if (activeModalType === 'cv') cvModal.classList.remove('active');
-  projectContents.forEach(el => el.classList.remove('active'));
-  const target = document.querySelector(`[data-project-content="${num}"]`);
-  if (target) target.classList.add('active');
-  projectModal.classList.add('active');
-  activeModalType = 'project';
-  activeProjectNum = num;
-  // Show hover/selected state on active project item
-  projectItems.forEach(item => {
-    const text = item.querySelector('.contact-text');
-    const isActive = item.dataset.project === String(num);
-    item.classList.toggle('highlighted', isActive);
-    if (text) text.textContent = isActive ? item.dataset.hover : item.dataset.default;
-  });
-}
-
-function closeAnyModal() {
+function closeCvModal() {
   cvModal.classList.remove('active');
-  projectModal.classList.remove('active');
-  projectContents.forEach(el => el.classList.remove('active'));
-  activeModalType = null;
-  activeProjectNum = null;
-  // Reset all project items to default state
-  projectItems.forEach(item => {
-    const text = item.querySelector('.contact-text');
-    item.classList.remove('highlighted');
-    if (text) text.textContent = item.dataset.default;
-  });
+  cvModalOpen = false;
 }
 
 cvLink.addEventListener('click', (e) => {
   e.preventDefault();
-  if (activeModalType === 'cv') closeAnyModal();
+  if (cvModalOpen) closeCvModal();
   else openCvModal();
 });
 
-document.getElementById('cv-close').addEventListener('click', () => closeAnyModal());
-document.getElementById('project-close').addEventListener('click', () => closeAnyModal());
+document.getElementById('cv-close').addEventListener('click', () => closeCvModal());
 
-contactItems.forEach(item => {
-  if (item === cvLink) return;
-  item.addEventListener('click', () => { if (activeModalType) closeAnyModal(); });
-});
+// --- Inline Project Display ---
+const projectDisplay = document.getElementById('project-display');
+const projectContents = document.querySelectorAll('.project-content');
+let activeProjectNum = null;
+
+function switchProject(num) {
+  activeProjectNum = num;
+  projectContents.forEach(el => el.classList.toggle('active', el.dataset.projectContent === String(num)));
+  projectDisplay.scrollTop = 0;
+  projectItems.forEach(item => {
+    item.classList.toggle('highlighted', item.dataset.project === String(num));
+  });
+}
 
 // --- Project Items ---
 const projectItems = Array.from(document.querySelectorAll('.project-item'));
@@ -318,59 +295,16 @@ let highlightedProject = -1;
 function highlightProject(index) {
   highlightedProject = index;
   projectItems.forEach((item, i) => {
-    const text = item.querySelector('.contact-text');
-    const isActive = i === index;
-    item.classList.toggle('highlighted', isActive);
-    if (text && item.dataset.hover) {
-      text.textContent = isActive ? item.dataset.hover : item.dataset.default;
-    }
+    item.classList.toggle('highlighted', i === index);
   });
 }
 
 projectItems.forEach(item => {
-  const text = item.querySelector('.contact-text');
-
-  if (isTouchDevice) {
-    item.addEventListener('click', (e) => {
-      if (primedItem !== item) {
-        e.preventDefault();
-        if (primedItem) {
-          const prevText = primedItem.querySelector('.contact-text');
-          prevText.textContent = primedItem.dataset.default;
-          primedItem.classList.remove('highlighted');
-        }
-        text.textContent = item.dataset.hover;
-        item.classList.add('highlighted');
-        primedItem = item;
-      } else {
-        // Second tap: open project
-        const num = item.dataset.project;
-        if (activeModalType === 'project' && activeProjectNum === num) {
-          closeAnyModal();
-        } else {
-          openProjectModal(num);
-        }
-        text.textContent = item.dataset.default;
-        item.classList.remove('highlighted');
-        primedItem = null;
-      }
-    });
-  } else {
-    item.addEventListener('mouseenter', () => { text.textContent = item.dataset.hover; });
-    item.addEventListener('mouseleave', () => {
-      if (activeModalType === 'project' && activeProjectNum === item.dataset.project) return;
-      text.textContent = item.dataset.default;
-    });
-    item.addEventListener('click', () => {
-      const num = item.dataset.project;
-      if (activeModalType === 'project' && activeProjectNum === num) {
-        closeAnyModal();
-      } else {
-        openProjectModal(num);
-      }
-    });
-  }
+  item.addEventListener('click', () => {
+    switchProject(parseInt(item.dataset.project));
+  });
 });
+
 
 // --- Load CV from markdown ---
 fetch('/cv/cv.md')
@@ -511,7 +445,7 @@ const fgObserver = new MutationObserver(() => {
 fgObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 
 function startScribble(x, y) {
-  if (stickerDragging || activeModalType) return;
+  if (stickerDragging || cvModalOpen) return;
   scribbling = true;
   document.body.classList.add('drawing');
   strokes.push({ points: [{ x, y }], endTime: null });
@@ -531,7 +465,7 @@ function endScribble() {
 }
 
 function isInteractive(el) {
-  return el.closest('button, a, .nav-btn, .contact-item, .sticker, .cv-modal, .project-modal');
+  return el.closest('button, a, .nav-btn, .contact-item, .sticker, .cv-modal, .project-display');
 }
 
 document.addEventListener('mousedown', (e) => { if (!isInteractive(e.target)) startScribble(e.clientX, e.clientY); });

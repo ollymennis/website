@@ -131,7 +131,6 @@ a.contact-item:hover {
 /* --- Layout --- */
 main {
   padding: 3rem;
-  max-width: 600px;
 }
 
 /* --- Name --- */
@@ -212,7 +211,6 @@ main {
   margin-left: 1rem;
   font-size: 0.85rem;
   line-height: 1.5;
-  max-width: 480px;
 }
 
 .bio-quote {
@@ -352,6 +350,24 @@ main {
   outline: none;
 }
 
+.project-item:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.project-item.highlighted {
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.project-item .project-title {
+  transition: margin-left 120ms ease;
+}
+
+.project-item.highlighted .project-title {
+  margin-left: 0.5rem;
+}
+
 .contact-arrow {
   width: 0.65em;
   height: 0.65em;
@@ -484,72 +500,43 @@ main {
   font-weight: 700;
 }
 
-/* --- Project Modal --- */
-.project-modal {
+/* --- Work Layout (project list + inline content) --- */
+.work-layout {
+  display: flex;
+  gap: 4rem;
+}
+
+.work-layout .contact-list {
+  flex-shrink: 0;
+}
+
+.project-display {
   position: fixed;
-  top: 3rem;
-  left: 300px;
-  bottom: 3rem;
-  z-index: 150;
+  top: 0;
+  left: 350px;
+  right: 0;
+  bottom: 0;
+  padding: 3rem;
   background: var(--bg);
-  font-family: var(--mono);
-  font-size: 1rem;
-  line-height: 1.5;
-  color: var(--fg);
-  border: 2px solid var(--fg);
-  clip-path: inset(0 100% 0 0);
-  visibility: hidden;
-  transition: clip-path 350ms cubic-bezier(0.4, 0, 0.2, 1), visibility 0ms 350ms;
-}
-
-.project-modal.active {
-  clip-path: inset(0 0 0 0);
-  visibility: visible;
-  transition: clip-path 350ms cubic-bezier(0.4, 0, 0.2, 1), visibility 0ms 0ms;
-}
-
-.project-modal-inner {
-  height: 100%;
+  z-index: 150;
   overflow-y: auto;
   overscroll-behavior: contain;
-  padding: 3rem;
-  scrollbar-width: none;
+  scrollbar-width: thin;
   scrollbar-color: var(--fg) transparent;
   touch-action: pan-y;
   -webkit-overflow-scrolling: touch;
-  opacity: 0;
-  transform: translateX(-10px);
-  transition: opacity 250ms 150ms ease, transform 250ms 150ms ease;
 }
 
-.project-modal.active .project-modal-inner {
-  opacity: 1;
-  transform: translateX(0);
-}
-
-.project-modal-inner::-webkit-scrollbar {
+.project-display::-webkit-scrollbar {
   width: 2px;
 }
 
-.project-modal-inner::-webkit-scrollbar-track {
+.project-display::-webkit-scrollbar-track {
   background: transparent;
-  margin-top: 24px;
 }
 
-.project-modal-inner::-webkit-scrollbar-thumb {
+.project-display::-webkit-scrollbar-thumb {
   background: var(--fg);
-}
-
-.project-close {
-  position: absolute;
-  top: 4px;
-  right: 4px;
-  background: none;
-  border: none;
-  cursor: url('/icons/mouse-hover.svg'), pointer;
-  padding: 0;
-  line-height: 0;
-  color: var(--fg);
 }
 
 .project-content {
@@ -560,8 +547,51 @@ main {
   display: block;
 }
 
-.project-content video,
-.project-content img {
+.project-header {
+  margin-bottom: 1.5rem;
+}
+
+.project-header h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.project-subtitle {
+  color: var(--fg-muted);
+}
+
+.project-subtitle:empty {
+  display: none;
+}
+
+.project-body p,
+.project-body h3 {
+  max-width: 75%;
+}
+
+.project-body p {
+  font-size: 0.75rem;
+}
+
+.icon-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 48px);
+  gap: 0;
+  padding: 1rem 0;
+  margin-left: -16px;
+}
+
+.icon-grid img {
+  width: 16px;
+  height: 16px;
+  padding: 16px;
+  margin-bottom: 0;
+  filter: brightness(0) saturate(100%) invert(11%) sepia(32%) saturate(2048%) hue-rotate(133deg) brightness(97%) contrast(98%);
+}
+
+.project-body video,
+.project-body img {
   max-width: 500px;
   width: 100%;
   height: auto;
@@ -570,23 +600,12 @@ main {
 }
 
 @media (max-width: 800px) {
-  .project-modal {
-    position: fixed;
-    inset: 1rem;
-    margin-top: 0;
-    max-width: none;
+  .work-layout {
+    flex-direction: column;
+  }
+  .project-display {
+    position: static;
     max-height: none;
-    overflow: hidden;
-    z-index: 150;
-    background: var(--bg);
-  }
-  .project-close {
-    position: absolute;
-    float: none;
-  }
-  .project-modal-inner {
-    max-height: 100%;
-    height: 100%;
   }
 }
 
