@@ -216,6 +216,7 @@ main {
 .bio-quote {
   margin: 0;
   padding: 0;
+  max-width: 480px;
 }
 
 .bio-quotemark {
@@ -511,6 +512,7 @@ main {
 }
 
 .project-display {
+  display: none;
   position: fixed;
   top: 0;
   left: 350px;
@@ -539,6 +541,10 @@ main {
   background: var(--fg);
 }
 
+.project-display.active {
+  display: block;
+}
+
 .project-content {
   display: none;
 }
@@ -555,6 +561,7 @@ main {
   font-size: 1.25rem;
   font-weight: 700;
   line-height: 1.5;
+  letter-spacing: -0.03em;
 }
 
 .project-subtitle {
@@ -567,7 +574,7 @@ main {
 
 .project-body p,
 .project-body h3 {
-  max-width: 75%;
+  max-width: 500px;
 }
 
 .project-body p {
@@ -577,9 +584,10 @@ main {
 .icon-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, 48px);
+  max-width: calc(48px * 8);
   gap: 0;
   padding: 1rem 0;
-  margin-left: -16px;
+  margin-left: -8px;
 }
 
 .icon-grid img {
@@ -588,6 +596,14 @@ main {
   padding: 16px;
   margin-bottom: 0;
   filter: brightness(0) saturate(100%) invert(11%) sepia(32%) saturate(2048%) hue-rotate(133deg) brightness(97%) contrast(98%);
+}
+
+.video-placeholder {
+  max-width: 500px;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: var(--border);
+  margin-bottom: 1rem;
 }
 
 .project-body video,
@@ -606,6 +622,17 @@ main {
   .project-display {
     position: static;
     max-height: none;
+    padding: 1.5rem 0 0 0;
+    background: none;
+  }
+  .project-body video,
+  .project-body img {
+    max-width: 100%;
+  }
+  .project-body p,
+  .project-body h3 {
+    max-width: 100%;
+    letter-spacing: -0.03em;
   }
 }
 
@@ -719,4 +746,11 @@ body.drawing a:hover {
   user-select: none;
   cursor: url('/icons/mouse-hover.svg'), grab;
   visibility: hidden;
+  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease;
+}
+
+.sticker.sticker-out {
+  transform: scale(0) !important;
+  opacity: 0;
+  pointer-events: none;
 }

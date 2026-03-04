@@ -23,10 +23,13 @@ function switchSection(index) {
     contactItems.forEach(item => item.classList.remove('highlighted'));
   }
 
-  // Clear project highlight when leaving work-work
+  // Clear project highlight and hide display when leaving work-work
   if (name !== 'work-work') {
     highlightedProject = -1;
+    activeProjectNum = null;
     projectItems.forEach(item => item.classList.remove('highlighted'));
+    projectDisplay.classList.remove('active');
+    projectContents.forEach(el => el.classList.remove('active'));
   }
 
   if (cvModalOpen) closeCvModal();
@@ -34,6 +37,18 @@ function switchSection(index) {
 
   // Enable page scroll when work-work is active (content may be tall)
   document.documentElement.style.overflow = name === 'work-work' ? '' : 'hidden';
+
+  // Stagger stickers out when entering work-work, back in when leaving
+  const stickers = document.querySelectorAll('.sticker');
+  stickers.forEach((sticker, i) => {
+    if (name === 'work-work') {
+      sticker.style.transitionDelay = `${i * 60}ms`;
+      sticker.classList.add('sticker-out');
+    } else {
+      sticker.style.transitionDelay = `${i * 40}ms`;
+      sticker.classList.remove('sticker-out');
+    }
+  });
 
 }
 
@@ -281,6 +296,7 @@ let activeProjectNum = null;
 
 function switchProject(num) {
   activeProjectNum = num;
+  projectDisplay.classList.add('active');
   projectContents.forEach(el => el.classList.toggle('active', el.dataset.projectContent === String(num)));
   projectDisplay.scrollTop = 0;
   projectItems.forEach(item => {
