@@ -45,111 +45,13 @@ information
             <button class="contact-item project-item" data-index="6" data-project="7"><span class="project-num">07</span> <span class="project-title">project:PR</span></button>
           </div>
           <div class="project-display" id="project-display">
-            <div class="project-content" data-project-content="1">
-              <div class="project-header">
-                <h2>arcade cabinet</h2>
-                <p class="project-subtitle"></p>
-              </div>
-              <div class="project-body">
-                <p>project content goes here.</p>
-              </div>
-            </div>
-            <div class="project-content" data-project-content="2">
-              <div class="project-header">
-                <h2>icons visual refresh</h2>
-                <p class="project-subtitle"></p>
-              </div>
-              <div class="project-body">
-                <p>coming soon</p>
-                <div class="icon-row" id="icon-row">
-                  <img src="/media/icons-refresh/alertOnline.svg" alt="" />
-                  <img src="/media/icons-refresh/avatar.svg" alt="" />
-                  <img src="/media/icons-refresh/bankAccount.svg" alt="" />
-                  <img src="/media/icons-refresh/bankLinked.svg" alt="" />
-                  <img src="/media/icons-refresh/biometricsFace.svg" alt="" />
-                  <img src="/media/icons-refresh/biometricsFingerprint.svg" alt="" />
-                  <img src="/media/icons-refresh/block.svg" alt="" />
-                  <img src="/media/icons-refresh/botMic.svg" alt="" />
-                </div>
-              </div>
-            </div>
-            <div class="project-content" data-project-content="3">
-              <div class="project-header">
-                <h2>icons-mcp</h2>
-                <p class="project-subtitle">contextual mapping + semantic search + svg generation</p>
-              </div>
-              <div class="project-body">
-                <p>icons are a consistency tax. humans sift through libraries manually, fuzzy search is bad, the pipeline is inflexible and relies on figma, and market and arcade libraries have separate conventions.</p>
-                <div class="video-placeholder"></div>
-
-                <p>for hackweek 2026, I combined two tools I had been working on: semantic search across assets leveraging multimodal embeddings + a custom svg generator</p>
-                <p>pipeline-agnostic icon server that gives ai agents the power to search, match, and generate icons. describe what you need in natural language.</p>
-
-                <h3>semantic icon search</h3>
-                <p>describe what you need in plain language — auto-map icons based on context.</p>
-                <video src="/media/icons-mcp/linearbot.mp4" autoplay loop muted playsinline></video>
-                <p>vector search + full-text search finds the best match across all icon sets with confidence scoring. multimodal embeddings fuse image + text + figma tags via cohere. compound queries auto-decompose into facets. cross-brand resolution maps icons between sets automatically.</p>
-
-                <h3>svg generation</h3>
-                <p>when no existing icon fits, generate a new one from a text prompt.</p>
-                <video src="/media/icons-mcp/snowhat-trimmed.mp4" autoplay loop muted playsinline></video>
-                <p>low confidence search triggers generation suggestion automatically.</p>
-
-                <h3>one server, many clients</h3>
-                <p>mcp over stdio for ai coding tools. http for bots and services. same search, same results.</p>
-                <p>claude code, goose, linear bot, slack bot, managerbot — all connected.</p>
-
-                <h3>vibecoding with icons-mcp</h3>
-                <p>single-prompt projects that use the mcp to auto-select icons.</p>
-                <video src="/media/icons-mcp/pills-minute-trimmed.mp4" autoplay loop muted playsinline></video>
-
-                <h3>under the hood</h3>
-                <p>three tools. one server. cohere multimodal embeddings fuse image + text + tags into a single vector per icon.</p>
-                <p>query → cohere embed → lancedb → rrf merge → results</p>
-                <p>sync_icons → figma api → export pngs → embed + index</p>
-              </div>
-            </div>
-            <div class="project-content" data-project-content="4">
-              <div class="project-header">
-                <h2>moneybot</h2>
-                <p class="project-subtitle"></p>
-              </div>
-              <div class="project-body">
-                <p>project content goes here.</p>
-              </div>
-            </div>
-            <div class="project-content" data-project-content="5">
-              <div class="project-header">
-                <h2>brand refresh</h2>
-                <p class="project-subtitle"></p>
-              </div>
-              <div class="project-body">
-                <p>project content goes here.</p>
-              </div>
-            </div>
-            <div class="project-content" data-project-content="6">
-              <div class="project-header">
-                <h2>CAF + illustrations</h2>
-                <p class="project-subtitle"></p>
-              </div>
-              <div class="project-body">
-                <video src="/media/ani-illu/caf.mp4" autoplay loop muted playsinline></video>
-                <img src="/media/ani-illu/cashapp.png" alt="cashapp" />
-                <video src="/media/ani-illu/money-suck.mp4" autoplay loop muted playsinline></video>
-                <img src="/media/ani-illu/flower-card.png" alt="flower card" />
-                <img src="/media/ani-illu/limes.png" alt="limes" />
-                <p>project content goes here.</p>
-              </div>
-            </div>
-            <div class="project-content" data-project-content="7">
-              <div class="project-header">
-                <h2>project:PR</h2>
-                <p class="project-subtitle"></p>
-              </div>
-              <div class="project-body">
-                <p>project content goes here.</p>
-              </div>
-            </div>
+            <div class="project-content" data-project-content="1" data-md="/projects/01-arcade-cabinet.md"></div>
+            <div class="project-content" data-project-content="2" data-md="/projects/02-icons-visual-refresh.md"></div>
+            <div class="project-content" data-project-content="3" data-md="/projects/03-icons-mcp.md"></div>
+            <div class="project-content" data-project-content="4" data-md="/projects/04-moneybot.md"></div>
+            <div class="project-content" data-project-content="5" data-md="/projects/05-brand-refresh.md"></div>
+            <div class="project-content" data-project-content="6" data-md="/projects/06-caf-illustrations.md"></div>
+            <div class="project-content" data-project-content="7" data-md="/projects/07-project-pr.md"></div>
           </div>
         </div>
       </div>

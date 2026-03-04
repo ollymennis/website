@@ -579,12 +579,19 @@ main {
 
 .project-body p {
   font-size: 0.75rem;
-  margin-bottom: 0.75rem;
+  margin-bottom: 1.5rem;
 }
 
 .project-body h3 {
-  margin-top: 1.5rem;
-  margin-bottom: 0.5rem;
+  margin-top: 2.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.project-body video,
+.project-body img,
+.video-placeholder {
+  margin-top: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .icon-row {
@@ -602,6 +609,22 @@ main {
   filter: brightness(0) saturate(100%) invert(11%) sepia(32%) saturate(2048%) hue-rotate(133deg) brightness(97%) contrast(98%);
 }
 
+.video-crop {
+  max-width: 500px;
+  width: 100%;
+  overflow: hidden;
+  aspect-ratio: 4 / 3;
+  margin-top: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.video-crop video {
+  width: 130%;
+  height: 100%;
+  object-fit: cover;
+  margin-left: -15%;
+}
+
 .video-placeholder {
   max-width: 500px;
   width: 100%;
@@ -616,7 +639,6 @@ main {
   width: 100%;
   height: auto;
   display: block;
-  margin-bottom: 1rem;
 }
 
 @media (max-width: 800px) {

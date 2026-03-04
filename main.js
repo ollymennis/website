@@ -289,6 +289,63 @@ cvLink.addEventListener('click', (e) => {
 
 document.getElementById('cv-close').addEventListener('click', () => closeCvModal());
 
+// --- Project Markdown Loader ---
+function parseProjectMd(md) {
+  const lines = md.split('\n');
+  let title = '';
+  let subtitle = '';
+  let bodyLines = [];
+  let i = 0;
+
+  // First line: # title
+  if (lines[i] && lines[i].startsWith('# ')) {
+    title = lines[i].slice(2).trim();
+    i++;
+  }
+  // Optional subtitle: _text_ on next non-empty line
+  while (i < lines.length && !lines[i].trim()) i++;
+  if (lines[i] && /^_(.+)_$/.test(lines[i].trim())) {
+    subtitle = lines[i].trim().slice(1, -1);
+    i++;
+  }
+  // Rest is body
+  bodyLines = lines.slice(i);
+
+  // Convert body markdown to HTML
+  let bodyHtml = '';
+  for (const line of bodyLines) {
+    const trimmed = line.trim();
+    if (!trimmed) { bodyHtml += '\n'; continue; }
+    // Pass through HTML tags directly
+    if (trimmed.startsWith('<')) { bodyHtml += trimmed + '\n'; continue; }
+    // h3
+    if (trimmed.startsWith('### ')) { bodyHtml += `<h3>${trimmed.slice(4)}</h3>\n`; continue; }
+    // Regular paragraph
+    bodyHtml += `<p>${trimmed}</p>\n`;
+  }
+
+  return { title, subtitle, bodyHtml };
+}
+
+const projectMdCache = {};
+
+async function loadProjectMd(el) {
+  const mdPath = el.dataset.md;
+  if (!mdPath) return;
+  if (projectMdCache[mdPath]) {
+    el.innerHTML = projectMdCache[mdPath];
+    return;
+  }
+  const md = await fetch(mdPath).then(r => r.text());
+  const { title, subtitle, bodyHtml } = parseProjectMd(md);
+  const html = `<div class="project-header"><h2>${title}</h2>${subtitle ? `<p class="project-subtitle">${subtitle}</p>` : '<p class="project-subtitle"></p>'}</div><div class="project-body">${bodyHtml}</div>`;
+  projectMdCache[mdPath] = html;
+  el.innerHTML = html;
+}
+
+// Preload all project markdown
+document.querySelectorAll('.project-content[data-md]').forEach(el => loadProjectMd(el));
+
 // --- Inline Project Display ---
 const projectDisplay = document.getElementById('project-display');
 const projectContents = document.querySelectorAll('.project-content');
@@ -539,56 +596,59 @@ const iconFiles = [
   'savingsApy','savingsGoal','timeProgressStart','traffic'
 ];
 
-const iconRow = document.getElementById('icon-row');
-if (iconRow) {
-  const slots = Array.from(iconRow.querySelectorAll('img'));
-  let pool = iconFiles.filter(f => !slots.some(s => s.src.includes(f)));
-  let iconInterval = null;
+let iconAnimSlots = null;
+let iconAnimPool = [];
+let iconInterval = null;
 
-  function shuffleArray(arr) {
-    for (let i = arr.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [arr[i], arr[j]] = [arr[j], arr[i]];
-    }
-    return arr;
+function shuffleArray(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
   }
-  shuffleArray(pool);
-
-  function swapAllSlots() {
-    const order = slots.map((s, i) => i);
-    shuffleArray(order);
-    order.forEach((slotIdx, i) => {
-      const delay = i * 120 + Math.random() * 80;
-      setTimeout(() => {
-        if (pool.length === 0) {
-          pool = iconFiles.filter(f => !slots.some(s => s.src.includes(f)));
-          shuffleArray(pool);
-        }
-        const slot = slots[slotIdx];
-        const oldName = slot.src.split('/').pop().replace('.svg', '');
-        const newName = pool.pop();
-        pool.unshift(oldName);
-        slot.src = `/media/icons-refresh/${newName}.svg`;
-      }, delay);
-    });
-  }
-
-  function startIconAnimation() {
-    if (iconInterval) return;
-    swapAllSlots();
-    iconInterval = setInterval(swapAllSlots, 1200);
-  }
-
-  function stopIconAnimation() {
-    clearInterval(iconInterval);
-    iconInterval = null;
-  }
-
-  // Hook into switchProject to start/stop animation
-  const _origSwitchProject = switchProject;
-  switchProject = function(num) {
-    _origSwitchProject(num);
-    if (num === 2) startIconAnimation();
-    else stopIconAnimation();
-  };
+  return arr;
 }
+
+function swapAllSlots() {
+  if (!iconAnimSlots) return;
+  const order = iconAnimSlots.map((s, i) => i);
+  shuffleArray(order);
+  order.forEach((slotIdx, i) => {
+    const delay = i * 120 + Math.random() * 80;
+    setTimeout(() => {
+      if (iconAnimPool.length === 0) {
+        iconAnimPool = iconFiles.filter(f => !iconAnimSlots.some(s => s.src.includes(f)));
+        shuffleArray(iconAnimPool);
+      }
+      const slot = iconAnimSlots[slotIdx];
+      const oldName = slot.src.split('/').pop().replace('.svg', '');
+      const newName = iconAnimPool.pop();
+      iconAnimPool.unshift(oldName);
+      slot.src = `/media/icons-refresh/${newName}.svg`;
+    }, delay);
+  });
+}
+
+function startIconAnimation() {
+  const row = document.getElementById('icon-row');
+  if (!row) return;
+  iconAnimSlots = Array.from(row.querySelectorAll('img'));
+  iconAnimPool = iconFiles.filter(f => !iconAnimSlots.some(s => s.src.includes(f)));
+  shuffleArray(iconAnimPool);
+  if (iconInterval) return;
+  swapAllSlots();
+  iconInterval = setInterval(swapAllSlots, 1200);
+}
+
+function stopIconAnimation() {
+  clearInterval(iconInterval);
+  iconInterval = null;
+  iconAnimSlots = null;
+}
+
+// Hook into switchProject to start/stop animation
+const _origSwitchProject = switchProject;
+switchProject = function(num) {
+  _origSwitchProject(num);
+  if (num === 2) startIconAnimation();
+  else stopIconAnimation();
+};
