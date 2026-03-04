@@ -37,7 +37,7 @@ information
         <div class="contact-list">
           <button class="contact-item project-item" data-index="0" data-project="1" data-default="01 arcade cabinet" data-hover="01 arcade cabinet →"><span class="contact-text">01 arcade cabinet</span></button>
           <button class="contact-item project-item" data-index="1" data-project="2" data-default="02 icons visual refresh" data-hover="02 icons visual refresh →"><span class="contact-text">02 icons visual refresh</span></button>
-          <button class="contact-item project-item" data-index="2" data-project="3" data-default="03 tokens-mcp" data-hover="03 tokens-mcp →"><span class="contact-text">03 tokens-mcp</span></button>
+          <button class="contact-item project-item" data-index="2" data-project="3" data-default="03 icons-mcp" data-hover="03 icons-mcp →"><span class="contact-text">03 icons-mcp</span></button>
           <button class="contact-item project-item" data-index="3" data-project="4" data-default="04 moneybot" data-hover="04 moneybot →"><span class="contact-text">04 moneybot</span></button>
           <button class="contact-item project-item" data-index="4" data-project="5" data-default="05 brand refresh" data-hover="05 brand refresh →"><span class="contact-text">05 brand refresh</span></button>
           <button class="contact-item project-item" data-index="5" data-project="6" data-default="06 CAF + illustrations" data-hover="06 CAF + illustrations →"><span class="contact-text">06 CAF + illustrations</span></button>
@@ -91,8 +91,34 @@ information
           <p>project content goes here.</p>
         </div>
         <div class="project-content" data-project-content="3">
-          <h2>tokens-mcp</h2>
-          <p>project content goes here.</p>
+          <h2>icons-mcp</h2>
+          <p>pipeline-agnostic icon server that gives ai agents the power to search, match, and generate icons. describe what you need in natural language.</p>
+
+          <h3>the problem</h3>
+          <p>icons are a consistency tax. humans sift through libraries manually, fuzzy search is bad, the pipeline is inflexible and relies on figma, and market and arcade libraries have separate conventions.</p>
+
+          <h3>semantic icon search</h3>
+          <p>describe what you need in plain language — auto-map icons based on context.</p>
+          <video src="/media/icons-mcp/linearbot.mp4" autoplay loop muted playsinline></video>
+          <p>vector search + full-text search finds the best match across all icon sets with confidence scoring. multimodal embeddings fuse image + text + figma tags via cohere. compound queries auto-decompose into facets. cross-brand resolution maps icons between sets automatically.</p>
+
+          <h3>svg generation</h3>
+          <p>when no existing icon fits, generate a new one from a text prompt.</p>
+          <video src="/media/icons-mcp/snowhat-trimmed.mp4" autoplay loop muted playsinline></video>
+          <p>low confidence search triggers generation suggestion automatically.</p>
+
+          <h3>one server, many clients</h3>
+          <p>mcp over stdio for ai coding tools. http for bots and services. same search, same results.</p>
+          <p>claude code, goose, linear bot, slack bot, managerbot — all connected.</p>
+
+          <h3>vibecoding with icons-mcp</h3>
+          <p>single-prompt projects that use the mcp to auto-select icons.</p>
+          <video src="/media/icons-mcp/pills-minute-trimmed.mp4" autoplay loop muted playsinline></video>
+
+          <h3>under the hood</h3>
+          <p>three tools. one server. cohere multimodal embeddings fuse image + text + tags into a single vector per icon.</p>
+          <p>query → cohere embed → lancedb → rrf merge → results</p>
+          <p>sync_icons → figma api → export pngs → embed + index</p>
         </div>
         <div class="project-content" data-project-content="4">
           <h2>moneybot</h2>
