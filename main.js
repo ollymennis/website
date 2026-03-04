@@ -334,6 +334,8 @@ async function loadProjectMd(el) {
   if (!mdPath) return;
   if (projectMdCache[mdPath]) {
     el.innerHTML = projectMdCache[mdPath];
+    initHoverPreviews(el);
+    initLoopAtVideos(el);
     return;
   }
   const md = await fetch(mdPath).then(r => r.text());
@@ -341,6 +343,51 @@ async function loadProjectMd(el) {
   const html = `<div class="project-header"><h2>${title}</h2>${subtitle ? `<p class="project-subtitle">${subtitle}</p>` : '<p class="project-subtitle"></p>'}</div><div class="project-body">${bodyHtml}</div>`;
   projectMdCache[mdPath] = html;
   el.innerHTML = html;
+  initHoverPreviews(el);
+  initLoopAtVideos(el);
+}
+
+function initHoverPreviews(el) {
+  el.querySelectorAll('.hover-preview[data-preview]').forEach(span => {
+    const img = document.createElement('img');
+    img.className = 'preview-img';
+    img.src = span.dataset.preview;
+    span.appendChild(img);
+    span.addEventListener('mouseenter', () => {
+      img.style.display = 'block';
+      const rect = span.getBoundingClientRect();
+      const imgW = 700;
+      let left = rect.left;
+      let top = rect.bottom + 8;
+      // Clamp to viewport
+      if (left + imgW > window.innerWidth) left = window.innerWidth - imgW - 16;
+      if (left < 16) left = 16;
+      // If it would overflow bottom, show above
+      img.style.left = left + 'px';
+      img.style.top = top + 'px';
+      requestAnimationFrame(() => {
+        const imgRect = img.getBoundingClientRect();
+        if (imgRect.bottom > window.innerHeight) {
+          img.style.top = (rect.top - imgRect.height - 8) + 'px';
+        }
+      });
+    });
+    span.addEventListener('mouseleave', () => {
+      img.style.display = 'none';
+    });
+  });
+}
+
+function initLoopAtVideos(el) {
+  el.querySelectorAll('video[data-loop-at]').forEach(video => {
+    const loopTime = parseFloat(video.dataset.loopAt);
+    video.addEventListener('timeupdate', () => {
+      if (video.currentTime >= loopTime) {
+        video.currentTime = 0;
+        video.play();
+      }
+    });
+  });
 }
 
 // Preload all project markdown

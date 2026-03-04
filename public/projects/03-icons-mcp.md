@@ -21,7 +21,7 @@ _describe what you need in plain language and auto-map icons based on context_
 
 below is an example of the mcp being utilized by a linearbot I built to respond to tickets with suggestions
 
-<div class="video-crop"><video src="/media/icons-mcp/linearbot.mp4" autoplay loop muted playsinline></video></div>
+<video src="/media/icons-mcp/linearbot.mp4" autoplay loop muted playsinline></video>
 
 vector search + full-text search finds the best match across all icon sets with confidence scoring. multimodal embeddings fuse image + text + figma tags via cohere. compound queries auto-decompose into facets. cross-brand resolution maps icons between sets automatically.
 

@@ -609,24 +609,25 @@ main {
   filter: brightness(0) saturate(100%) invert(11%) sepia(32%) saturate(2048%) hue-rotate(133deg) brightness(97%) contrast(98%);
 }
 
-.video-crop {
-  max-width: 500px;
-  width: 100%;
-  overflow: hidden;
-  aspect-ratio: 4 / 3;
-  margin-top: 1rem;
-  margin-bottom: 1.5rem;
+.hover-preview {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: url('/icons/mouse-hover.svg'), pointer;
+  position: relative;
 }
 
-.video-crop video {
-  width: 130%;
-  height: 100%;
-  object-fit: cover;
-  margin-left: -15%;
+.hover-preview .preview-img {
+  display: none;
+  position: fixed;
+  max-width: 900px;
+  width: 700px;
+  z-index: 200;
+  pointer-events: none;
+  border: 2px solid var(--fg);
 }
 
 .video-placeholder {
-  max-width: 500px;
+  max-width: 900px;
   width: 100%;
   aspect-ratio: 16 / 9;
   background: var(--border);
@@ -635,10 +636,11 @@ main {
 
 .project-body video,
 .project-body img {
-  max-width: 500px;
+  max-width: 900px;
   width: 100%;
   height: auto;
   display: block;
+  border-radius: 18px;
 }
 
 @media (max-width: 800px) {
