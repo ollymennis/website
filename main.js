@@ -522,3 +522,73 @@ function renderScribble() {
   requestAnimationFrame(renderScribble);
 }
 requestAnimationFrame(renderScribble);
+
+// --- Icon Row Animation ---
+const iconFiles = [
+  'alertOnline','avatar','bankAccount','bankLinked','biometricsFace','biometricsFingerprint',
+  'block','botMic','cardActive','cardAdd','cardBasic','cardCredit','cardInactive','cashAppPay',
+  'categoryAccessories','categoryAccessoriesHats','categoryApparel','categoryAuto','categoryBar',
+  'categoryCafe','categoryDiy','categoryEntertainment','categoryFashion','categoryFoodDrinkAlt',
+  'categoryFurniture','categoryGrocery','categoryHome','categoryHomeAuto','categoryKids',
+  'categoryRent','categoryShoesHeel','categorySports','categorySportsAlt','categoryTech',
+  'categoryTourism','categoryToys','categoryTransportation','categoryTravel','deposit',
+  'depositBarcode','depositCheck','depositPaper','discountMaximum','discountMinimum',
+  'documentPaystub','documentQuill','fast','fpoShrimp','governmentFlag','hyperlink','idea',
+  'instant','international','location','music','next','note','notifications',
+  'overdraftProtection','passcodeFill','paychecks','photo','qr','recurringAutomatic',
+  'savingsApy','savingsGoal','timeProgressStart','traffic'
+];
+
+const iconRow = document.getElementById('icon-row');
+if (iconRow) {
+  const slots = Array.from(iconRow.querySelectorAll('img'));
+  let pool = iconFiles.filter(f => !slots.some(s => s.src.includes(f)));
+  let iconInterval = null;
+
+  function shuffleArray(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+  shuffleArray(pool);
+
+  function swapAllSlots() {
+    const order = slots.map((s, i) => i);
+    shuffleArray(order);
+    order.forEach((slotIdx, i) => {
+      const delay = i * 120 + Math.random() * 80;
+      setTimeout(() => {
+        if (pool.length === 0) {
+          pool = iconFiles.filter(f => !slots.some(s => s.src.includes(f)));
+          shuffleArray(pool);
+        }
+        const slot = slots[slotIdx];
+        const oldName = slot.src.split('/').pop().replace('.svg', '');
+        const newName = pool.pop();
+        pool.unshift(oldName);
+        slot.src = `/media/icons-refresh/${newName}.svg`;
+      }, delay);
+    });
+  }
+
+  function startIconAnimation() {
+    if (iconInterval) return;
+    swapAllSlots();
+    iconInterval = setInterval(swapAllSlots, 1200);
+  }
+
+  function stopIconAnimation() {
+    clearInterval(iconInterval);
+    iconInterval = null;
+  }
+
+  // Hook into switchProject to start/stop animation
+  const _origSwitchProject = switchProject;
+  switchProject = function(num) {
+    _origSwitchProject(num);
+    if (num === 2) startIconAnimation();
+    else stopIconAnimation();
+  };
+}

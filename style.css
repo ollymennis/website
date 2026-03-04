@@ -579,21 +579,25 @@ main {
 
 .project-body p {
   font-size: 0.75rem;
+  margin-bottom: 0.75rem;
 }
 
-.icon-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, 48px);
-  max-width: calc(48px * 8);
-  gap: 0;
+.project-body h3 {
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.icon-row {
+  display: flex;
+  gap: 2rem;
   padding: 1rem 0;
-  margin-left: -8px;
 }
 
-.icon-grid img {
-  width: 16px;
-  height: 16px;
-  padding: 16px;
+.icon-row img {
+  width: 16px !important;
+  height: 16px !important;
+  max-width: 16px;
+  max-height: 16px;
   margin-bottom: 0;
   filter: brightness(0) saturate(100%) invert(11%) sepia(32%) saturate(2048%) hue-rotate(133deg) brightness(97%) contrast(98%);
 }
