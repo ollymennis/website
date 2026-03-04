@@ -23,7 +23,14 @@ function switchSection(index) {
     contactItems.forEach(item => item.classList.remove('highlighted'));
   }
 
-  if (modalOpen) closeModal();
+  // Clear project highlight when leaving work-work
+  if (name !== 'work-work') {
+    highlightedProject = -1;
+    projectItems.forEach(item => item.classList.remove('highlighted'));
+  }
+
+  if (activeModalType) closeAnyModal();
+  primedItem = null;
 
 }
 
@@ -83,13 +90,16 @@ function getActiveSlideController() {
 // --- Keyboard navigation ---
 document.addEventListener('keydown', (e) => {
   if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-  if (modalOpen && e.code === 'Escape') {
-    closeModal();
+  if (activeModalType && e.code === 'Escape') {
+    closeAnyModal();
     return;
   }
-  if (modalOpen && e.code === 'Space') {
+  if (activeModalType && e.code === 'Space') {
     e.preventDefault();
-    cvModal.querySelector('.cv-modal-inner').scrollBy(0, e.shiftKey ? -200 : 200);
+    const scrollTarget = activeModalType === 'cv'
+      ? cvModal.querySelector('.cv-modal-inner')
+      : projectModal.querySelector('.project-modal-inner');
+    scrollTarget.scrollBy(0, e.shiftKey ? -200 : 200);
     return;
   }
 
@@ -114,27 +124,32 @@ document.addEventListener('keydown', (e) => {
     return;
   }
 
-  // Left/Right: work slides (only when a work section is active)
-  const slider = getActiveSlideController();
-  if (slider) {
+  // Work-work: arrow keys cycle projects, number keys + enter activate
+  if (sections[currentNav] === 'work-work') {
     if (key === 'ArrowRight' || key === 'KeyD') {
       e.preventDefault();
-      slider.next();
+      highlightProject(Math.min(projectItems.length - 1, highlightedProject + 1));
       return;
     }
     if (key === 'ArrowLeft' || key === 'KeyA') {
       e.preventDefault();
-      slider.prev();
+      highlightProject(Math.max(0, highlightedProject - 1));
       return;
     }
     const num = key.match(/^Digit(\d)$/);
     if (num) {
       const idx = parseInt(num[1], 10) - 1;
-      if (idx >= 0 && idx < slider.slides.length) {
+      if (idx >= 0 && idx < projectItems.length) {
         e.preventDefault();
-        slider.goto(idx);
+        highlightProject(idx);
+        projectItems[idx].click();
       }
     }
+    if (key === 'Enter' && highlightedProject >= 0) {
+      e.preventDefault();
+      projectItems[highlightedProject].click();
+    }
+    return;
   }
 
   // Information items: arrow keys cycle, number keys select, enter activates
@@ -235,33 +250,126 @@ function toggleDarkMode() {
 
 let canvasOpen = false;
 
-// --- CV Modal ---
+// --- Modal System (CV + Project) ---
 const cvModal = document.getElementById('cv-modal');
+const projectModal = document.getElementById('project-modal');
 const cvLink = document.querySelector('[data-default="03 cv"]');
+const projectContents = document.querySelectorAll('.project-content');
 
-let modalOpen = false;
+let activeModalType = null; // 'cv' | 'project' | null
+let activeProjectNum = null;
 
-function openModal() {
+function openCvModal() {
+  if (activeModalType === 'project') projectModal.classList.remove('active');
   cvModal.classList.add('active');
-  modalOpen = true;
+  activeModalType = 'cv';
+  activeProjectNum = null;
 }
 
-function closeModal() {
+function openProjectModal(num) {
+  if (activeModalType === 'cv') cvModal.classList.remove('active');
+  projectContents.forEach(el => el.classList.remove('active'));
+  const target = document.querySelector(`[data-project-content="${num}"]`);
+  if (target) target.classList.add('active');
+  projectModal.classList.add('active');
+  activeModalType = 'project';
+  activeProjectNum = num;
+  // Show hover/selected state on active project item
+  projectItems.forEach(item => {
+    const text = item.querySelector('.contact-text');
+    const isActive = item.dataset.project === String(num);
+    item.classList.toggle('highlighted', isActive);
+    if (text) text.textContent = isActive ? item.dataset.hover : item.dataset.default;
+  });
+}
+
+function closeAnyModal() {
   cvModal.classList.remove('active');
-  modalOpen = false;
+  projectModal.classList.remove('active');
+  projectContents.forEach(el => el.classList.remove('active'));
+  activeModalType = null;
+  activeProjectNum = null;
+  // Reset all project items to default state
+  projectItems.forEach(item => {
+    const text = item.querySelector('.contact-text');
+    item.classList.remove('highlighted');
+    if (text) text.textContent = item.dataset.default;
+  });
 }
 
 cvLink.addEventListener('click', (e) => {
   e.preventDefault();
-  if (modalOpen) closeModal();
-  else openModal();
+  if (activeModalType === 'cv') closeAnyModal();
+  else openCvModal();
 });
 
-document.getElementById('cv-close').addEventListener('click', () => closeModal());
+document.getElementById('cv-close').addEventListener('click', () => closeAnyModal());
+document.getElementById('project-close').addEventListener('click', () => closeAnyModal());
 
 contactItems.forEach(item => {
   if (item === cvLink) return;
-  item.addEventListener('click', () => { if (modalOpen) closeModal(); });
+  item.addEventListener('click', () => { if (activeModalType) closeAnyModal(); });
+});
+
+// --- Project Items ---
+const projectItems = Array.from(document.querySelectorAll('.project-item'));
+let highlightedProject = -1;
+
+function highlightProject(index) {
+  highlightedProject = index;
+  projectItems.forEach((item, i) => {
+    const text = item.querySelector('.contact-text');
+    const isActive = i === index;
+    item.classList.toggle('highlighted', isActive);
+    if (text && item.dataset.hover) {
+      text.textContent = isActive ? item.dataset.hover : item.dataset.default;
+    }
+  });
+}
+
+projectItems.forEach(item => {
+  const text = item.querySelector('.contact-text');
+
+  if (isTouchDevice) {
+    item.addEventListener('click', (e) => {
+      if (primedItem !== item) {
+        e.preventDefault();
+        if (primedItem) {
+          const prevText = primedItem.querySelector('.contact-text');
+          prevText.textContent = primedItem.dataset.default;
+          primedItem.classList.remove('highlighted');
+        }
+        text.textContent = item.dataset.hover;
+        item.classList.add('highlighted');
+        primedItem = item;
+      } else {
+        // Second tap: open project
+        const num = item.dataset.project;
+        if (activeModalType === 'project' && activeProjectNum === num) {
+          closeAnyModal();
+        } else {
+          openProjectModal(num);
+        }
+        text.textContent = item.dataset.default;
+        item.classList.remove('highlighted');
+        primedItem = null;
+      }
+    });
+  } else {
+    item.addEventListener('mouseenter', () => { text.textContent = item.dataset.hover; });
+    item.addEventListener('mouseleave', () => {
+      if (activeModalType === 'project' && activeProjectNum === item.dataset.project) return;
+      text.textContent = item.dataset.default;
+    });
+    item.addEventListener('click', () => {
+      const num = item.dataset.project;
+      if (activeModalType === 'project' && activeProjectNum === num) {
+        closeAnyModal();
+      } else {
+        openProjectModal(num);
+      }
+    });
+  }
 });
 
 // --- Load CV from markdown ---
@@ -322,63 +430,6 @@ fetch('/cv/cv.md')
     if (inList) html += '</ul></div>';
     document.getElementById('cv-content').innerHTML = html;
   });
-
-// --- Snake Loader ---
-const snakeSvg = document.getElementById('snake-loader');
-if (snakeSvg) {
-  const CELL = 6;
-  const STEP = 6;
-  const TRAIL_LEN = 8;
-  const INTERVAL = 120;
-
-  // 3x3 snake path: L→R, R→L, L→R, then reverse back up the middle
-  const path = [
-    [0,0], [1,0], [2,0],   // row 0 →
-    [2,1], [1,1], [0,1],   // row 1 ←
-    [0,2], [1,2], [2,2],   // row 2 →
-    [2,1], [1,1], [0,1],   // reverse back up
-  ];
-
-  let step = 0;
-  const trail = [];
-
-  // Pre-create rect elements for trail + head
-  const rects = [];
-  for (let i = 0; i < TRAIL_LEN + 1; i++) {
-    const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-    rect.setAttribute('width', CELL);
-    rect.setAttribute('height', CELL);
-    rect.setAttribute('fill', 'currentColor');
-    rect.setAttribute('opacity', '0');
-    snakeSvg.appendChild(rect);
-    rects.push(rect);
-  }
-
-  setInterval(() => {
-    const pos = path[step % path.length];
-    trail.push(pos);
-    if (trail.length > TRAIL_LEN) trail.shift();
-
-    // Hide all first
-    rects.forEach(r => r.setAttribute('opacity', '0'));
-
-    // Draw trail at full opacity in #ABC8D6
-    for (let i = 0; i < trail.length; i++) {
-      rects[i].setAttribute('x', trail[i][0] * STEP);
-      rects[i].setAttribute('y', trail[i][1] * STEP);
-      rects[i].setAttribute('fill', '#ABC8D6');
-      rects[i].setAttribute('opacity', '1');
-    }
-
-    // Head at full opacity
-    const head = rects[trail.length];
-    head.setAttribute('x', pos[0] * STEP);
-    head.setAttribute('y', pos[1] * STEP);
-    head.setAttribute('opacity', '1');
-
-    step++;
-  }, INTERVAL);
-}
 
 // --- Draggable Stickers ---
 let stickerZ = 100;
@@ -460,7 +511,7 @@ const fgObserver = new MutationObserver(() => {
 fgObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 
 function startScribble(x, y) {
-  if (stickerDragging || modalOpen) return;
+  if (stickerDragging || activeModalType) return;
   scribbling = true;
   document.body.classList.add('drawing');
   strokes.push({ points: [{ x, y }], endTime: null });
@@ -480,7 +531,7 @@ function endScribble() {
 }
 
 function isInteractive(el) {
-  return el.closest('button, a, .nav-btn, .contact-item, .sticker, .cv-modal');
+  return el.closest('button, a, .nav-btn, .contact-item, .sticker, .cv-modal, .project-modal');
 }
 
 document.addEventListener('mousedown', (e) => { if (!isInteractive(e.target)) startScribble(e.clientX, e.clientY); });
