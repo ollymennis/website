@@ -1,7 +1,7 @@
 # asset cabinet
 _contextual mapping + semantic search_
 
-with the help of claude code, I added semantic search to the icon library tool used by engineers and designers. the improved search experience leverages *multimodal embeddings* and consolidates the icon libraries across block, making discovery and finding cross-brand options a bit easier.
+with the help of claude code, I added semantic search to the icon library tool used by engineers and designers. the improved search experience leverages *multimodal embeddings* and consolidates the icon libraries across block, making icon retrievel less tedious
 
 <video src="/media/cabinet/main.mp4" autoplay loop muted playsinline></video>
 
@@ -19,6 +19,6 @@ also explored wild options:
 
 <video src="/media/cabinet/wild-1.mp4" autoplay loop muted playsinline></video>
 
-
+<img src="/media/cabinet/wild-2.png" alt="wild" />
 
 

@@ -585,6 +585,12 @@ main {
 .project-body h3 {
   margin-top: 2.5rem;
   margin-bottom: 0.75rem;
+  font-weight: 700;
+}
+
+.project-body a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .project-body video,
@@ -685,6 +691,40 @@ main {
 }
 
 
+
+.video-nocrop {
+  max-width: 800px;
+  width: 100%;
+  margin-top: 1rem;
+  margin-bottom: 1.5rem;
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+.video-nocrop video {
+  display: block;
+  width: 100%;
+  border-radius: 18px;
+}
+
+.video-crop-sides {
+  max-width: 800px;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 18px;
+  margin-top: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.video-crop-sides video {
+  display: block;
+  width: 130%;
+  margin-left: -15%;
+  margin-top: -8%;
+  border-radius: 0;
+  margin-bottom: -1px;
+  border-radius: 0;
+}
 
 .project-body img[src$=".svg"] {
   border-radius: 0;

@@ -385,11 +385,13 @@ function initHoverPreviews(el) {
 }
 
 function initLoopAtVideos(el) {
-  el.querySelectorAll('video[data-loop-at]').forEach(video => {
-    const loopTime = parseFloat(video.dataset.loopAt);
+  el.querySelectorAll('video[data-loop-at], video[data-start-at]').forEach(video => {
+    const startTime = parseFloat(video.dataset.startAt) || 0;
+    const loopTime = parseFloat(video.dataset.loopAt) || Infinity;
+    if (startTime) video.currentTime = startTime;
     video.addEventListener('timeupdate', () => {
       if (video.currentTime >= loopTime) {
-        video.currentTime = 0;
+        video.currentTime = startTime;
         video.play();
       }
     });
