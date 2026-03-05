@@ -375,6 +375,13 @@ main {
   margin-left: 0.5rem;
 }
 
+.project-title-icon {
+  width: 1.2em;
+  height: 1.2em;
+  vertical-align: -0.15em;
+  border-radius: 0;
+}
+
 .contact-arrow {
   width: 0.65em;
   height: 0.65em;
@@ -574,6 +581,11 @@ main {
   display: block;
 }
 
+.project-header,
+.project-body {
+  max-width: 600px;
+}
+
 .project-header {
   margin-bottom: 1.5rem;
 }
@@ -595,7 +607,6 @@ main {
 
 .project-body p,
 .project-body h3 {
-  max-width: 500px;
 }
 
 .project-body p {
@@ -609,24 +620,109 @@ main {
   font-weight: 700;
 }
 
+.project-body blockquote {
+  margin-bottom: 1.5rem;
+  padding-left: 1rem;
+  border-left: 2px solid var(--fg);
+  font-style: italic;
+}
+
+.project-body blockquote p {
+  margin-bottom: 0;
+}
+
 .project-body a {
   text-decoration: underline;
   text-underline-offset: 3px;
 }
 
+.team-row {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  margin-top: 2rem;
+  margin-bottom: 3rem;
+}
+
+.team-avatar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none !important;
+  cursor: url('/icons/mouse-hover.svg'), pointer;
+}
+
+.team-avatar .team-initials {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--fg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--mono);
+  font-size: 0.55rem;
+  font-weight: 700;
+  color: var(--bg);
+  line-height: 1;
+  user-select: none;
+}
+
+.team-avatar .team-name {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  color: var(--fg);
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 80ms;
+}
+
+.team-avatar:hover .team-name {
+  opacity: 1;
+}
+
+.project-body pre {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.project-body code {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  line-height: 1.6;
+}
+
 .project-body video,
 .project-body img,
 .video-placeholder,
-.video-crop {
-  margin-top: 1rem;
-  margin-bottom: 1.5rem;
+.video-crop,
+.video-nocrop,
+.video-crop-sides {
+  margin-top: 2.5rem;
+  margin-bottom: 2.5rem;
+}
+
+/* Caption blockquotes tight to media above */
+.project-body img + blockquote,
+.project-body video + blockquote,
+.project-body .video-crop + blockquote,
+.project-body .video-nocrop + blockquote,
+.project-body .video-crop-sides + blockquote,
+.project-body .video-placeholder + blockquote {
+  margin-top: -1.25rem;
+  margin-bottom: 2.5rem;
 }
 
 .media-row {
   display: flex;
   gap: 4rem;
   align-items: flex-start;
-  max-width: 800px;
   margin-top: 1rem;
   margin-bottom: 1.5rem;
 }
@@ -744,6 +840,29 @@ main {
   white-space: nowrap;
 }
 
+.hover-icon {
+  cursor: url('/icons/mouse-hover.svg'), pointer;
+  position: relative;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.hover-icon .hover-icon-img {
+  display: none;
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: auto;
+  pointer-events: none;
+  border-radius: 0;
+}
+
+.hover-icon:hover .hover-icon-img {
+  display: block;
+}
+
 .hover-preview {
   text-decoration: underline;
   text-underline-offset: 3px;
@@ -762,24 +881,23 @@ main {
 }
 
 .video-placeholder {
-  max-width: 800px;
   width: 100%;
   aspect-ratio: 16 / 9;
   background: var(--border);
   margin-bottom: 1rem;
+  border-radius: 18px;
 }
 
 .project-body video,
 .project-body img {
-  max-width: 800px;
   width: 100%;
   height: auto;
   display: block;
   border-radius: 18px;
+  cursor: url('/icons/mouse-hover.svg'), pointer;
 }
 
 .video-crop {
-  max-width: 800px;
   width: 100%;
   overflow: hidden;
   border-radius: 18px;
@@ -796,7 +914,6 @@ main {
 
 
 .video-nocrop {
-  max-width: 800px;
   width: 100%;
   margin-top: 1rem;
   margin-bottom: 1.5rem;
@@ -811,7 +928,6 @@ main {
 }
 
 .video-crop-sides {
-  max-width: 800px;
   width: 100%;
   overflow: hidden;
   border-radius: 18px;
@@ -831,6 +947,34 @@ main {
 
 .project-body img[src$=".svg"] {
   border-radius: 0;
+}
+
+/* --- Media Lightbox --- */
+.media-lightbox {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(0, 0, 0, 0.85);
+  cursor: url('/icons/mouse-hover.svg'), pointer;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.media-lightbox.active {
+  display: flex;
+}
+
+.media-lightbox img,
+.media-lightbox video {
+  max-width: 90vw;
+  max-height: 90vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 18px;
+  pointer-events: none;
 }
 
 @media (max-width: 800px) {
@@ -891,16 +1035,14 @@ main {
   .project-display-close {
     display: block;
   }
-  .project-body video,
-  .project-body img {
-    max-width: 100%;
+  .project-header,
+  .project-body {
+    max-width: none;
   }
-  .project-body p {
-    max-width: 100%;
-    letter-spacing: -0.03em;
-  }
+  .project-header,
+  .project-body p,
   .project-body h3 {
-    max-width: 100%;
+    max-width: 75%;
     letter-spacing: -0.03em;
   }
   .media-row {
@@ -1027,17 +1169,21 @@ main {
   .project-display-close {
     display: block;
   }
+  .project-header,
+  .project-body {
+    max-width: none;
+  }
   .project-header h2 {
     font-size: 2rem;
   }
-  .project-body p {
-    font-size: 1.25rem;
-    max-width: 100%;
+  .project-header,
+  .project-body p,
+  .project-body h3 {
+    max-width: 75%;
     letter-spacing: -0.03em;
   }
-  .project-body h3 {
-    max-width: 100%;
-    letter-spacing: -0.03em;
+  .project-body p {
+    font-size: 1.25rem;
   }
 }
 

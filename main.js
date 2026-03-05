@@ -129,6 +129,7 @@ function getActiveSlideController() {
 document.addEventListener('keydown', (e) => {
   if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
   if (e.code === 'Escape') {
+    if (lightboxOpen) { closeLightbox(); return; }
     if (activeProjectNum !== null) { closeProjectDisplay(); return; }
     if (cvModalOpen) { closeCvModal(); return; }
   }
@@ -333,17 +334,41 @@ function parseProjectMd(md) {
 
   // Convert body markdown to HTML
   let bodyHtml = '';
+  let inCodeBlock = false;
+  let codeContent = '';
   for (const line of bodyLines) {
     const trimmed = line.trim();
+    // Code fence toggle
+    if (trimmed.startsWith('```')) {
+      if (!inCodeBlock) {
+        inCodeBlock = true;
+        codeContent = trimmed.slice(3).trim() ? trimmed.slice(3).trim() + '\n' : '';
+        // Check for single-line fenced code: ``` text ```
+        if (trimmed.endsWith('```') && trimmed.length > 3 && trimmed.slice(3).trim().endsWith('```')) {
+          bodyHtml += `<pre><code>${trimmed.slice(3, trimmed.lastIndexOf('```')).trim()}</code></pre>\n`;
+          inCodeBlock = false;
+          codeContent = '';
+        }
+      } else {
+        bodyHtml += `<pre><code>${codeContent.trimEnd()}</code></pre>\n`;
+        inCodeBlock = false;
+        codeContent = '';
+      }
+      continue;
+    }
+    if (inCodeBlock) { codeContent += line + '\n'; continue; }
     if (!trimmed) { bodyHtml += '\n'; continue; }
     // Pass through HTML tags directly
     if (trimmed.startsWith('<video')) { bodyHtml += `<div class="video-crop">${trimmed}</div>\n`; continue; }
     if (trimmed.startsWith('<')) { bodyHtml += trimmed + '\n'; continue; }
     // h3
     if (trimmed.startsWith('### ')) { bodyHtml += `<h3>${trimmed.slice(4)}</h3>\n`; continue; }
+    // Blockquote
+    if (trimmed.startsWith('>')) { bodyHtml += `<blockquote><p>${trimmed.slice(1).trim()}</p></blockquote>\n`; continue; }
     // Regular paragraph
     bodyHtml += `<p>${trimmed}</p>\n`;
   }
+  if (inCodeBlock) { bodyHtml += `<pre><code>${codeContent.trimEnd()}</code></pre>\n`; }
 
   return { title, subtitle, bodyHtml };
 }
@@ -356,6 +381,7 @@ async function loadProjectMd(el) {
   if (projectMdCache[mdPath]) {
     el.innerHTML = projectMdCache[mdPath];
     initHoverPreviews(el);
+    initHoverIcons(el);
     initLoopAtVideos(el);
     observeVideos(el);
     initIconSpecimen(el);
@@ -367,9 +393,19 @@ async function loadProjectMd(el) {
   projectMdCache[mdPath] = html;
   el.innerHTML = html;
   initHoverPreviews(el);
+  initHoverIcons(el);
   initLoopAtVideos(el);
   observeVideos(el);
   initIconSpecimen(el);
+}
+
+function initHoverIcons(el) {
+  el.querySelectorAll('.hover-icon[data-icon]').forEach(span => {
+    const img = document.createElement('img');
+    img.className = 'hover-icon-img';
+    img.src = span.dataset.icon;
+    span.appendChild(img);
+  });
 }
 
 function initHoverPreviews(el) {
@@ -730,7 +766,7 @@ fgObserver.observe(document.documentElement, { attributes: true, attributeFilter
 
 function startScribble(x, y) {
   if (window.innerWidth <= 800) return;
-  if (stickerDragging || cvModalOpen || activeProjectNum !== null) return;
+  if (stickerDragging || cvModalOpen || activeProjectNum !== null || lightboxOpen) return;
   scribbling = true;
   document.body.classList.add('drawing');
   strokes.push({ points: [{ x, y }], endTime: null });
@@ -864,3 +900,39 @@ switchProject = function(num) {
   if (num === 7) startIconAnimation();
   else stopIconAnimation();
 };
+
+// --- Media Lightbox ---
+const lightbox = document.getElementById('media-lightbox');
+let lightboxOpen = false;
+
+function openLightbox(el) {
+  const clone = el.cloneNode(true);
+  clone.style = '';
+  clone.className = '';
+  clone.removeAttribute('class');
+  if (clone.tagName === 'VIDEO') {
+    clone.muted = true;
+    clone.autoplay = true;
+    clone.loop = true;
+    clone.playsInline = true;
+  }
+  lightbox.innerHTML = '';
+  lightbox.appendChild(clone);
+  lightbox.classList.add('active');
+  lightboxOpen = true;
+}
+
+function closeLightbox() {
+  lightbox.classList.remove('active');
+  lightbox.innerHTML = '';
+  lightboxOpen = false;
+}
+
+lightbox.addEventListener('click', closeLightbox);
+
+projectDisplay.addEventListener('click', (e) => {
+  const media = e.target.closest('.project-body img, .project-body video');
+  if (!media) return;
+  if (media.closest('.media-fixed') || media.classList.contains('media-fixed')) return;
+  openLightbox(media);
+});
