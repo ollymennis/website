@@ -744,6 +744,7 @@ main {
     z-index: 10;
     background: var(--bg);
     padding-top: 1.5rem;
+    padding-bottom: 1px;
     margin-top: -1.5rem;
   }
   .work-layout .contact-list {

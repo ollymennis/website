@@ -655,6 +655,7 @@ const fgObserver = new MutationObserver(() => {
 fgObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 
 function startScribble(x, y) {
+  if (window.innerWidth <= 800) return;
   if (stickerDragging || cvModalOpen) return;
   scribbling = true;
   document.body.classList.add('drawing');
