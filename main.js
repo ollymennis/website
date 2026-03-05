@@ -368,6 +368,7 @@ async function loadProjectMd(el) {
     el.innerHTML = projectMdCache[mdPath];
     initHoverPreviews(el);
     initLoopAtVideos(el);
+    observeVideos(el);
     return;
   }
   const md = await fetch(mdPath).then(r => r.text());
@@ -377,6 +378,7 @@ async function loadProjectMd(el) {
   el.innerHTML = html;
   initHoverPreviews(el);
   initLoopAtVideos(el);
+  observeVideos(el);
 }
 
 function initHoverPreviews(el) {
@@ -424,6 +426,25 @@ function initLoopAtVideos(el) {
         video.play();
       }
     });
+  });
+}
+
+// --- Play videos only when in view ---
+const videoObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.play().catch(() => {});
+    } else {
+      entry.target.pause();
+    }
+  });
+}, { threshold: 0.25 });
+
+function observeVideos(el) {
+  el.querySelectorAll('video[autoplay]').forEach(video => {
+    video.autoplay = false;
+    video.pause();
+    videoObserver.observe(video);
   });
 }
 
