@@ -1,10 +1,22 @@
+// --- Measure nav height for mobile sticky stacking ---
+const navEl = document.querySelector('.nav');
+function updateNavHeight() {
+  if (window.innerWidth <= 800) {
+    document.documentElement.style.setProperty('--nav-height', navEl.offsetHeight + 'px');
+  }
+}
+updateNavHeight();
+window.addEventListener('resize', updateNavHeight);
+
 // --- Nav / Tab system ---
 const navBtns = Array.from(document.querySelectorAll('.nav-btn'));
 const panels = document.querySelectorAll('.content-panel');
 const sections = navBtns.map(btn => btn.dataset.section);
 let currentNav = 0;
 
-function switchSection(index) {
+function switchSection(indexOrName) {
+  const index = typeof indexOrName === 'string' ? sections.indexOf(indexOrName) : indexOrName;
+  if (index < 0) return;
   currentNav = index;
   const name = sections[index];
 
@@ -23,7 +35,51 @@ function switchSection(index) {
     contactItems.forEach(item => item.classList.remove('highlighted'));
   }
 
-  if (modalOpen) closeModal();
+  // Clear project highlight and hide display when leaving work-work
+  if (name !== 'work-work') {
+    highlightedProject = -1;
+    activeProjectNum = null;
+    projectItems.forEach(item => item.classList.remove('highlighted'));
+    projectDisplay.classList.remove('active');
+    projectContents.forEach(el => el.classList.remove('active'));
+    // Reset mobile dropdown
+    const toggle = document.querySelector('.project-menu-toggle');
+    if (toggle) {
+      toggle.style.display = 'none';
+      toggle.classList.remove('open');
+    }
+    const mobileList = document.querySelector('.work-layout .contact-list');
+    if (mobileList) {
+      mobileList.classList.remove('open', 'collapsed');
+    }
+    projectItems.forEach(p => p.classList.remove('mobile-hidden'));
+  }
+
+  // Update URL hash
+  history.replaceState(null, '', name === 'about' ? location.pathname : '#' + name);
+
+  if (cvModalOpen) closeCvModal();
+  primedItem = null;
+
+  // Enable page scroll when work-work is active (content may be tall)
+  // On mobile, CSS handles overflow — never set hidden
+  if (window.innerWidth > 800) {
+    document.documentElement.style.overflow = name === 'work-work' ? '' : 'hidden';
+  } else {
+    document.documentElement.style.overflow = '';
+  }
+
+  // Stagger stickers out when entering work-work, back in when leaving
+  const stickers = document.querySelectorAll('.sticker');
+  stickers.forEach((sticker, i) => {
+    if (name === 'work-work') {
+      sticker.style.transitionDelay = `${i * 60}ms`;
+      sticker.classList.add('sticker-out');
+    } else {
+      sticker.style.transitionDelay = `${i * 40}ms`;
+      sticker.classList.remove('sticker-out');
+    }
+  });
 
 }
 
@@ -83,11 +139,11 @@ function getActiveSlideController() {
 // --- Keyboard navigation ---
 document.addEventListener('keydown', (e) => {
   if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-  if (modalOpen && e.code === 'Escape') {
-    closeModal();
+  if (cvModalOpen && e.code === 'Escape') {
+    closeCvModal();
     return;
   }
-  if (modalOpen && e.code === 'Space') {
+  if (cvModalOpen && e.code === 'Space') {
     e.preventDefault();
     cvModal.querySelector('.cv-modal-inner').scrollBy(0, e.shiftKey ? -200 : 200);
     return;
@@ -114,27 +170,33 @@ document.addEventListener('keydown', (e) => {
     return;
   }
 
-  // Left/Right: work slides (only when a work section is active)
-  const slider = getActiveSlideController();
-  if (slider) {
+  // Work-work: arrow keys cycle projects, number keys switch directly
+  if (sections[currentNav] === 'work-work') {
     if (key === 'ArrowRight' || key === 'KeyD') {
       e.preventDefault();
-      slider.next();
+      const nextNum = Math.min(projectItems.length, activeProjectNum + 1);
+      switchProject(nextNum);
       return;
     }
     if (key === 'ArrowLeft' || key === 'KeyA') {
       e.preventDefault();
-      slider.prev();
+      const prevNum = Math.max(1, activeProjectNum - 1);
+      switchProject(prevNum);
       return;
     }
     const num = key.match(/^Digit(\d)$/);
     if (num) {
-      const idx = parseInt(num[1], 10) - 1;
-      if (idx >= 0 && idx < slider.slides.length) {
+      const idx = parseInt(num[1], 10);
+      if (idx >= 1 && idx <= projectItems.length) {
         e.preventDefault();
-        slider.goto(idx);
+        switchProject(idx);
       }
     }
+    if (key === 'Enter' && highlightedProject >= 0) {
+      e.preventDefault();
+      switchProject(highlightedProject + 1);
+    }
+    return;
   }
 
   // Information items: arrow keys cycle, number keys select, enter activates
@@ -238,31 +300,224 @@ let canvasOpen = false;
 // --- CV Modal ---
 const cvModal = document.getElementById('cv-modal');
 const cvLink = document.querySelector('[data-default="03 cv"]');
+let cvModalOpen = false;
 
-let modalOpen = false;
-
-function openModal() {
+function openCvModal() {
   cvModal.classList.add('active');
-  modalOpen = true;
+  cvModalOpen = true;
 }
 
-function closeModal() {
+function closeCvModal() {
   cvModal.classList.remove('active');
-  modalOpen = false;
+  cvModalOpen = false;
 }
 
 cvLink.addEventListener('click', (e) => {
   e.preventDefault();
-  if (modalOpen) closeModal();
-  else openModal();
+  if (cvModalOpen) closeCvModal();
+  else openCvModal();
 });
 
-document.getElementById('cv-close').addEventListener('click', () => closeModal());
+document.getElementById('cv-close').addEventListener('click', () => closeCvModal());
 
-contactItems.forEach(item => {
-  if (item === cvLink) return;
-  item.addEventListener('click', () => { if (modalOpen) closeModal(); });
+// --- Project Markdown Loader ---
+function parseProjectMd(md) {
+  const lines = md.split('\n');
+  let title = '';
+  let subtitle = '';
+  let bodyLines = [];
+  let i = 0;
+
+  // First line: # title
+  if (lines[i] && lines[i].startsWith('# ')) {
+    title = lines[i].slice(2).trim();
+    i++;
+  }
+  // Optional subtitle: _text_ on next non-empty line
+  while (i < lines.length && !lines[i].trim()) i++;
+  if (lines[i] && /^_(.+)_$/.test(lines[i].trim())) {
+    subtitle = lines[i].trim().slice(1, -1);
+    i++;
+  }
+  // Rest is body
+  bodyLines = lines.slice(i);
+
+  // Convert body markdown to HTML
+  let bodyHtml = '';
+  for (const line of bodyLines) {
+    const trimmed = line.trim();
+    if (!trimmed) { bodyHtml += '\n'; continue; }
+    // Pass through HTML tags directly
+    if (trimmed.startsWith('<video')) { bodyHtml += `<div class="video-crop">${trimmed}</div>\n`; continue; }
+    if (trimmed.startsWith('<')) { bodyHtml += trimmed + '\n'; continue; }
+    // h3
+    if (trimmed.startsWith('### ')) { bodyHtml += `<h3>${trimmed.slice(4)}</h3>\n`; continue; }
+    // Regular paragraph
+    bodyHtml += `<p>${trimmed}</p>\n`;
+  }
+
+  return { title, subtitle, bodyHtml };
+}
+
+const projectMdCache = {};
+
+async function loadProjectMd(el) {
+  const mdPath = el.dataset.md;
+  if (!mdPath) return;
+  if (projectMdCache[mdPath]) {
+    el.innerHTML = projectMdCache[mdPath];
+    initHoverPreviews(el);
+    initLoopAtVideos(el);
+    return;
+  }
+  const md = await fetch(mdPath).then(r => r.text());
+  const { title, subtitle, bodyHtml } = parseProjectMd(md);
+  const html = `<div class="project-header"><h2>${title}</h2>${subtitle ? `<p class="project-subtitle">${subtitle}</p>` : '<p class="project-subtitle"></p>'}</div><div class="project-body">${bodyHtml}</div>`;
+  projectMdCache[mdPath] = html;
+  el.innerHTML = html;
+  initHoverPreviews(el);
+  initLoopAtVideos(el);
+}
+
+function initHoverPreviews(el) {
+  el.querySelectorAll('.hover-preview[data-preview]').forEach(span => {
+    const img = document.createElement('img');
+    img.className = 'preview-img';
+    img.src = span.dataset.preview;
+    span.appendChild(img);
+    span.addEventListener('mouseenter', () => {
+      img.style.display = 'block';
+      const rect = span.getBoundingClientRect();
+      const imgW = 700;
+      let left = rect.left;
+      let top = rect.bottom + 8;
+      // Clamp to viewport
+      if (left + imgW > window.innerWidth) left = window.innerWidth - imgW - 16;
+      if (left < 16) left = 16;
+      // If it would overflow bottom, show above
+      img.style.left = left + 'px';
+      img.style.top = top + 'px';
+      requestAnimationFrame(() => {
+        const imgRect = img.getBoundingClientRect();
+        if (imgRect.bottom > window.innerHeight) {
+          img.style.top = (rect.top - imgRect.height - 8) + 'px';
+        }
+      });
+    });
+    span.addEventListener('mouseleave', () => {
+      img.style.display = 'none';
+    });
+  });
+}
+
+function initLoopAtVideos(el) {
+  el.querySelectorAll('video[data-playback-rate]').forEach(video => {
+    video.playbackRate = parseFloat(video.dataset.playbackRate);
+  });
+  el.querySelectorAll('video[data-loop-at], video[data-start-at]').forEach(video => {
+    const startTime = parseFloat(video.dataset.startAt) || 0;
+    const loopTime = parseFloat(video.dataset.loopAt) || Infinity;
+    if (startTime) video.currentTime = startTime;
+    video.addEventListener('timeupdate', () => {
+      if (video.currentTime >= loopTime) {
+        video.currentTime = startTime;
+        video.play();
+      }
+    });
+  });
+}
+
+// Preload all project markdown
+document.querySelectorAll('.project-content[data-md]').forEach(el => loadProjectMd(el));
+
+// --- Inline Project Display ---
+const projectDisplay = document.getElementById('project-display');
+const projectContents = document.querySelectorAll('.project-content');
+let activeProjectNum = null;
+
+function switchProject(num) {
+  activeProjectNum = num;
+  projectDisplay.classList.add('active');
+  projectContents.forEach(el => el.classList.toggle('active', el.dataset.projectContent === String(num)));
+  projectDisplay.scrollTop = 0;
+  projectItems.forEach(item => {
+    item.classList.toggle('highlighted', item.dataset.project === String(num));
+  });
+  // Update URL hash
+  const activeItem = projectItems.find(item => item.dataset.project === String(num));
+  if (activeItem && activeItem.dataset.slug) {
+    history.replaceState(null, '', '#' + activeItem.dataset.slug);
+  }
+  // Update mobile dropdown toggle text
+  if (typeof updateMenuToggleText === 'function') updateMenuToggleText(num);
+}
+
+// --- Project Items ---
+const projectItems = Array.from(document.querySelectorAll('.project-item'));
+let highlightedProject = -1;
+
+function highlightProject(index) {
+  highlightedProject = index;
+  projectItems.forEach((item, i) => {
+    item.classList.toggle('highlighted', i === index);
+  });
+}
+
+projectItems.forEach(item => {
+  item.addEventListener('click', () => {
+    switchProject(parseInt(item.dataset.project));
+  });
 });
+
+// --- Mobile project dropdown toggle ---
+const workContactList = document.querySelector('.work-layout .contact-list');
+const menuToggle = document.createElement('button');
+menuToggle.className = 'project-menu-toggle';
+menuToggle.style.display = 'none';
+menuToggle.innerHTML = '<span class="toggle-text"></span><img class="chevron" src="/icons/expand.svg" alt="">';
+workContactList.insertBefore(menuToggle, workContactList.firstChild);
+
+menuToggle.addEventListener('click', () => {
+  const isOpen = workContactList.classList.toggle('open');
+  menuToggle.classList.toggle('open', isOpen);
+});
+
+function updateMenuToggleText(num) {
+  if (window.innerWidth > 800) return;
+  const item = projectItems.find(p => p.dataset.project === String(num));
+  if (item) {
+    const title = item.querySelector('.project-title');
+    menuToggle.querySelector('.toggle-text').textContent =
+      item.dataset.project.padStart(2, '0') + ' ' + (title ? title.textContent : '');
+    menuToggle.style.display = '';
+    workContactList.classList.add('collapsed');
+    // Hide selected item from the dropdown list
+    projectItems.forEach(p => p.classList.remove('mobile-hidden'));
+    item.classList.add('mobile-hidden');
+  }
+  // Close dropdown on selection
+  workContactList.classList.remove('open');
+  menuToggle.classList.remove('open');
+}
+
+// --- Handle URL hash for deep linking ---
+function handleHash() {
+  if (!location.hash) return;
+  const slug = location.hash.slice(1);
+  // Check sections first
+  if (sections.includes(slug)) {
+    switchSection(slug);
+    return;
+  }
+  // Then check projects
+  const match = projectItems.find(item => item.dataset.slug === slug);
+  if (match) {
+    switchSection('work-work');
+    switchProject(parseInt(match.dataset.project));
+  }
+}
+handleHash();
+window.addEventListener('hashchange', handleHash);
 
 // --- Load CV from markdown ---
 fetch('/cv/cv.md')
@@ -322,63 +577,6 @@ fetch('/cv/cv.md')
     if (inList) html += '</ul></div>';
     document.getElementById('cv-content').innerHTML = html;
   });
-
-// --- Snake Loader ---
-const snakeSvg = document.getElementById('snake-loader');
-if (snakeSvg) {
-  const CELL = 6;
-  const STEP = 6;
-  const TRAIL_LEN = 8;
-  const INTERVAL = 120;
-
-  // 3x3 snake path: L→R, R→L, L→R, then reverse back up the middle
-  const path = [
-    [0,0], [1,0], [2,0],   // row 0 →
-    [2,1], [1,1], [0,1],   // row 1 ←
-    [0,2], [1,2], [2,2],   // row 2 →
-    [2,1], [1,1], [0,1],   // reverse back up
-  ];
-
-  let step = 0;
-  const trail = [];
-
-  // Pre-create rect elements for trail + head
-  const rects = [];
-  for (let i = 0; i < TRAIL_LEN + 1; i++) {
-    const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-    rect.setAttribute('width', CELL);
-    rect.setAttribute('height', CELL);
-    rect.setAttribute('fill', 'currentColor');
-    rect.setAttribute('opacity', '0');
-    snakeSvg.appendChild(rect);
-    rects.push(rect);
-  }
-
-  setInterval(() => {
-    const pos = path[step % path.length];
-    trail.push(pos);
-    if (trail.length > TRAIL_LEN) trail.shift();
-
-    // Hide all first
-    rects.forEach(r => r.setAttribute('opacity', '0'));
-
-    // Draw trail at full opacity in #ABC8D6
-    for (let i = 0; i < trail.length; i++) {
-      rects[i].setAttribute('x', trail[i][0] * STEP);
-      rects[i].setAttribute('y', trail[i][1] * STEP);
-      rects[i].setAttribute('fill', '#ABC8D6');
-      rects[i].setAttribute('opacity', '1');
-    }
-
-    // Head at full opacity
-    const head = rects[trail.length];
-    head.setAttribute('x', pos[0] * STEP);
-    head.setAttribute('y', pos[1] * STEP);
-    head.setAttribute('opacity', '1');
-
-    step++;
-  }, INTERVAL);
-}
 
 // --- Draggable Stickers ---
 let stickerZ = 100;
@@ -460,7 +658,8 @@ const fgObserver = new MutationObserver(() => {
 fgObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 
 function startScribble(x, y) {
-  if (stickerDragging || modalOpen) return;
+  if (window.innerWidth <= 800) return;
+  if (stickerDragging || cvModalOpen) return;
   scribbling = true;
   document.body.classList.add('drawing');
   strokes.push({ points: [{ x, y }], endTime: null });
@@ -480,7 +679,7 @@ function endScribble() {
 }
 
 function isInteractive(el) {
-  return el.closest('button, a, .nav-btn, .contact-item, .sticker, .cv-modal');
+  return el.closest('button, a, .nav-btn, .contact-item, .sticker, .cv-modal, .project-display');
 }
 
 document.addEventListener('mousedown', (e) => { if (!isInteractive(e.target)) startScribble(e.clientX, e.clientY); });
@@ -521,3 +720,76 @@ function renderScribble() {
   requestAnimationFrame(renderScribble);
 }
 requestAnimationFrame(renderScribble);
+
+// --- Icon Row Animation ---
+const iconFiles = [
+  'avatar','bankAccount','bankLinked','biometricsFace','biometricsFingerprint',
+  'block','botMic','cardActive','cardAdd','cardBasic','cardCredit','cardInactive','cashAppPay',
+  'categoryAccessories','categoryAccessoriesHats','categoryApparel','categoryAuto','categoryBar',
+  'categoryCafe','categoryDiy','categoryEntertainment','categoryFashion','categoryFoodDrinkAlt',
+  'categoryFurniture','categoryGrocery','categoryHome','categoryHomeAuto','categoryKids',
+  'categoryRent','categoryShoesHeel','categorySports','categorySportsAlt','categoryTech',
+  'categoryTourism','categoryToys','categoryTransportation','categoryTravel','deposit',
+  'depositBarcode','depositCheck','depositPaper','discountMaximum','discountMinimum',
+  'documentPaystub','documentQuill','fast','fpoShrimp','governmentFlag','hyperlink','idea',
+  'instant','international','location','music','next','note','notifications',
+  'overdraftProtection','passcodeFill','paychecks','photo','qr','recurringAutomatic',
+  'savingsApy','savingsGoal','timeProgressStart','traffic'
+];
+
+let iconAnimSlots = null;
+let iconAnimPool = [];
+let iconInterval = null;
+
+function shuffleArray(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function swapAllSlots() {
+  if (!iconAnimSlots) return;
+  const order = iconAnimSlots.map((s, i) => i);
+  shuffleArray(order);
+  order.forEach((slotIdx, i) => {
+    const delay = i * 120 + Math.random() * 80;
+    setTimeout(() => {
+      if (iconAnimPool.length === 0) {
+        iconAnimPool = iconFiles.filter(f => !iconAnimSlots.some(s => s.src.includes(f)));
+        shuffleArray(iconAnimPool);
+      }
+      const slot = iconAnimSlots[slotIdx];
+      const oldName = slot.src.split('/').pop().replace('.svg', '');
+      const newName = iconAnimPool.pop();
+      iconAnimPool.unshift(oldName);
+      slot.src = `/media/icons-refresh/${newName}.svg`;
+    }, delay);
+  });
+}
+
+function startIconAnimation() {
+  const row = document.getElementById('icon-row');
+  if (!row) return;
+  iconAnimSlots = Array.from(row.querySelectorAll('img'));
+  iconAnimPool = iconFiles.filter(f => !iconAnimSlots.some(s => s.src.includes(f)));
+  shuffleArray(iconAnimPool);
+  if (iconInterval) return;
+  swapAllSlots();
+  iconInterval = setInterval(swapAllSlots, 1200);
+}
+
+function stopIconAnimation() {
+  clearInterval(iconInterval);
+  iconInterval = null;
+  iconAnimSlots = null;
+}
+
+// Hook into switchProject to start/stop animation
+const _origSwitchProject = switchProject;
+switchProject = function(num) {
+  _origSwitchProject(num);
+  if (num === 7) startIconAnimation();
+  else stopIconAnimation();
+};
