@@ -1,7 +1,7 @@
 /* --- Font --- */
 @font-face {
   font-family: 'Commit Mono';
-  src: url('/fonts/CommitMonoV143/CommitMono-400-Regular.otf') format('opentype');
+  src: url('/fonts/CommitMonoV143/CommitMono-400-Regular.woff2') format('woff2');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -9,7 +9,7 @@
 
 @font-face {
   font-family: 'Commit Mono';
-  src: url('/fonts/CommitMonoV143/CommitMono-400-Italic.otf') format('opentype');
+  src: url('/fonts/CommitMonoV143/CommitMono-400-Italic.woff2') format('woff2');
   font-weight: 400;
   font-style: italic;
   font-display: swap;
@@ -17,7 +17,7 @@
 
 @font-face {
   font-family: 'Commit Mono';
-  src: url('/fonts/CommitMonoV143/CommitMono-700-Regular.otf') format('opentype');
+  src: url('/fonts/CommitMonoV143/CommitMono-700-Regular.woff2') format('woff2');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -25,7 +25,7 @@
 
 @font-face {
   font-family: 'Commit Mono';
-  src: url('/fonts/CommitMonoV143/CommitMono-700-Italic.otf') format('opentype');
+  src: url('/fonts/CommitMonoV143/CommitMono-700-Italic.woff2') format('woff2');
   font-weight: 700;
   font-style: italic;
   font-display: swap;
