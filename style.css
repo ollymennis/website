@@ -166,6 +166,12 @@ main {
   transition: background 80ms, color 80ms, padding-left 120ms 60ms;
 }
 
+.nav-btn.disabled {
+  color: var(--border);
+  cursor: default;
+  pointer-events: none;
+}
+
 /* Selected: solid inverted block */
 .nav-btn.active {
   background: var(--fg);
@@ -834,11 +840,20 @@ main {
   .project-menu-toggle.open .chevron {
     transform: rotate(180deg);
   }
-  .work-layout .contact-list.collapsed .project-item {
+  .work-layout .contact-list.collapsed .dropdown-list {
     display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--bg);
+    z-index: 20;
+    padding: 0.25rem 0 0.75rem 0;
+    flex-direction: column;
+    gap: 0.25rem;
   }
-  .work-layout .contact-list.collapsed.open .project-item {
-    display: block;
+  .work-layout .contact-list.collapsed.open .dropdown-list {
+    display: flex;
   }
   .work-layout .contact-list .project-item.mobile-hidden {
     display: none !important;

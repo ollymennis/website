@@ -504,6 +504,12 @@ menuToggle.style.display = 'none';
 menuToggle.innerHTML = '<span class="toggle-text"></span><img class="chevron" src="/icons/expand.svg" alt="">';
 workContactList.insertBefore(menuToggle, workContactList.firstChild);
 
+// Wrap project items in a container for absolute positioning on mobile
+const dropdownList = document.createElement('div');
+dropdownList.className = 'dropdown-list';
+projectItems.forEach(item => dropdownList.appendChild(item));
+workContactList.appendChild(dropdownList);
+
 menuToggle.addEventListener('click', () => {
   const isOpen = workContactList.classList.toggle('open');
   menuToggle.classList.toggle('open', isOpen);
