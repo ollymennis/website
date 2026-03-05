@@ -359,6 +359,7 @@ async function loadProjectMd(el) {
     initHoverPreviews(el);
     initLoopAtVideos(el);
     observeVideos(el);
+    initIconSpecimen(el);
     return;
   }
   const md = await fetch(mdPath).then(r => r.text());
@@ -369,6 +370,7 @@ async function loadProjectMd(el) {
   initHoverPreviews(el);
   initLoopAtVideos(el);
   observeVideos(el);
+  initIconSpecimen(el);
 }
 
 function initHoverPreviews(el) {
@@ -415,6 +417,86 @@ function initLoopAtVideos(el) {
         video.currentTime = startTime;
         video.play();
       }
+    });
+  });
+}
+
+// --- Icon Specimen Viewer ---
+const specimenCategories = {
+  'identity': ['avatar', 'biometricsFace', 'biometricsFingerprint', 'passcodeFill'],
+  'banking': ['bankAccount', 'bankLinked', 'cashAppPay', 'overdraftProtection'],
+  'cards': ['cardActive', 'cardAdd', 'cardBasic', 'cardCredit', 'cardInactive'],
+  'spending': [
+    'categoryAccessories', 'categoryAccessoriesHats', 'categoryApparel', 'categoryAuto',
+    'categoryBar', 'categoryCafe', 'categoryDiy', 'categoryEntertainment', 'categoryFashion',
+    'categoryFoodDrinkAlt', 'categoryFurniture', 'categoryGrocery', 'categoryHome',
+    'categoryHomeAuto', 'categoryKids', 'categoryRent', 'categoryShoesHeel', 'categorySports',
+    'categorySportsAlt', 'categoryTech', 'categoryTourism', 'categoryToys',
+    'categoryTransportation', 'categoryTravel'
+  ],
+  'deposits': ['deposit', 'depositBarcode', 'depositCheck', 'depositPaper'],
+  'documents': ['documentPaystub', 'documentQuill'],
+  'savings': ['discountMaximum', 'discountMinimum', 'paychecks', 'recurringAutomatic', 'savingsApy', 'savingsGoal'],
+  'general': [
+    'block', 'botMic', 'fast', 'fpoShrimp', 'governmentFlag', 'hyperlink', 'idea',
+    'instant', 'international', 'location', 'music', 'next', 'note', 'notifications',
+    'photo', 'qr', 'timeProgressStart', 'traffic'
+  ]
+};
+
+function initIconSpecimen(el) {
+  const container = el.querySelector('#icon-specimen');
+  if (!container) return;
+  const body = container.querySelector('#specimen-body');
+  if (!body || body.dataset.initialized) return;
+  body.dataset.initialized = 'true';
+
+  // Build categorized grid
+  for (const [category, icons] of Object.entries(specimenCategories)) {
+    const section = document.createElement('div');
+    section.className = 'specimen-section';
+
+    const title = document.createElement('div');
+    title.className = 'specimen-section-title';
+    title.textContent = category;
+    section.appendChild(title);
+
+    const grid = document.createElement('div');
+    grid.className = 'specimen-grid';
+
+    for (const name of icons) {
+      const item = document.createElement('div');
+      item.className = 'specimen-icon';
+
+      const img = document.createElement('img');
+      img.src = `/media/icons-refresh/${name}.svg`;
+      img.alt = name;
+      item.appendChild(img);
+
+      const label = document.createElement('span');
+      label.className = 'specimen-icon-label';
+      // Convert camelCase to readable: categoryFoodDrinkAlt → food drink alt
+      label.textContent = name
+        .replace(/^category/, '')
+        .replace(/([A-Z])/g, ' $1')
+        .trim()
+        .toLowerCase();
+      item.appendChild(label);
+
+      grid.appendChild(item);
+    }
+
+    section.appendChild(grid);
+    body.appendChild(section);
+  }
+
+  // Size controls
+  const buttons = container.querySelectorAll('.specimen-size-btn');
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      buttons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      container.style.setProperty('--specimen-size', btn.dataset.size + 'px');
     });
   });
 }
