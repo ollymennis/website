@@ -395,6 +395,11 @@ main {
   text-underline-offset: 3px;
 }
 
+/* --- Project Modal (mobile only) --- */
+.project-modal {
+  display: none;
+}
+
 /* --- CV Modal --- */
 .cv-modal {
   display: none;
@@ -760,16 +765,7 @@ main {
     font-size: 0.75rem;
   }
   .work-layout .contact-list {
-    position: sticky;
-    top: var(--nav-height, 0px);
-    z-index: 9;
-    background: var(--bg);
-    padding-top: 2.5rem;
-    margin-top: -2.5rem;
     align-items: flex-start;
-  }
-  .work-layout .contact-list.collapsed {
-    padding-bottom: 0.75rem;
   }
   .work-layout {
     flex-direction: column;
@@ -814,49 +810,26 @@ main {
     height: 60px;
     mix-blend-mode: multiply;
   }
-  /* Dropdown toggle for project menu */
-  .project-menu-toggle {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: none;
-    border: none;
-    font-family: var(--mono);
-    font-size: inherit;
-    color: var(--fg);
-    padding: 0.4rem 0;
-    cursor: url('/icons/mouse-hover.svg'), pointer;
-    font-weight: 700;
-    outline: none;
-    text-align: left;
-    max-width: 100%;
-  }
-  .project-menu-toggle .chevron {
-    width: 0.75em;
-    height: 0.75em;
-    transition: transform 200ms ease;
-    /* inherits fg color via dark mode filter on parent if needed */
-  }
-  .project-menu-toggle.open .chevron {
-    transform: rotate(180deg);
-  }
-  .work-layout .contact-list.collapsed .dropdown-list {
+  .project-modal {
     display: none;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
+    position: fixed;
+    inset: 1rem;
+    z-index: 150;
     background: var(--bg);
-    z-index: 20;
-    padding: 0.25rem 0 0.75rem 0;
-    flex-direction: column;
-    gap: 0.25rem;
+    overflow: hidden;
+    border: 2px solid var(--fg);
   }
-  .work-layout .contact-list.collapsed.open .dropdown-list {
-    display: flex;
+  .project-modal.active {
+    display: block;
   }
-  .work-layout .contact-list .project-item.mobile-hidden {
-    display: none !important;
+  .project-modal-inner {
+    height: 100%;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 3rem 1.5rem;
+    scrollbar-width: none;
+    touch-action: pan-y;
+    -webkit-overflow-scrolling: touch;
   }
 }
 
@@ -940,12 +913,26 @@ main {
     font-size: 1.5rem;
     padding: 0.15rem 0;
   }
-}
-
-/* --- Project menu toggle (hidden on desktop) --- */
-@media (min-width: 801px) {
-  .project-menu-toggle {
+  .project-modal {
     display: none;
+    position: fixed;
+    inset: 1rem;
+    z-index: 150;
+    background: var(--bg);
+    overflow: hidden;
+    border: 2px solid var(--fg);
+  }
+  .project-modal.active {
+    display: block;
+  }
+  .project-modal-inner {
+    height: 100%;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 3rem 1.5rem;
+    scrollbar-width: none;
+    touch-action: pan-y;
+    -webkit-overflow-scrolling: touch;
   }
 }
 

@@ -42,17 +42,7 @@ function switchSection(indexOrName) {
     projectItems.forEach(item => item.classList.remove('highlighted'));
     projectDisplay.classList.remove('active');
     projectContents.forEach(el => el.classList.remove('active'));
-    // Reset mobile dropdown
-    const toggle = document.querySelector('.project-menu-toggle');
-    if (toggle) {
-      toggle.style.display = 'none';
-      toggle.classList.remove('open');
-    }
-    const mobileList = document.querySelector('.work-layout .contact-list');
-    if (mobileList) {
-      mobileList.classList.remove('open', 'collapsed');
-    }
-    projectItems.forEach(p => p.classList.remove('mobile-hidden'));
+    if (projectModalOpen) closeProjectModal();
   }
 
   // Update URL hash
@@ -139,9 +129,9 @@ function getActiveSlideController() {
 // --- Keyboard navigation ---
 document.addEventListener('keydown', (e) => {
   if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-  if (cvModalOpen && e.code === 'Escape') {
-    closeCvModal();
-    return;
+  if (e.code === 'Escape') {
+    if (projectModalOpen) { closeProjectModal(); return; }
+    if (cvModalOpen) { closeCvModal(); return; }
   }
   if (cvModalOpen && e.code === 'Space') {
     e.preventDefault();
@@ -458,25 +448,31 @@ let activeProjectNum = null;
 
 function switchProject(num) {
   activeProjectNum = num;
-  projectDisplay.classList.add('active');
   projectContents.forEach(el => el.classList.toggle('active', el.dataset.projectContent === String(num)));
-  projectDisplay.scrollTop = 0;
-  if (window.innerWidth <= 800) {
-    const list = document.querySelector('.work-layout .contact-list');
-    const offset = list ? list.getBoundingClientRect().bottom : 0;
-    const scrollTarget = projectDisplay.getBoundingClientRect().top + window.scrollY - offset;
-    window.scrollTo(0, Math.max(0, scrollTarget));
-  }
   projectItems.forEach(item => {
     item.classList.toggle('highlighted', item.dataset.project === String(num));
   });
+
+  if (window.innerWidth <= 800) {
+    // Mobile: open project content in modal
+    const activeContent = document.querySelector(`.project-content[data-project-content="${num}"]`);
+    if (activeContent) {
+      projectModalContent.appendChild(activeContent);
+      projectModal.classList.add('active');
+      projectModalContent.scrollTop = 0;
+      projectModalOpen = true;
+    }
+  } else {
+    // Desktop: show in fixed side panel
+    projectDisplay.classList.add('active');
+    projectDisplay.scrollTop = 0;
+  }
+
   // Update URL hash
   const activeItem = projectItems.find(item => item.dataset.project === String(num));
   if (activeItem && activeItem.dataset.slug) {
     history.replaceState(null, '', '#' + activeItem.dataset.slug);
   }
-  // Update mobile dropdown toggle text
-  if (typeof updateMenuToggleText === 'function') updateMenuToggleText(num);
 }
 
 // --- Project Items ---
@@ -496,42 +492,24 @@ projectItems.forEach(item => {
   });
 });
 
-// --- Mobile project dropdown toggle ---
-const workContactList = document.querySelector('.work-layout .contact-list');
-const menuToggle = document.createElement('button');
-menuToggle.className = 'project-menu-toggle';
-menuToggle.style.display = 'none';
-menuToggle.innerHTML = '<span class="toggle-text"></span><img class="chevron" src="/icons/expand.svg" alt="">';
-workContactList.insertBefore(menuToggle, workContactList.firstChild);
+// --- Project Modal (mobile) ---
+const projectModal = document.getElementById('project-modal');
+const projectModalContent = document.getElementById('project-modal-content');
+let projectModalOpen = false;
 
-// Wrap project items in a container for absolute positioning on mobile
-const dropdownList = document.createElement('div');
-dropdownList.className = 'dropdown-list';
-projectItems.forEach(item => dropdownList.appendChild(item));
-workContactList.appendChild(dropdownList);
-
-menuToggle.addEventListener('click', () => {
-  const isOpen = workContactList.classList.toggle('open');
-  menuToggle.classList.toggle('open', isOpen);
-});
-
-function updateMenuToggleText(num) {
-  if (window.innerWidth > 800) return;
-  const item = projectItems.find(p => p.dataset.project === String(num));
-  if (item) {
-    const title = item.querySelector('.project-title');
-    menuToggle.querySelector('.toggle-text').textContent =
-      item.dataset.project.padStart(2, '0') + ' ' + (title ? title.textContent : '');
-    menuToggle.style.display = '';
-    workContactList.classList.add('collapsed');
-    // Hide selected item from the dropdown list
-    projectItems.forEach(p => p.classList.remove('mobile-hidden'));
-    item.classList.add('mobile-hidden');
+function closeProjectModal() {
+  projectModal.classList.remove('active');
+  // Move content back to project-display
+  const activeContent = projectModalContent.querySelector('.project-content');
+  if (activeContent) {
+    projectDisplay.appendChild(activeContent);
   }
-  // Close dropdown on selection
-  workContactList.classList.remove('open');
-  menuToggle.classList.remove('open');
+  projectModalOpen = false;
+  // Update hash back to work-work
+  history.replaceState(null, '', '#work-work');
 }
+
+document.getElementById('project-modal-close').addEventListener('click', closeProjectModal);
 
 // --- Handle URL hash for deep linking ---
 function handleHash() {
@@ -692,7 +670,7 @@ fgObserver.observe(document.documentElement, { attributes: true, attributeFilter
 
 function startScribble(x, y) {
   if (window.innerWidth <= 800) return;
-  if (stickerDragging || cvModalOpen) return;
+  if (stickerDragging || cvModalOpen || projectModalOpen) return;
   scribbling = true;
   document.body.classList.add('drawing');
   strokes.push({ points: [{ x, y }], endTime: null });
@@ -712,7 +690,7 @@ function endScribble() {
 }
 
 function isInteractive(el) {
-  return el.closest('button, a, .nav-btn, .contact-item, .sticker, .cv-modal, .project-display');
+  return el.closest('button, a, .nav-btn, .contact-item, .sticker, .cv-modal, .project-modal, .project-display');
 }
 
 document.addEventListener('mousedown', (e) => { if (!isInteractive(e.target)) startScribble(e.clientX, e.clientY); });
