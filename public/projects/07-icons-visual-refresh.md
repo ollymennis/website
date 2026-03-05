@@ -3,7 +3,7 @@ _coming soon_
 
 
 <div class="icon-row" id="icon-row">
-  <img src="/media/icons-refresh/alertOnline.svg" alt="" />
+  <img src="/media/icons-refresh/cardActive.svg" alt="" />
   <img src="/media/icons-refresh/avatar.svg" alt="" />
   <img src="/media/icons-refresh/bankAccount.svg" alt="" />
   <img src="/media/icons-refresh/bankLinked.svg" alt="" />

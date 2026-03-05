@@ -745,7 +745,13 @@ main {
     background: var(--bg);
     padding-top: 1.5rem;
     margin-top: -1.5rem;
-    box-shadow: 0 2px 0 var(--bg);
+    box-shadow: 0 2.5rem 0 var(--bg);
+  }
+  .nav-btn {
+    font-size: 0.75rem;
+  }
+  .contact-item {
+    font-size: 0.75rem;
   }
   .work-layout .contact-list {
     position: sticky;
@@ -754,6 +760,7 @@ main {
     background: var(--bg);
     padding-top: 2.5rem;
     margin-top: -2.5rem;
+    align-items: flex-start;
   }
   .work-layout .contact-list.collapsed {
     padding-bottom: 0.75rem;
@@ -778,7 +785,11 @@ main {
   .project-body img {
     max-width: 100%;
   }
-  .project-body p,
+  .project-body p {
+    max-width: 100%;
+    letter-spacing: -0.03em;
+    font-size: 1rem;
+  }
   .project-body h3 {
     max-width: 100%;
     letter-spacing: -0.03em;
@@ -811,6 +822,8 @@ main {
     cursor: url('/icons/mouse-hover.svg'), pointer;
     font-weight: 700;
     outline: none;
+    text-align: left;
+    max-width: 100%;
   }
   .project-menu-toggle .chevron {
     width: 0.75em;

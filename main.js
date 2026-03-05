@@ -720,7 +720,7 @@ requestAnimationFrame(renderScribble);
 
 // --- Icon Row Animation ---
 const iconFiles = [
-  'alertOnline','avatar','bankAccount','bankLinked','biometricsFace','biometricsFingerprint',
+  'avatar','bankAccount','bankLinked','biometricsFace','biometricsFingerprint',
   'block','botMic','cardActive','cardAdd','cardBasic','cardCredit','cardInactive','cashAppPay',
   'categoryAccessories','categoryAccessoriesHats','categoryApparel','categoryAuto','categoryBar',
   'categoryCafe','categoryDiy','categoryEntertainment','categoryFashion','categoryFoodDrinkAlt',
