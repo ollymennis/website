@@ -361,16 +361,23 @@ function parseProjectMd(md) {
     // Pass through HTML tags directly
     if (trimmed.startsWith('<video')) { bodyHtml += `<div class="video-crop">${trimmed}</div>\n`; continue; }
     if (trimmed.startsWith('<')) { bodyHtml += trimmed + '\n'; continue; }
-    // h3
-    if (trimmed.startsWith('### ')) { bodyHtml += `<h3>${trimmed.slice(4)}</h3>\n`; continue; }
+    // h2 and h3 (check h3 first since ### also starts with ##)
+    if (trimmed.startsWith('### ')) { bodyHtml += `<h3>${inlineMd(trimmed.slice(4))}</h3>\n`; continue; }
+    if (trimmed.startsWith('## ')) { bodyHtml += `<h2>${inlineMd(trimmed.slice(3))}</h2>\n`; continue; }
     // Blockquote
-    if (trimmed.startsWith('>')) { bodyHtml += `<blockquote><p>${trimmed.slice(1).trim()}</p></blockquote>\n`; continue; }
+    if (trimmed.startsWith('>')) { bodyHtml += `<blockquote><p>${inlineMd(trimmed.slice(1).trim())}</p></blockquote>\n`; continue; }
     // Regular paragraph
-    bodyHtml += `<p>${trimmed}</p>\n`;
+    bodyHtml += `<p>${inlineMd(trimmed)}</p>\n`;
   }
   if (inCodeBlock) { bodyHtml += `<pre><code>${codeContent.trimEnd()}</code></pre>\n`; }
 
   return { title, subtitle, bodyHtml };
+}
+
+function inlineMd(text) {
+  return text
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/_(.+?)_/g, '<em>$1</em>');
 }
 
 const projectMdCache = {};
@@ -404,7 +411,20 @@ function initHoverIcons(el) {
     const img = document.createElement('img');
     img.className = 'hover-icon-img';
     img.src = span.dataset.icon;
+    if (span.dataset.iconWidth) img.style.width = span.dataset.iconWidth;
     span.appendChild(img);
+    span.addEventListener('mouseenter', (e) => {
+      img.style.display = 'block';
+      img.style.left = e.clientX + 'px';
+      img.style.top = (e.clientY - img.offsetHeight - 8) + 'px';
+    });
+    span.addEventListener('mousemove', (e) => {
+      img.style.left = e.clientX + 'px';
+      img.style.top = (e.clientY - img.offsetHeight - 8) + 'px';
+    });
+    span.addEventListener('mouseleave', () => {
+      img.style.display = 'none';
+    });
   });
 }
 

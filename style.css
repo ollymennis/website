@@ -614,6 +614,13 @@ main {
   margin-bottom: 1.5rem;
 }
 
+.project-body h2 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-top: 2.5rem;
+  margin-bottom: 0.75rem;
+}
+
 .project-body h3 {
   margin-top: 2.5rem;
   margin-bottom: 0.75rem;
@@ -631,6 +638,13 @@ main {
   margin-bottom: 0;
 }
 
+.project-body hr {
+  border: none;
+  border-top: 2px solid var(--fg);
+  opacity: 0.08;
+  margin: 4rem 0 1.5rem;
+}
+
 .project-body a {
   text-decoration: underline;
   text-underline-offset: 3px;
@@ -641,7 +655,7 @@ main {
   gap: 1.5rem;
   justify-content: center;
   margin-top: 2rem;
-  margin-bottom: 3rem;
+  margin-bottom: 1.5rem;
 }
 
 .team-avatar {
@@ -849,18 +863,12 @@ main {
 
 .hover-icon .hover-icon-img {
   display: none;
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%);
+  position: fixed;
   width: 40px;
   height: auto;
   pointer-events: none;
   border-radius: 0;
-}
-
-.hover-icon:hover .hover-icon-img {
-  display: block;
+  z-index: 200;
 }
 
 .hover-preview {
