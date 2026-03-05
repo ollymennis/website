@@ -744,8 +744,8 @@ main {
     z-index: 10;
     background: var(--bg);
     padding-top: 1.5rem;
-    padding-bottom: 1px;
     margin-top: -1.5rem;
+    box-shadow: 0 2px 0 var(--bg);
   }
   .work-layout .contact-list {
     position: sticky;
