@@ -1,3 +1,13 @@
+// --- Measure nav height for mobile sticky stacking ---
+const navEl = document.querySelector('.nav');
+function updateNavHeight() {
+  if (window.innerWidth <= 800) {
+    document.documentElement.style.setProperty('--nav-height', navEl.offsetHeight + 'px');
+  }
+}
+updateNavHeight();
+window.addEventListener('resize', updateNavHeight);
+
 // --- Nav / Tab system ---
 const navBtns = Array.from(document.querySelectorAll('.nav-btn'));
 const panels = document.querySelectorAll('.content-panel');
@@ -32,6 +42,17 @@ function switchSection(indexOrName) {
     projectItems.forEach(item => item.classList.remove('highlighted'));
     projectDisplay.classList.remove('active');
     projectContents.forEach(el => el.classList.remove('active'));
+    // Reset mobile dropdown
+    const toggle = document.querySelector('.project-menu-toggle');
+    if (toggle) {
+      toggle.style.display = 'none';
+      toggle.classList.remove('open');
+    }
+    const mobileList = document.querySelector('.work-layout .contact-list');
+    if (mobileList) {
+      mobileList.classList.remove('open', 'collapsed');
+    }
+    projectItems.forEach(p => p.classList.remove('mobile-hidden'));
   }
 
   // Update URL hash
@@ -41,7 +62,12 @@ function switchSection(indexOrName) {
   primedItem = null;
 
   // Enable page scroll when work-work is active (content may be tall)
-  document.documentElement.style.overflow = name === 'work-work' ? '' : 'hidden';
+  // On mobile, CSS handles overflow — never set hidden
+  if (window.innerWidth > 800) {
+    document.documentElement.style.overflow = name === 'work-work' ? '' : 'hidden';
+  } else {
+    document.documentElement.style.overflow = '';
+  }
 
   // Stagger stickers out when entering work-work, back in when leaving
   const stickers = document.querySelectorAll('.sticker');
@@ -419,6 +445,8 @@ function switchProject(num) {
   if (activeItem && activeItem.dataset.slug) {
     history.replaceState(null, '', '#' + activeItem.dataset.slug);
   }
+  // Update mobile dropdown toggle text
+  if (typeof updateMenuToggleText === 'function') updateMenuToggleText(num);
 }
 
 // --- Project Items ---
@@ -437,6 +465,37 @@ projectItems.forEach(item => {
     switchProject(parseInt(item.dataset.project));
   });
 });
+
+// --- Mobile project dropdown toggle ---
+const workContactList = document.querySelector('.work-layout .contact-list');
+const menuToggle = document.createElement('button');
+menuToggle.className = 'project-menu-toggle';
+menuToggle.style.display = 'none';
+menuToggle.innerHTML = '<span class="toggle-text"></span><img class="chevron" src="/icons/expand.svg" alt="">';
+workContactList.insertBefore(menuToggle, workContactList.firstChild);
+
+menuToggle.addEventListener('click', () => {
+  const isOpen = workContactList.classList.toggle('open');
+  menuToggle.classList.toggle('open', isOpen);
+});
+
+function updateMenuToggleText(num) {
+  if (window.innerWidth > 800) return;
+  const item = projectItems.find(p => p.dataset.project === String(num));
+  if (item) {
+    const title = item.querySelector('.project-title');
+    menuToggle.querySelector('.toggle-text').textContent =
+      item.dataset.project.padStart(2, '0') + ' ' + (title ? title.textContent : '');
+    menuToggle.style.display = '';
+    workContactList.classList.add('collapsed');
+    // Hide selected item from the dropdown list
+    projectItems.forEach(p => p.classList.remove('mobile-hidden'));
+    item.classList.add('mobile-hidden');
+  }
+  // Close dropdown on selection
+  workContactList.classList.remove('open');
+  menuToggle.classList.remove('open');
+}
 
 // --- Handle URL hash for deep linking ---
 function handleHash() {

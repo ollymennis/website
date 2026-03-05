@@ -731,14 +731,44 @@ main {
 }
 
 @media (max-width: 800px) {
+  html {
+    overflow: auto !important;
+    height: auto;
+  }
+  main {
+    padding: 1.5rem;
+  }
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--bg);
+    padding: 0.5rem 0 0 0;
+  }
+  .work-layout .contact-list {
+    position: sticky;
+    top: var(--nav-height, 0px);
+    z-index: 9;
+    background: var(--bg);
+  }
+  .work-layout .contact-list.collapsed {
+    padding-bottom: 0.75rem;
+  }
   .work-layout {
     flex-direction: column;
+    gap: 0;
   }
   .project-display {
-    position: static;
+    position: relative;
+    top: auto;
+    left: auto;
+    right: auto;
+    bottom: auto;
     max-height: none;
     padding: 1.5rem 0 0 0;
     background: none;
+    overflow-y: visible;
+    z-index: 1;
   }
   .project-body video,
   .project-body img {
@@ -748,6 +778,53 @@ main {
   .project-body h3 {
     max-width: 100%;
     letter-spacing: -0.03em;
+  }
+  .media-row {
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .media-row {
+    background: var(--bg);
+    border-radius: 8px;
+    padding: 0.5rem;
+  }
+  .media-row img.media-fixed {
+    width: 60px;
+    height: 60px;
+    mix-blend-mode: multiply;
+  }
+  /* Dropdown toggle for project menu */
+  .project-menu-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: none;
+    border: none;
+    font-family: var(--mono);
+    font-size: inherit;
+    color: var(--fg);
+    padding: 0.4rem 0;
+    cursor: url('/icons/mouse-hover.svg'), pointer;
+    font-weight: 700;
+    outline: none;
+  }
+  .project-menu-toggle .chevron {
+    width: 0.75em;
+    height: 0.75em;
+    transition: transform 200ms ease;
+    /* inherits fg color via dark mode filter on parent if needed */
+  }
+  .project-menu-toggle.open .chevron {
+    transform: rotate(180deg);
+  }
+  .work-layout .contact-list.collapsed .project-item {
+    display: none;
+  }
+  .work-layout .contact-list.collapsed.open .project-item {
+    display: block;
+  }
+  .work-layout .contact-list .project-item.mobile-hidden {
+    display: none !important;
   }
 }
 
@@ -830,6 +907,13 @@ main {
   .content-area .contact-item {
     font-size: 1.5rem;
     padding: 0.15rem 0;
+  }
+}
+
+/* --- Project menu toggle (hidden on desktop) --- */
+@media (min-width: 801px) {
+  .project-menu-toggle {
+    display: none;
   }
 }
 
