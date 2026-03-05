@@ -461,6 +461,12 @@ function switchProject(num) {
   projectDisplay.classList.add('active');
   projectContents.forEach(el => el.classList.toggle('active', el.dataset.projectContent === String(num)));
   projectDisplay.scrollTop = 0;
+  if (window.innerWidth <= 800) {
+    const list = document.querySelector('.work-layout .contact-list');
+    const offset = list ? list.getBoundingClientRect().bottom : 0;
+    const scrollTarget = projectDisplay.getBoundingClientRect().top + window.scrollY - offset;
+    window.scrollTo(0, Math.max(0, scrollTarget));
+  }
   projectItems.forEach(item => {
     item.classList.toggle('highlighted', item.dataset.project === String(num));
   });
