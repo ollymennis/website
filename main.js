@@ -360,7 +360,8 @@ function parseProjectMd(md) {
     if (!trimmed) { bodyHtml += '\n'; continue; }
     // Pass through HTML tags directly
     if (trimmed.startsWith('<video')) { bodyHtml += `<div class="video-crop">${trimmed}</div>\n`; continue; }
-    if (trimmed.startsWith('<')) { bodyHtml += trimmed + '\n'; continue; }
+    if (trimmed.startsWith('<!--')) { bodyHtml += trimmed + '\n'; continue; }
+    if (trimmed.startsWith('<') && /^<(div|img|hr|blockquote|pre|table|ul|ol|li|iframe|figure|section|aside|nav|header|footer)\b/i.test(trimmed)) { bodyHtml += trimmed + '\n'; continue; }
     // h2 and h3 (check h3 first since ### also starts with ##)
     if (trimmed.startsWith('### ')) { bodyHtml += `<h3>${inlineMd(trimmed.slice(4))}</h3>\n`; continue; }
     if (trimmed.startsWith('## ')) { bodyHtml += `<h2>${inlineMd(trimmed.slice(3))}</h2>\n`; continue; }
