@@ -1,4 +1,4 @@
-# icons visual refresh
+# icons
 _coming soon_
 
 

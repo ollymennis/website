@@ -1,4 +1,4 @@
-# cel & illustrations
+# hands
 _various cel animations and illustrations done for cash app's creative team_
 
 <video src="/media/ani-illu/caf.mp4" autoplay loop muted playsinline></video>

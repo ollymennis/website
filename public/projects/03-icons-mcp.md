@@ -24,8 +24,7 @@ below is an example of the mcp being utilized by a linearbot I built to respond 
 
 <div class="video-crop-sides"><video src="/media/icons-mcp/linearbot.mp4" autoplay muted playsinline data-start-at="5" data-loop-at="20"></video></div>
 
-### vibecoding with icons-mcp
 
-here is an example of a single-prompt project generating phrases and using the mcp to auto-select icons
+here is an example of a single-prompt claude code project generating phrases and using the mcp to auto-select icons
 
 <video src="/media/icons-mcp/pills-minute-trimmed.mp4" autoplay loop muted playsinline></video>

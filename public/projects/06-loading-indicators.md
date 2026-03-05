@@ -1,4 +1,4 @@
-# loading indicators
+# loading
 _coming soon_
 
 <div class="media-row">

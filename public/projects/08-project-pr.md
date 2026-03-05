@@ -1,3 +1,2 @@
 # project:PR
-
-project content goes here.
+_coming soon_

@@ -411,6 +411,9 @@ function initHoverPreviews(el) {
 }
 
 function initLoopAtVideos(el) {
+  el.querySelectorAll('video[data-playback-rate]').forEach(video => {
+    video.playbackRate = parseFloat(video.dataset.playbackRate);
+  });
   el.querySelectorAll('video[data-loop-at], video[data-start-at]').forEach(video => {
     const startTime = parseFloat(video.dataset.startAt) || 0;
     const loopTime = parseFloat(video.dataset.loopAt) || Infinity;
