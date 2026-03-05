@@ -4,7 +4,9 @@ const panels = document.querySelectorAll('.content-panel');
 const sections = navBtns.map(btn => btn.dataset.section);
 let currentNav = 0;
 
-function switchSection(index) {
+function switchSection(indexOrName) {
+  const index = typeof indexOrName === 'string' ? sections.indexOf(indexOrName) : indexOrName;
+  if (index < 0) return;
   currentNav = index;
   const name = sections[index];
 
@@ -31,6 +33,9 @@ function switchSection(index) {
     projectDisplay.classList.remove('active');
     projectContents.forEach(el => el.classList.remove('active'));
   }
+
+  // Update URL hash
+  history.replaceState(null, '', name === 'about' ? location.pathname : '#' + name);
 
   if (cvModalOpen) closeCvModal();
   primedItem = null;
@@ -407,6 +412,11 @@ function switchProject(num) {
   projectItems.forEach(item => {
     item.classList.toggle('highlighted', item.dataset.project === String(num));
   });
+  // Update URL hash
+  const activeItem = projectItems.find(item => item.dataset.project === String(num));
+  if (activeItem && activeItem.dataset.slug) {
+    history.replaceState(null, '', '#' + activeItem.dataset.slug);
+  }
 }
 
 // --- Project Items ---
@@ -426,6 +436,24 @@ projectItems.forEach(item => {
   });
 });
 
+// --- Handle URL hash for deep linking ---
+function handleHash() {
+  if (!location.hash) return;
+  const slug = location.hash.slice(1);
+  // Check sections first
+  if (sections.includes(slug)) {
+    switchSection(slug);
+    return;
+  }
+  // Then check projects
+  const match = projectItems.find(item => item.dataset.slug === slug);
+  if (match) {
+    switchSection('work-work');
+    switchProject(parseInt(match.dataset.project));
+  }
+}
+handleHash();
+window.addEventListener('hashchange', handleHash);
 
 // --- Load CV from markdown ---
 fetch('/cv/cv.md')
@@ -697,6 +725,6 @@ function stopIconAnimation() {
 const _origSwitchProject = switchProject;
 switchProject = function(num) {
   _origSwitchProject(num);
-  if (num === 5) startIconAnimation();
+  if (num === 7) startIconAnimation();
   else stopIconAnimation();
 };

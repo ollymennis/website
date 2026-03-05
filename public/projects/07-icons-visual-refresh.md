@@ -1,6 +1,6 @@
 # icons visual refresh
+_coming soon_
 
-coming soon
 
 <div class="icon-row" id="icon-row">
   <img src="/media/icons-refresh/alertOnline.svg" alt="" />

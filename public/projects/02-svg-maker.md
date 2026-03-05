@@ -1,3 +1,2 @@
 # svg maker
-
-project content goes here.
+_coming soon_

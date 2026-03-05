@@ -617,6 +617,7 @@ main {
   height: 80px;
   object-fit: contain;
   border-radius: 0;
+  mix-blend-mode: multiply;
 }
 
 .icon-row {

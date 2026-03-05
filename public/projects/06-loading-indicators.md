@@ -1,6 +1,5 @@
 # loading indicators
-
-coming soon
+_coming soon_
 
 <div class="media-row">
 <img class="media-fixed" src="/media/ani-illu/loadie_.gif" alt="" />

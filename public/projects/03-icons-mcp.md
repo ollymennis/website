@@ -10,15 +10,12 @@ icons-mcp is a pipeline-agnostic icon server that gives ai agents the power to s
 
 it combines two tools I've recently built:
 
-assets cabinet (see project 01 for semantic multimodal embeddings project) + a custom svg generator (see project 02 for my svg maker)
+assets cabinet (see <a href="#asset-cabinet">project 01</a> for semantic multimodal embeddings project) + a custom svg generator (see <a href="#svg-maker">project 02</a> for my svg maker)
 
-here is an example of it working in our internal chat interface, goose:
+describe what you need in plain language and auto-map icons based on context. here is an example of it working in our internal chat interface, goose:
 
 <img src="/media/icons-mcp/goose.png" alt="goose" />
 
-
-### semantic icon search
-_describe what you need in plain language and auto-map icons based on context_
 
 below is an example of the mcp being utilized by a linearbot I built to respond to tickets with suggestions
 
