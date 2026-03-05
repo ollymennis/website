@@ -395,9 +395,19 @@ main {
   text-underline-offset: 3px;
 }
 
-/* --- Project Modal (mobile only) --- */
-.project-modal {
+/* --- Project Display Close Button (mobile only) --- */
+.project-display-close {
   display: none;
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: none;
+  border: none;
+  cursor: url('/icons/mouse-hover.svg'), pointer;
+  padding: 0;
+  line-height: 0;
+  color: var(--fg);
+  z-index: 1;
 }
 
 /* --- CV Modal --- */
@@ -854,16 +864,32 @@ main {
     gap: 0;
   }
   .project-display {
-    position: relative;
-    top: auto;
-    left: auto;
-    right: auto;
-    bottom: auto;
-    max-height: none;
-    padding: 1.5rem 0 0 0;
-    background: none;
-    overflow-y: visible;
-    z-index: 1;
+    position: fixed;
+    inset: 1rem;
+    left: 1rem;
+    top: 1rem;
+    right: 1rem;
+    bottom: 1rem;
+    z-index: 150;
+    background: var(--bg);
+    overflow: hidden;
+    border: 2px solid var(--fg);
+    padding: 0;
+  }
+  .project-display.active {
+    display: block;
+  }
+  .project-display.active .project-content.active {
+    height: 100%;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 3rem 1.5rem;
+    scrollbar-width: none;
+    touch-action: pan-y;
+    -webkit-overflow-scrolling: touch;
+  }
+  .project-display-close {
+    display: block;
   }
   .project-body video,
   .project-body img {
@@ -872,7 +898,6 @@ main {
   .project-body p {
     max-width: 100%;
     letter-spacing: -0.03em;
-    font-size: 1rem;
   }
   .project-body h3 {
     max-width: 100%;
@@ -891,27 +916,6 @@ main {
     width: 60px;
     height: 60px;
     mix-blend-mode: multiply;
-  }
-  .project-modal {
-    display: none;
-    position: fixed;
-    inset: 1rem;
-    z-index: 150;
-    background: var(--bg);
-    overflow: hidden;
-    border: 2px solid var(--fg);
-  }
-  .project-modal.active {
-    display: block;
-  }
-  .project-modal-inner {
-    height: 100%;
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    padding: 3rem 1.5rem;
-    scrollbar-width: none;
-    touch-action: pan-y;
-    -webkit-overflow-scrolling: touch;
   }
 }
 
@@ -995,19 +999,23 @@ main {
     font-size: 1.5rem;
     padding: 0.15rem 0;
   }
-  .project-modal {
-    display: none;
+  .project-display {
     position: fixed;
     inset: 1rem;
+    left: 1rem;
+    top: 1rem;
+    right: 1rem;
+    bottom: 1rem;
     z-index: 150;
     background: var(--bg);
     overflow: hidden;
     border: 2px solid var(--fg);
+    padding: 0;
   }
-  .project-modal.active {
+  .project-display.active {
     display: block;
   }
-  .project-modal-inner {
+  .project-display.active .project-content.active {
     height: 100%;
     overflow-y: auto;
     overscroll-behavior: contain;
@@ -1015,6 +1023,21 @@ main {
     scrollbar-width: none;
     touch-action: pan-y;
     -webkit-overflow-scrolling: touch;
+  }
+  .project-display-close {
+    display: block;
+  }
+  .project-header h2 {
+    font-size: 2rem;
+  }
+  .project-body p {
+    font-size: 1.25rem;
+    max-width: 100%;
+    letter-spacing: -0.03em;
+  }
+  .project-body h3 {
+    max-width: 100%;
+    letter-spacing: -0.03em;
   }
 }
 

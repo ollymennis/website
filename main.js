@@ -42,7 +42,6 @@ function switchSection(indexOrName) {
     projectItems.forEach(item => item.classList.remove('highlighted'));
     projectDisplay.classList.remove('active');
     projectContents.forEach(el => el.classList.remove('active'));
-    if (projectModalOpen) closeProjectModal();
   }
 
   // Update URL hash
@@ -130,7 +129,7 @@ function getActiveSlideController() {
 document.addEventListener('keydown', (e) => {
   if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
   if (e.code === 'Escape') {
-    if (projectModalOpen) { closeProjectModal(); return; }
+    if (activeProjectNum !== null) { closeProjectDisplay(); return; }
     if (cvModalOpen) { closeCvModal(); return; }
   }
   if (cvModalOpen && e.code === 'Space') {
@@ -530,31 +529,27 @@ let activeProjectNum = null;
 
 function switchProject(num) {
   activeProjectNum = num;
+  projectDisplay.classList.add('active');
   projectContents.forEach(el => el.classList.toggle('active', el.dataset.projectContent === String(num)));
   projectItems.forEach(item => {
     item.classList.toggle('highlighted', item.dataset.project === String(num));
   });
-
-  if (window.innerWidth <= 800) {
-    // Mobile: open project content in modal
-    const activeContent = document.querySelector(`.project-content[data-project-content="${num}"]`);
-    if (activeContent) {
-      projectModalContent.appendChild(activeContent);
-      projectModal.classList.add('active');
-      projectModalContent.scrollTop = 0;
-      projectModalOpen = true;
-    }
-  } else {
-    // Desktop: show in fixed side panel
-    projectDisplay.classList.add('active');
-    projectDisplay.scrollTop = 0;
-  }
+  projectDisplay.scrollTop = 0;
 
   // Update URL hash
   const activeItem = projectItems.find(item => item.dataset.project === String(num));
   if (activeItem && activeItem.dataset.slug) {
     history.replaceState(null, '', '#' + activeItem.dataset.slug);
   }
+}
+
+function closeProjectDisplay() {
+  projectDisplay.classList.remove('active');
+  projectContents.forEach(el => el.classList.remove('active'));
+  highlightedProject = -1;
+  activeProjectNum = null;
+  projectItems.forEach(item => item.classList.remove('highlighted'));
+  history.replaceState(null, '', '#work-work');
 }
 
 // --- Project Items ---
@@ -574,24 +569,7 @@ projectItems.forEach(item => {
   });
 });
 
-// --- Project Modal (mobile) ---
-const projectModal = document.getElementById('project-modal');
-const projectModalContent = document.getElementById('project-modal-content');
-let projectModalOpen = false;
-
-function closeProjectModal() {
-  projectModal.classList.remove('active');
-  // Move content back to project-display
-  const activeContent = projectModalContent.querySelector('.project-content');
-  if (activeContent) {
-    projectDisplay.appendChild(activeContent);
-  }
-  projectModalOpen = false;
-  // Update hash back to work-work
-  history.replaceState(null, '', '#work-work');
-}
-
-document.getElementById('project-modal-close').addEventListener('click', closeProjectModal);
+document.getElementById('project-display-close').addEventListener('click', closeProjectDisplay);
 
 // --- Handle URL hash for deep linking ---
 function handleHash() {
@@ -752,7 +730,7 @@ fgObserver.observe(document.documentElement, { attributes: true, attributeFilter
 
 function startScribble(x, y) {
   if (window.innerWidth <= 800) return;
-  if (stickerDragging || cvModalOpen || projectModalOpen) return;
+  if (stickerDragging || cvModalOpen || activeProjectNum !== null) return;
   scribbling = true;
   document.body.classList.add('drawing');
   strokes.push({ points: [{ x, y }], endTime: null });
@@ -772,7 +750,7 @@ function endScribble() {
 }
 
 function isInteractive(el) {
-  return el.closest('button, a, .nav-btn, .contact-item, .sticker, .cv-modal, .project-modal, .project-display');
+  return el.closest('button, a, .nav-btn, .contact-item, .sticker, .cv-modal, .project-display');
 }
 
 document.addEventListener('mousedown', (e) => { if (!isInteractive(e.target)) startScribble(e.clientX, e.clientY); });
