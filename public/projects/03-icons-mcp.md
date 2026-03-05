@@ -5,15 +5,16 @@ icons are a consistency tax. humans sift through libraries manually, fuzzy searc
 
 icons-mcp is a pipeline-agnostic icon server that gives ai agents the power to search, match, and generate icons
 
-<div class="video-placeholder"></div>
+<img src="/media/icons-mcp/vibecode-example2.png" alt="vibecode example" />
 
 
 it combines two tools I've recently built:
 
-*arcade cabinet (see project 01 for semantic multimodal embeddings project) + a custom svg generator*
+assets cabinet (see project 01 for semantic multimodal embeddings project) + a custom svg generator (see project 02 for my svg maker)
 
+here is an example of it working in our internal chat interface, goose:
 
-<div class="video-placeholder"></div>
+<img src="/media/icons-mcp/goose.png" alt="goose" />
 
 
 ### semantic icon search

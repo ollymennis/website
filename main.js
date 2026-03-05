@@ -317,6 +317,7 @@ function parseProjectMd(md) {
     const trimmed = line.trim();
     if (!trimmed) { bodyHtml += '\n'; continue; }
     // Pass through HTML tags directly
+    if (trimmed.startsWith('<video')) { bodyHtml += `<div class="video-crop">${trimmed}</div>\n`; continue; }
     if (trimmed.startsWith('<')) { bodyHtml += trimmed + '\n'; continue; }
     // h3
     if (trimmed.startsWith('### ')) { bodyHtml += `<h3>${trimmed.slice(4)}</h3>\n`; continue; }
@@ -696,6 +697,6 @@ function stopIconAnimation() {
 const _origSwitchProject = switchProject;
 switchProject = function(num) {
   _origSwitchProject(num);
-  if (num === 2) startIconAnimation();
+  if (num === 5) startIconAnimation();
   else stopIconAnimation();
 };

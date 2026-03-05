@@ -589,9 +589,34 @@ main {
 
 .project-body video,
 .project-body img,
-.video-placeholder {
+.video-placeholder,
+.video-crop {
   margin-top: 1rem;
   margin-bottom: 1.5rem;
+}
+
+.media-row {
+  display: flex;
+  gap: 4rem;
+  align-items: flex-start;
+  max-width: 800px;
+  margin-top: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.media-row img {
+  flex: 1;
+  min-width: 0;
+  height: auto;
+  border-radius: 18px;
+}
+
+.media-row img.media-fixed {
+  flex: none;
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  border-radius: 0;
 }
 
 .icon-row {
@@ -627,7 +652,7 @@ main {
 }
 
 .video-placeholder {
-  max-width: 900px;
+  max-width: 800px;
   width: 100%;
   aspect-ratio: 16 / 9;
   background: var(--border);
@@ -636,11 +661,32 @@ main {
 
 .project-body video,
 .project-body img {
-  max-width: 900px;
+  max-width: 800px;
   width: 100%;
   height: auto;
   display: block;
   border-radius: 18px;
+}
+
+.video-crop {
+  max-width: 800px;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 18px;
+}
+
+.video-crop video {
+  display: block;
+  width: 100%;
+  margin-top: -8%;
+  margin-bottom: -1px;
+  border-radius: 0;
+}
+
+
+
+.project-body img[src$=".svg"] {
+  border-radius: 0;
 }
 
 @media (max-width: 800px) {

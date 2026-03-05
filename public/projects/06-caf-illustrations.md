@@ -1,4 +1,5 @@
-# CAF + illustrations
+# cel & illustrations
+_various cel animations and illustrations done for the creative studio_
 
 <video src="/media/ani-illu/caf.mp4" autoplay loop muted playsinline></video>
 <img src="/media/ani-illu/cashapp.png" alt="cashapp" />
