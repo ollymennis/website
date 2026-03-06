@@ -14,10 +14,10 @@ icons-mcp is a pipeline-agnostic server that gives any AI tool — chat interfac
 ### architecture
 
 the server combines two tools I built separately:
+<a href="#asset-cabinet">asset cabinet</a> + <a href="#svg-maker">svg maker</a> 
 
-<a href="#asset-cabinet">asset cabinet</a> — semantic multimodal search across all icon sets at block, using vector + full-text search with confidence scoring. compound queries auto-decompose into facets. cross-brand resolution maps icons between cash app, tidal, and block automatically
+semantic multimodal searches across all icon sets at block, using vector + full-text search with confidence scoring. compound queries auto-decompose into facets. cross-brand resolution maps icons between cash app, square, goose, tidal, and proto automatically. when no existing icon fits, the LLM can decide whether generating a new one from a text prompt is the ideal next step. the generator produces SVGs that match the target library's style constraints*
 
-<a href="#svg-maker">svg maker</a> — when no existing icon fits, generate a new one from a text prompt. the generator produces SVGs that match the target library's style constraints
 
 <!-- [placeholder: simple architecture diagram showing the two systems feeding into the MCP server, with arrows to the various consumer tools] -->
 
@@ -25,9 +25,9 @@ the server combines two tools I built separately:
 
 the server plugs into any tool that speaks MCP. here are three real integrations:
 
-### goose (internal chat)
+### goose (internal chatbot)
 
-designers and engineers describe what they need in conversation. the agent searches across libraries, shows matches with confidence scores, and can generate alternatives
+builders describe what they need in conversation. the agent searches across libraries, returns matches with confidence scores, and can generate alternatives
 
 <img src="/media/icons-mcp/goose.png" alt="goose" />
 
@@ -37,7 +37,7 @@ I built a linear integration that monitors incoming tickets and auto-suggests ic
 
 <div class="video-crop-sides"><video src="/media/icons-mcp/linearbot.mp4" autoplay muted playsinline data-start-at="5" data-loop-at="20"></video></div>
 
-### claude code (single-prompt generation)
+### claude code, single-prompt generation
 
 a single prompt to claude code can generate an entire set of labeled phrases and auto-select matching icons for each — no manual browsing
 

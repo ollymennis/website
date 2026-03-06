@@ -345,12 +345,13 @@ function parseProjectMd(md) {
         codeContent = trimmed.slice(3).trim() ? trimmed.slice(3).trim() + '\n' : '';
         // Check for single-line fenced code: ``` text ```
         if (trimmed.endsWith('```') && trimmed.length > 3 && trimmed.slice(3).trim().endsWith('```')) {
-          bodyHtml += `<pre><code>${trimmed.slice(3, trimmed.lastIndexOf('```')).trim()}</code></pre>\n`;
+          const raw = trimmed.slice(3, trimmed.lastIndexOf('```')).trim();
+          bodyHtml += `<pre><code>${raw.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</code></pre>\n`;
           inCodeBlock = false;
           codeContent = '';
         }
       } else {
-        bodyHtml += `<pre><code>${codeContent.trimEnd()}</code></pre>\n`;
+        bodyHtml += `<pre><code>${codeContent.trimEnd().replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</code></pre>\n`;
         inCodeBlock = false;
         codeContent = '';
       }
@@ -370,7 +371,7 @@ function parseProjectMd(md) {
     // Regular paragraph
     bodyHtml += `<p>${inlineMd(trimmed)}</p>\n`;
   }
-  if (inCodeBlock) { bodyHtml += `<pre><code>${codeContent.trimEnd()}</code></pre>\n`; }
+  if (inCodeBlock) { bodyHtml += `<pre><code>${codeContent.trimEnd().replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</code></pre>\n`; }
 
   return { title, subtitle, bodyHtml };
 }
@@ -393,6 +394,7 @@ async function loadProjectMd(el) {
     initLoopAtVideos(el);
     observeVideos(el);
     initIconSpecimen(el);
+    initSvgGridDemo(el);
     return;
   }
   const md = await fetch(mdPath).then(r => r.text());
@@ -405,6 +407,7 @@ async function loadProjectMd(el) {
   initLoopAtVideos(el);
   observeVideos(el);
   initIconSpecimen(el);
+  initSvgGridDemo(el);
 }
 
 function initHoverIcons(el) {
@@ -499,6 +502,41 @@ const specimenCategories = {
     'photo', 'qr', 'timeProgressStart', 'traffic'
   ]
 };
+
+function initSvgGridDemo(el) {
+  el.querySelectorAll('.svg-grid-demo').forEach(container => {
+    if (container.dataset.initialized) return;
+    container.dataset.initialized = 'true';
+    const svg = container.querySelector('svg');
+    const coord = container.querySelector('.svg-grid-coord');
+    const dot = container.querySelector('.svg-grid-dot');
+    if (!svg || !coord) return;
+    container.addEventListener('mousemove', e => {
+      const rect = svg.getBoundingClientRect();
+      const x = ((e.clientX - rect.left) / rect.width) * 24;
+      const y = ((e.clientY - rect.top) / rect.height) * 24;
+      const rx = Math.round(x);
+      const ry = Math.round(y);
+      coord.textContent = `${rx}, ${ry}`;
+      const cRect = container.getBoundingClientRect();
+      if (dot) {
+        dot.style.display = 'block';
+        dot.style.left = (rect.left - cRect.left + rx / 24 * rect.width) + 'px';
+        dot.style.top = (rect.top - cRect.top + ry / 24 * rect.height) + 'px';
+      }
+      coord.style.position = 'absolute';
+      coord.style.display = 'block';
+      coord.style.left = (e.clientX - cRect.left + 12) + 'px';
+      coord.style.top = (e.clientY - cRect.top + 12) + 'px';
+      coord.style.right = 'auto';
+    });
+    container.addEventListener('mouseleave', () => {
+      coord.textContent = '';
+      coord.style.display = 'none';
+      if (dot) dot.style.display = 'none';
+    });
+  });
+}
 
 function initIconSpecimen(el) {
   const container = el.querySelector('#icon-specimen');
