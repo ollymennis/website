@@ -782,18 +782,44 @@ function initSvgGridDemo(el) {
     const coord = container.querySelector('.svg-grid-coord');
     const dot = container.querySelector('.svg-grid-dot');
     if (!svg || !coord) return;
+    const plPaths = container.querySelectorAll('.pl-path');
+    // Hide blue indicator paths on init
+    plPaths.forEach(p => {
+      p.querySelectorAll('path:nth-child(2)').forEach(bp => { bp.style.opacity = '0'; });
+    });
+    // Find paired code block
+    const codeBlock = container.parentElement && container.parentElement.querySelector('pre code');
+    const codeSpans = codeBlock ? codeBlock.querySelectorAll('[data-path-code]') : [];
     container.addEventListener('mousemove', e => {
       const rect = svg.getBoundingClientRect();
       const x = ((e.clientX - rect.left) / rect.width) * 24;
       const y = ((e.clientY - rect.top) / rect.height) * 24;
       const rx = Math.round(x);
       const ry = Math.round(y);
+      // Detect hovered path
+      let hoveredPath = null;
+      if (plPaths.length) {
+        const els = document.elementsFromPoint(e.clientX, e.clientY);
+        for (const el of els) {
+          const g = el.closest('.pl-path');
+          if (g) { hoveredPath = g; break; }
+        }
+      }
       coord.textContent = `(${rx}, ${ry})`;
       const cRect = container.getBoundingClientRect();
       if (dot) {
         dot.style.display = 'block';
         dot.style.left = (rect.left - cRect.left + rx / 24 * rect.width) + 'px';
         dot.style.top = (rect.top - cRect.top + ry / 24 * rect.height) + 'px';
+      }
+      if (plPaths.length) {
+        plPaths.forEach(p => {
+          p.style.opacity = hoveredPath ? (p === hoveredPath ? '1' : '0.15') : '1';
+          p.querySelectorAll('path:nth-child(2)').forEach(bp => { bp.style.opacity = hoveredPath && p === hoveredPath ? '1' : '0'; });
+        });
+        codeSpans.forEach(s => {
+          s.style.opacity = hoveredPath ? (s.dataset.pathCode === hoveredPath.dataset.label ? '1' : '0.25') : '1';
+        });
       }
       coord.style.position = 'absolute';
       coord.style.display = 'block';
@@ -805,6 +831,13 @@ function initSvgGridDemo(el) {
       coord.textContent = '';
       coord.style.display = 'none';
       if (dot) dot.style.display = 'none';
+      if (plPaths.length) {
+        plPaths.forEach(p => {
+          p.style.opacity = '1';
+          p.querySelectorAll('path:nth-child(2)').forEach(bp => { bp.style.opacity = '0'; });
+        });
+        codeSpans.forEach(s => { s.style.opacity = '1'; });
+      }
     });
   });
 }
