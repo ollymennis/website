@@ -1392,6 +1392,7 @@ function closeLightbox() {
 lightbox.addEventListener('click', closeLightbox);
 
 projectDisplay.addEventListener('click', (e) => {
+  if (window.innerWidth <= 700) return;
   const media = e.target.closest('.project-body img, .project-body video');
   if (!media) return;
   if (media.closest('.media-fixed') || media.classList.contains('media-fixed')) return;
