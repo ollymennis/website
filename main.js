@@ -399,6 +399,7 @@ async function loadProjectMd(el) {
     initBezierDemo(el);
     initPathLabelDemo(el);
     initGenDemo(el);
+    initIconIntroRow(el);
     return;
   }
   const md = await fetch(mdPath).then(r => r.text());
@@ -415,6 +416,7 @@ async function loadProjectMd(el) {
   initBezierDemo(el);
   initPathLabelDemo(el);
   initGenDemo(el);
+  initIconIntroRow(el);
 }
 
 function initHoverIcons(el) {
@@ -509,6 +511,31 @@ const specimenCategories = {
     'photo', 'qr', 'timeProgressStart', 'traffic'
   ]
 };
+
+function initIconIntroRow(el) {
+  el.querySelectorAll('.icon-intro-row').forEach(row => {
+    if (row.dataset.initialized) return;
+    row.dataset.initialized = '1';
+    const basePath = '/media/icons-refresh/';
+    const allNames = iconFiles.slice();
+    const slots = Array.from(row.querySelectorAll('img'));
+    let pool = [];
+    function refill() {
+      pool = allNames.filter(n => !slots.some(s => s.src.includes(n)));
+      for (let i = pool.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [pool[i], pool[j]] = [pool[j], pool[i]];
+      }
+    }
+    function swapOne() {
+      if (pool.length === 0) refill();
+      const idx = Math.floor(Math.random() * slots.length);
+      slots[idx].src = basePath + pool.pop() + '.svg';
+    }
+    refill();
+    setInterval(swapOne, 150);
+  });
+}
 
 function initGenDemo(el) {
   el.querySelectorAll('.gen-demo').forEach(container => {

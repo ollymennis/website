@@ -757,6 +757,27 @@ main {
   mix-blend-mode: multiply;
 }
 
+.icon-intro-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem 0;
+  margin: 1.5rem auto;
+  max-width: 400px;
+}
+
+.icon-intro-row img {
+  width: 24px !important;
+  height: 24px !important;
+  max-width: 24px;
+  max-height: 24px;
+  margin-bottom: 0;
+  filter: brightness(0) saturate(100%) invert(11%) sepia(32%) saturate(2048%) hue-rotate(133deg) brightness(97%) contrast(98%);
+}
+
+[data-theme="dark"] .icon-intro-row img {
+  filter: brightness(0) saturate(100%) invert(95%) sepia(5%) saturate(200%) hue-rotate(120deg) brightness(105%) contrast(95%);
+}
+
 .icon-row {
   display: flex;
   gap: 2rem;
