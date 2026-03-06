@@ -638,6 +638,26 @@ main {
   margin-bottom: 0;
 }
 
+.project-body .bullet-list {
+  list-style: none;
+  padding-left: 1.5rem;
+  margin: 0.5rem 0 1.5rem;
+}
+
+.project-body .bullet-list li {
+  margin-bottom: 0.25rem;
+  line-height: 1.5;
+  font-size: 0.75rem;
+}
+
+.project-body .bullet-list .bullet-marker {
+  display: inline-block;
+  width: 1rem;
+  margin-left: -1.25rem;
+  color: var(--fg);
+  opacity: 0.5;
+}
+
 .project-body hr {
   border: none;
   border-top: 2px solid var(--fg);
@@ -714,6 +734,13 @@ main {
   border: 1px solid var(--border);
   border-radius: 4px;
   padding: 0.1rem 0.3rem;
+}
+
+.project-body pre code {
+  background: none;
+  border: none;
+  border-radius: 0;
+  padding: 0;
 }
 
 .project-body video,
@@ -1073,7 +1100,8 @@ main {
   }
   .project-header,
   .project-body p,
-  .project-body h3 {
+  .project-body h3,
+  .project-body .bullet-list {
     max-width: 75%;
     letter-spacing: -0.03em;
   }
@@ -1210,11 +1238,13 @@ main {
   }
   .project-header,
   .project-body p,
-  .project-body h3 {
+  .project-body h3,
+  .project-body .bullet-list {
     max-width: 75%;
     letter-spacing: -0.03em;
   }
-  .project-body p {
+  .project-body p,
+  .project-body .bullet-list li {
     font-size: 1.25rem;
   }
 }

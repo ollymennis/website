@@ -336,6 +336,7 @@ function parseProjectMd(md) {
   let bodyHtml = '';
   let inCodeBlock = false;
   let codeContent = '';
+  let inBulletList = false;
   for (const line of bodyLines) {
     const trimmed = line.trim();
     // Code fence toggle
@@ -358,7 +359,7 @@ function parseProjectMd(md) {
       continue;
     }
     if (inCodeBlock) { codeContent += line + '\n'; continue; }
-    if (!trimmed) { bodyHtml += '\n'; continue; }
+    if (!trimmed) { if (inBulletList) { bodyHtml += '</ul>\n'; inBulletList = false; } bodyHtml += '\n'; continue; }
     // Pass through HTML tags directly
     if (trimmed.startsWith('<video')) { bodyHtml += `<div class="video-crop">${trimmed}</div>\n`; continue; }
     if (trimmed.startsWith('<!--')) { bodyHtml += trimmed + '\n'; continue; }
@@ -366,11 +367,21 @@ function parseProjectMd(md) {
     // h2 and h3 (check h3 first since ### also starts with ##)
     if (trimmed.startsWith('### ')) { bodyHtml += `<h3>${inlineMd(trimmed.slice(4))}</h3>\n`; continue; }
     if (trimmed.startsWith('## ')) { bodyHtml += `<h2>${inlineMd(trimmed.slice(3))}</h2>\n`; continue; }
+    // Bullet lists (+ or →)
+    if (trimmed.startsWith('+ ') || trimmed.startsWith('→')) {
+      const text = trimmed.startsWith('+ ') ? trimmed.slice(2) : trimmed.slice(1).trim();
+      const marker = trimmed[0];
+      if (!inBulletList) { bodyHtml += `<ul class="bullet-list">`; inBulletList = true; }
+      bodyHtml += `<li><span class="bullet-marker">${marker}</span>${inlineMd(text)}</li>\n`;
+      continue;
+    }
+    if (inBulletList) { bodyHtml += '</ul>\n'; inBulletList = false; }
     // Blockquote
     if (trimmed.startsWith('>')) { bodyHtml += `<blockquote><p>${inlineMd(trimmed.slice(1).trim())}</p></blockquote>\n`; continue; }
     // Regular paragraph
     bodyHtml += `<p>${inlineMd(trimmed)}</p>\n`;
   }
+  if (inBulletList) { bodyHtml += '</ul>\n'; }
   if (inCodeBlock) { bodyHtml += `<pre><code>${codeContent.trimEnd().replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</code></pre>\n`; }
 
   return { title, subtitle, bodyHtml };
