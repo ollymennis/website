@@ -1233,6 +1233,9 @@ main {
   .project-body .bullet-list li {
     font-size: 1.25rem;
   }
+  .project-body code {
+    line-height: 1.3;
+  }
 }
 
 /* --- Drawing state: disable hovers --- */
