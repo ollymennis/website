@@ -40,7 +40,7 @@ she transported herself to the archives in the humming wagon of scandinavian int
 
 she looked for the people who came before her, before the technology. jenson, garamond, dreyfuss. susan kare taught a computer to smile with 32 pixels. _32._ and just like that, sparks.
 
-<img src="/media/moneybot/dreyfuss.png" alt="dreyfuss" />
+<img src="/media/moneybot/dreyfuss.jpg" alt="dreyfuss" />
 <img src="/media/moneybot/susan-kare.jpg" alt="susan" />
 <img src="/media/moneybot/susan-scribbles.jpg" alt="apple scribbles" />
 ### part III: the lab
