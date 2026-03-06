@@ -378,6 +378,7 @@ function parseProjectMd(md) {
 
 function inlineMd(text) {
   return text
+    .replace(/`([^`]+)`/g, (_, code) => `<code>${code.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</code>`)
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
     .replace(/_(.+?)_/g, '<em>$1</em>');
 }
@@ -395,6 +396,9 @@ async function loadProjectMd(el) {
     observeVideos(el);
     initIconSpecimen(el);
     initSvgGridDemo(el);
+    initBezierDemo(el);
+    initPathLabelDemo(el);
+    initGenDemo(el);
     return;
   }
   const md = await fetch(mdPath).then(r => r.text());
@@ -408,6 +412,9 @@ async function loadProjectMd(el) {
   observeVideos(el);
   initIconSpecimen(el);
   initSvgGridDemo(el);
+  initBezierDemo(el);
+  initPathLabelDemo(el);
+  initGenDemo(el);
 }
 
 function initHoverIcons(el) {
@@ -503,6 +510,232 @@ const specimenCategories = {
   ]
 };
 
+function initGenDemo(el) {
+  el.querySelectorAll('.gen-demo').forEach(container => {
+    if (container.dataset.initialized) return;
+    container.dataset.initialized = 'true';
+    const svg = container.querySelector('svg');
+    const loadingG = svg.querySelector('.gen-loading');
+    const resultG = svg.querySelector('.gen-result');
+    const codeOut = container.querySelector('.gen-code-output');
+    if (!svg || !loadingG || !resultG) return;
+
+    const LOADING_PATH = [
+      [0, 0], [1, 0], [2, 0], [3, 0],
+      [3, 1], [2, 1], [1, 1], [0, 1],
+      [0, 2], [1, 2], [2, 2], [3, 2],
+      [3, 3], [2, 3], [1, 3], [0, 3],
+      [0, 2], [1, 2], [2, 2], [3, 2],
+      [3, 1], [2, 1], [1, 1], [0, 1],
+    ];
+    const OX = 10, OY = 10;
+    let interval = null;
+    let codeInterval = null;
+    let running = false;
+
+    const SVG_CODE = `<svg viewBox="0 0 24 24" fill="none">
+  <!-- trunk -->
+  <path d="M10 22C9.33 18 9.67 14.33
+    11 11C11.67 10.33 12.33 10.33
+    13 11C14.33 14.33 14.67 18
+    14 22H10Z"
+    stroke="#FF00FF" stroke-width="2"
+    stroke-linejoin="round"/>
+  <!-- left-lower frond -->
+  <path d="M12 8C9.33 6 6.33 5 3 5"
+    stroke="#FF00FF" stroke-width="2"/>
+  <!-- right-lower frond -->
+  <path d="M12 8C14.67 6 17.67 5 21 5"
+    stroke="#FF00FF" stroke-width="2"/>
+  <!-- left-upper frond -->
+  <path d="M12 8C10.67 4.67 8.67 2.67
+    6 2"
+    stroke="#FF00FF" stroke-width="2"/>
+  <!-- right-upper frond -->
+  <path d="M12 8C13.33 4.67 15.33 2.67
+    18 2"
+    stroke="#FF00FF" stroke-width="2"/>
+  <!-- left-mid frond -->
+  <path d="M12 8C10 8.67 8 10 6 12"
+    stroke="#FF00FF" stroke-width="2"/>
+  <!-- right-mid frond -->
+  <path d="M12 8C14 8.67 16 10 18 12"
+    stroke="#FF00FF" stroke-width="2"/>
+</svg>`;
+
+    function startStreaming(duration) {
+      if (!codeOut) return;
+      const pre = codeOut.parentElement;
+      codeOut.textContent = '';
+      if (pre) pre.scrollTop = 0;
+      let charIdx = 0;
+      const charsPerTick = 2;
+      const totalTicks = Math.ceil(SVG_CODE.length / charsPerTick);
+      const tickMs = duration / totalTicks;
+      codeInterval = setInterval(() => {
+        const end = Math.min(charIdx + charsPerTick, SVG_CODE.length);
+        codeOut.textContent += SVG_CODE.slice(charIdx, end);
+        charIdx = end;
+        if (pre) pre.scrollTop = pre.scrollHeight;
+        if (charIdx >= SVG_CODE.length) clearInterval(codeInterval);
+      }, tickMs);
+    }
+
+    function stopStreaming() {
+      clearInterval(codeInterval);
+      codeInterval = null;
+    }
+
+    function startLoading() {
+      if (running) return;
+      running = true;
+      resultG.style.display = 'none';
+      loadingG.style.display = '';
+      if (codeOut) codeOut.textContent = '';
+      let idx = 0;
+      let trail = [];
+      interval = setInterval(() => {
+        trail = [idx, ...trail].slice(0, 10);
+        idx = (idx + 1) % LOADING_PATH.length;
+        let html = '';
+        for (let i = 0; i < trail.length; i++) {
+          const [tx, ty] = LOADING_PATH[trail[i]];
+          const op = 0.6 - (i * 0.06);
+          if (op <= 0) continue;
+          html += `<rect x="${OX + tx}" y="${OY + ty}" width="1" height="1" fill="#FF00FF" opacity="${op}"/>`;
+        }
+        const [cx, cy] = LOADING_PATH[idx];
+        html += `<rect x="${OX + cx}" y="${OY + cy}" width="1" height="1" fill="#FF00FF" opacity="1"/>`;
+        loadingG.innerHTML = html;
+      }, 120);
+    }
+
+    function stopLoading() {
+      clearInterval(interval);
+      interval = null;
+      loadingG.style.display = 'none';
+      loadingG.innerHTML = '';
+    }
+
+    function showResult() {
+      stopLoading();
+      stopStreaming();
+      if (codeOut) {
+        codeOut.textContent = SVG_CODE;
+        const pre = codeOut.parentElement;
+        if (pre) pre.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+      resultG.style.display = '';
+      running = false;
+    }
+
+    container.addEventListener('click', () => {
+      if (running) return;
+      const delay = 6000 + Math.random() * 3000;
+      startLoading();
+      startStreaming(delay);
+      setTimeout(showResult, delay);
+    });
+  });
+}
+
+function initPathLabelDemo(el) {
+  el.querySelectorAll('.path-label-demo').forEach(container => {
+    if (container.dataset.initialized) return;
+    container.dataset.initialized = 'true';
+    const paths = container.querySelectorAll('.pl-path');
+    const label = container.querySelector('.pl-label');
+    if (!paths.length || !label) return;
+    // Hide black path strokes by default
+    paths.forEach(p => {
+      p.style.cursor = 'pointer';
+      const blackPath = p.querySelectorAll('path:nth-child(2)');
+      blackPath.forEach(bp => { bp.style.opacity = '0'; });
+      p.addEventListener('mouseenter', () => {
+        paths.forEach(other => {
+          other.style.opacity = other === p ? '1' : '0.15';
+          other.querySelectorAll('.pl-magenta').forEach(m => { m.style.mixBlendMode = other === p ? 'multiply' : ''; });
+          other.querySelectorAll('path:nth-child(2)').forEach(bp => { bp.style.opacity = other === p ? '1' : '0'; });
+        });
+        label.textContent = `<!-- ${p.dataset.label} -->`;
+        label.style.opacity = '1';
+      });
+      p.addEventListener('mouseleave', () => {
+        paths.forEach(other => {
+          other.style.opacity = '1';
+          other.querySelectorAll('.pl-magenta').forEach(m => { m.style.mixBlendMode = ''; });
+          other.querySelectorAll('path:nth-child(2)').forEach(bp => { bp.style.opacity = '0'; });
+        });
+        label.style.opacity = '0';
+      });
+    });
+  });
+}
+
+function initBezierDemo(el) {
+  el.querySelectorAll('.bezier-demo').forEach(container => {
+    if (container.dataset.initialized) return;
+    container.dataset.initialized = 'true';
+    const svg = container.querySelector('svg');
+    if (!svg) return;
+    const curve = svg.querySelector('.bz-curve');
+    const handle1 = svg.querySelector('.bz-handle1');
+    const handle2 = svg.querySelector('.bz-handle2');
+    const cp1 = svg.querySelector('.bz-cp1');
+    const cp2 = svg.querySelector('.bz-cp2');
+    const labelCp1 = svg.querySelector('.bz-label-cp1');
+    const labelCp2 = svg.querySelector('.bz-label-cp2');
+    const curveFill = svg.querySelector('.bz-curve-fill');
+    const cmd = svg.querySelector('.bz-cmd');
+    if (!curve || !cp1 || !cp2) return;
+
+    const p0 = { x: 4, y: 20 };
+    const p1 = { x: 20, y: 4 };
+    let c1 = { x: 4, y: 8 };
+    let c2 = { x: 20, y: 16 };
+    let dragging = null;
+
+    function update() {
+      const d = `M ${p0.x} ${p0.y} C ${c1.x} ${c1.y}, ${c2.x} ${c2.y}, ${p1.x} ${p1.y}`;
+      curve.setAttribute('d', d);
+      if (curveFill) curveFill.setAttribute('d', d);
+      handle1.setAttribute('x2', c1.x); handle1.setAttribute('y2', c1.y);
+      handle2.setAttribute('x2', c2.x); handle2.setAttribute('y2', c2.y);
+      const s = 0.4;
+      cp1.setAttribute('d', `M ${c1.x} ${c1.y-s} L ${c1.x+s} ${c1.y} L ${c1.x} ${c1.y+s} L ${c1.x-s} ${c1.y} Z`);
+      cp2.setAttribute('d', `M ${c2.x} ${c2.y-s} L ${c2.x+s} ${c2.y} L ${c2.x} ${c2.y+s} L ${c2.x-s} ${c2.y} Z`);
+      if (labelCp1) { labelCp1.setAttribute('x', c1.x - 1.8); labelCp1.setAttribute('y', c1.y - 1); }
+      if (labelCp2) { labelCp2.setAttribute('x', c2.x + 0.8); labelCp2.setAttribute('y', c2.y - 1); }
+      if (cmd) cmd.textContent = `C ${Math.round(c1.x)} ${Math.round(c1.y)}, ${Math.round(c2.x)} ${Math.round(c2.y)}, ${p1.x} ${p1.y}`;
+    }
+
+    function toSvgCoords(e) {
+      const rect = svg.getBoundingClientRect();
+      return {
+        x: Math.round(((e.clientX - rect.left) / rect.width) * 25),
+        y: Math.round(((e.clientY - rect.top) / rect.height) * 25)
+      };
+    }
+
+    function onDown(target) {
+      return e => { e.preventDefault(); dragging = target; cp1.style.cursor = cp2.style.cursor = 'grabbing'; };
+    }
+    cp1.addEventListener('pointerdown', onDown(c1));
+    cp2.addEventListener('pointerdown', onDown(c2));
+
+    window.addEventListener('pointermove', e => {
+      if (!dragging) return;
+      const pos = toSvgCoords(e);
+      dragging.x = Math.max(0, Math.min(25, pos.x));
+      dragging.y = Math.max(0, Math.min(25, pos.y));
+      update();
+    });
+    window.addEventListener('pointerup', () => {
+      if (dragging) { dragging = null; cp1.style.cursor = cp2.style.cursor = 'grab'; }
+    });
+  });
+}
+
 function initSvgGridDemo(el) {
   el.querySelectorAll('.svg-grid-demo').forEach(container => {
     if (container.dataset.initialized) return;
@@ -517,7 +750,7 @@ function initSvgGridDemo(el) {
       const y = ((e.clientY - rect.top) / rect.height) * 24;
       const rx = Math.round(x);
       const ry = Math.round(y);
-      coord.textContent = `${rx}, ${ry}`;
+      coord.textContent = `(${rx}, ${ry})`;
       const cRect = container.getBoundingClientRect();
       if (dot) {
         dot.style.display = 'block';
