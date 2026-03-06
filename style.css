@@ -1039,23 +1039,14 @@ main {
     overflow: auto !important;
     height: auto;
   }
-  main {
-    padding: 1.5rem;
-  }
   .nav {
     position: sticky;
     top: 0;
     z-index: 10;
     background: var(--bg);
-    padding-top: 1.5rem;
-    margin-top: -1.5rem;
+    padding-top: 3rem;
+    margin-top: -3rem;
     box-shadow: 0 2.5rem 0 var(--bg);
-  }
-  .nav-btn {
-    font-size: 0.75rem;
-  }
-  .contact-item {
-    font-size: 0.75rem;
   }
   .work-layout .contact-list {
     align-items: flex-start;
