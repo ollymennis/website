@@ -5,7 +5,7 @@ _teaching a machine to draw_
 
 ### learning the language
 
-to build this I had to go back to the fundamentals. SVG is instructions, not pixels. every icon lives on a 24x24 unit grid:
+to build this I had to go back to the fundamentals. SVG is instructions, not pixels. each icon in the example set lives on a 24x24 unit grid:
 
 ```<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">```
 
@@ -17,11 +17,11 @@ paths are built from a handful of commands. `M` moves the pen. `L` draws a line.
 
 ### teaching the machine
 
-it is suprisingly difficult to generate usable svgs, given how incredible these models are at creating images. but generating a PNG is art — the model imagines pixels. generating an SVG is math — it has to write precise coordinates, calculate curves, and produce code that actually parses.
+it is suprisingly difficult to generate usable, unique svgs, given how incredible these models are at creating images. but generating a .png is art: the model imagines pixels. generating an SVG is math: it has to write precise coordinates, calculate curves, and produce code that actually parses.
 
-I've created about 1,000 finalized svgs for Block libraries. they have consistent stroke weights, standardized corner radii, precise visual centers. the goal is to generate new icons that belong next to those.
+I've created about 1,000 finalized svgs for Block libraries. they have consistent stroke weights, standardized corner radii, precise visual centers. my ultimate goal is to generate new icons that belong next to those.
 
-early outputs are valid SVG but look wrong. strokes too thick, rounded end caps, paths 1 pixel outside the grid, overlapping shapes, etc.
+early outputs are valid SVG but look wrong. strokes were often too thick, they had rounded end caps, paths were 1 pixel outside the grid, a lot of overlapping shapes, etc.
 
 <!-- [placeholder: the horse head attempts] -->
 
@@ -43,23 +43,16 @@ there's also a feedback loop. I rate outputs as good or bad, and those get injec
 
 post-generation, an auto-centering step calculates the bounding box of all path coordinates and shifts the icon to center on the 12,12 midpoint — but only if the offset is more than 0.5px, to avoid over-correction.
 
-<div class="gen-demo" style="position:relative;width:100%;max-width:800px;margin:2.5rem auto;cursor:pointer;user-select:none"><div style="font-family:var(--mono);font-size:0.7rem;opacity:0.3;margin-bottom:0.5rem">click to generate "palm tree"</div><div class="gen-demo-row" style="display:flex;gap:1rem"><div style="flex:0 0 50%;aspect-ratio:1"><svg viewBox="0 0 24 24" width="100%" height="100%" style="display:block;background:var(--bg);border:1px solid var(--fg);border-radius:0"><defs><pattern id="grid-gen" width="1" height="1" patternUnits="userSpaceOnUse"><rect width="1" height="1" fill="none" stroke="var(--fg)" stroke-width="0.03" opacity="0.12"/></pattern></defs><rect width="24" height="24" fill="url(#grid-gen)"/><g class="gen-loading" style="display:none"></g><g class="gen-result" style="display:none"><path class="gen-trunk" d="M10 22C9.33334 18 9.66667 14.3333 11 11C11.6667 10.3333 12.3333 10.3333 13 11C14.3333 14.3333 14.6667 18 14 22H10Z" stroke="#FF00FF" stroke-width="2" stroke-linejoin="round" fill="none"/><path class="gen-frond" d="M12 8C9.33333 6 6.33333 5 3 5" stroke="#FF00FF" stroke-width="2" stroke-linejoin="round" fill="none"/><path class="gen-frond" d="M12 8C14.6667 6 17.6667 5 21 5" stroke="#FF00FF" stroke-width="2" stroke-linejoin="round" fill="none"/><path class="gen-frond" d="M12 8C10.6667 4.66667 8.66667 2.66667 6 2" stroke="#FF00FF" stroke-width="2" stroke-linejoin="round" fill="none"/><path class="gen-frond" d="M12 8C13.3333 4.66667 15.3333 2.66667 18 2" stroke="#FF00FF" stroke-width="2" stroke-linejoin="round" fill="none"/><path class="gen-frond" d="M12 8C10 8.66667 8 10 6 12" stroke="#FF00FF" stroke-width="2" stroke-linejoin="round" fill="none"/><path class="gen-frond" d="M12 8C14 8.66667 16 10 18 12" stroke="#FF00FF" stroke-width="2" stroke-linejoin="round" fill="none"/></g></svg></div><div style="flex:1;position:relative"><pre class="gen-code" style="position:absolute;inset:0;margin:0;overflow-y:hidden"><code class="gen-code-output"></code></pre></div></div></div>
+<div class="gen-demo" style="position:relative;width:100%;max-width:800px;margin:2.5rem auto;cursor:pointer;user-select:none"><div style="font-family:var(--mono);font-size:0.7rem;opacity:0.3;margin-bottom:0.5rem">click to generate "palm tree"</div><div class="gen-demo-row" style="display:flex;gap:1rem"><div class="path-label-demo" style="flex:0 0 50%;aspect-ratio:1;position:relative"><svg viewBox="0 0 24 24" width="100%" height="100%" style="display:block;background:var(--bg);border:1px solid var(--fg);border-radius:0"><defs><pattern id="grid-gen" width="1" height="1" patternUnits="userSpaceOnUse"><rect width="1" height="1" fill="none" stroke="var(--fg)" stroke-width="0.03" opacity="0.12"/></pattern></defs><rect width="24" height="24" fill="url(#grid-gen)"/><g class="gen-loading" style="display:none"></g><g class="gen-result" style="display:none"><g class="pl-path" data-label="trunk"><path d="M10 22C9.33334 18 9.66667 14.3333 11 11C11.6667 10.3333 12.3333 10.3333 13 11C14.3333 14.3333 14.6667 18 14 22H10Z" stroke="#FF00FF" stroke-width="2" stroke-linejoin="round" fill="none" class="pl-magenta"/><path d="M10 22C9.33334 18 9.66667 14.3333 11 11C11.6667 10.3333 12.3333 10.3333 13 11C14.3333 14.3333 14.6667 18 14 22H10Z" stroke="#009CFF" stroke-width="0.12" stroke-linejoin="round" fill="none"/></g><g class="pl-path" data-label="left-lower-frond"><path d="M12 8C9.33333 6 6.33333 5 3 5" stroke="#FF00FF" stroke-width="2" stroke-linejoin="round" fill="none" class="pl-magenta"/><path d="M12 8C9.33333 6 6.33333 5 3 5" stroke="#009CFF" stroke-width="0.12" stroke-linejoin="round" fill="none"/></g><g class="pl-path" data-label="right-lower-frond"><path d="M12 8C14.6667 6 17.6667 5 21 5" stroke="#FF00FF" stroke-width="2" stroke-linejoin="round" fill="none" class="pl-magenta"/><path d="M12 8C14.6667 6 17.6667 5 21 5" stroke="#009CFF" stroke-width="0.12" stroke-linejoin="round" fill="none"/></g><g class="pl-path" data-label="left-upper-frond"><path d="M12 8C10.6667 4.66667 8.66667 2.66667 6 2" stroke="#FF00FF" stroke-width="2" stroke-linejoin="round" fill="none" class="pl-magenta"/><path d="M12 8C10.6667 4.66667 8.66667 2.66667 6 2" stroke="#009CFF" stroke-width="0.12" stroke-linejoin="round" fill="none"/></g><g class="pl-path" data-label="right-upper-frond"><path d="M12 8C13.3333 4.66667 15.3333 2.66667 18 2" stroke="#FF00FF" stroke-width="2" stroke-linejoin="round" fill="none" class="pl-magenta"/><path d="M12 8C13.3333 4.66667 15.3333 2.66667 18 2" stroke="#009CFF" stroke-width="0.12" stroke-linejoin="round" fill="none"/></g><g class="pl-path" data-label="left-mid-frond"><path d="M12 8C10 8.66667 8 10 6 12" stroke="#FF00FF" stroke-width="2" stroke-linejoin="round" fill="none" class="pl-magenta"/><path d="M12 8C10 8.66667 8 10 6 12" stroke="#009CFF" stroke-width="0.12" stroke-linejoin="round" fill="none"/></g><g class="pl-path" data-label="right-mid-frond"><path d="M12 8C14 8.66667 16 10 18 12" stroke="#FF00FF" stroke-width="2" stroke-linejoin="round" fill="none" class="pl-magenta"/><path d="M12 8C14 8.66667 16 10 18 12" stroke="#009CFF" stroke-width="0.12" stroke-linejoin="round" fill="none"/></g></g></svg><div class="pl-label" style="position:absolute;bottom:8px;left:8px;font-family:var(--mono);font-size:0.75rem;font-weight:bold;color:#000;pointer-events:none;white-space:nowrap;opacity:0"></div></div><div style="flex:1;position:relative"><pre class="gen-code" style="position:absolute;inset:0;margin:0;overflow-y:hidden"><code class="gen-code-output"></code></pre></div></div></div>
 
 ### evals
 
-evals deserve their own section. to measure progress and test various models, I added an eval pipeline. each run generates a batch of icons from the same set of prompts, scored on validity (does it parse), grid alignment, stroke consistency, path efficiency, and visual similarity to the reference. it makes prompt changes measurable and helps me keep my wits about me.
+evals deserve their own section. to measure progress and test various models, I added an eval pipeline. each run generates a batch of icons from the same set of prompts, scored on validity (does it parse), grid alignment, stroke consistency, path efficiency, and visual similarity to the reference. it makes prompt changes measurable with actual data. why isn't everyone talking about evals??????
 
-### tuning
 
-a valid SVG renders. a production SVG _belongs_ — it matches stroke weights across a library, aligns to the pixel grid so it doesn't blur at small sizes, and uses the minimum path commands to describe the shape.
+things I've learned other than the importance of evals:
 
-I run generations against existing libraries, compare stroke weights, measure corner radii, compare outputs on originals. batch after batch refining the system prompt.
-
-<video src="/media/svg maker/snowhat-trimmed.mp4" autoplay muted loop playsinline></video>
-
-things I've learned:
-
-**path simplification matters.** the model sometimes outputs dozens of segments where four would be more resonable. a circle doesn't need 12 cubic béziers — it needs two arcs. `H` and `V` for straight horizontal/vertical lines instead of `L`. `S` for smooth curves that mirror the previous control point.
+**path simplification matters.** the model sometimes outputs dozens of segments where ~four would be more resonable. a circle does NOT need 12 cubic béziers bestie 😭😭😭 it needs two arcs. `H` and `V` for straight horizontal/vertical lines instead of `L`. `S` for smooth curves that mirror the previous control point.
 
 **the viewBox is sacred.** anything outside it gets clipped. anything too small inside it looks lost. key
   shapes should fill 80-90% of the grid.
