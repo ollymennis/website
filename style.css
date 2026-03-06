@@ -790,7 +790,7 @@ main {
 .icon-intro-row {
   display: flex;
   justify-content: space-between;
-  max-width: 400px;
+  width: 100%;
 }
 
 .icon-intro-row img {
@@ -811,6 +811,7 @@ main {
   display: flex;
   gap: 2rem;
   padding: 1rem 0;
+  width: 100%;
 }
 
 .icon-row img {
@@ -952,7 +953,6 @@ main {
   height: auto;
   display: block;
   border-radius: 18px;
-  cursor: url('/icons/mouse-hover.svg'), pointer;
 }
 
 .gallery {
@@ -1023,32 +1023,6 @@ main {
   border-radius: 0;
 }
 
-/* --- Media Lightbox --- */
-.media-lightbox {
-  display: none;
-  position: fixed;
-  inset: 0;
-  z-index: 200;
-  background: rgba(0, 0, 0, 0.85);
-  cursor: url('/icons/mouse-hover.svg'), pointer;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem;
-}
-
-.media-lightbox.active {
-  display: flex;
-}
-
-.media-lightbox img,
-.media-lightbox video {
-  max-width: 90vw;
-  max-height: 90vh;
-  width: auto;
-  height: auto;
-  object-fit: contain;
-  border-radius: 18px;
-}
 
 @media (max-width: 700px) {
   html {

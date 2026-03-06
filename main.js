@@ -126,7 +126,6 @@ function getActiveSlideController() {
 document.addEventListener('keydown', (e) => {
   if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
   if (e.code === 'Escape') {
-    if (lightboxOpen) { closeLightbox(); return; }
     if (activeProjectNum !== null) { closeProjectDisplay(); return; }
     if (cvModalOpen) { closeCvModal(); return; }
   }
@@ -1219,7 +1218,7 @@ fgObserver.observe(document.documentElement, { attributes: true, attributeFilter
 
 function startScribble(x, y) {
   if (window.innerWidth <= 700) return;
-  if (stickerDragging || cvModalOpen || activeProjectNum !== null || lightboxOpen) return;
+  if (stickerDragging || cvModalOpen || activeProjectNum !== null) return;
   scribbling = true;
   document.body.classList.add('drawing');
   strokes.push({ points: [{ x, y }], endTime: null });
@@ -1365,39 +1364,3 @@ switchProject = function(num) {
   else stopIconAnimation();
 };
 
-// --- Media Lightbox ---
-const lightbox = document.getElementById('media-lightbox');
-let lightboxOpen = false;
-
-function openLightbox(el) {
-  const clone = el.cloneNode(true);
-  clone.style = '';
-  clone.className = '';
-  clone.removeAttribute('class');
-  if (clone.tagName === 'VIDEO') {
-    clone.muted = true;
-    clone.autoplay = true;
-    clone.loop = true;
-    clone.playsInline = true;
-  }
-  lightbox.innerHTML = '';
-  lightbox.appendChild(clone);
-  lightbox.classList.add('active');
-  lightboxOpen = true;
-}
-
-function closeLightbox() {
-  lightbox.classList.remove('active');
-  lightbox.innerHTML = '';
-  lightboxOpen = false;
-}
-
-lightbox.addEventListener('click', closeLightbox);
-
-projectDisplay.addEventListener('click', (e) => {
-  if (window.innerWidth <= 700) return;
-  const media = e.target.closest('.project-body img, .project-body video');
-  if (!media) return;
-  if (media.closest('.media-fixed') || media.classList.contains('media-fixed')) return;
-  openLightbox(media);
-});
