@@ -1012,6 +1012,7 @@ function switchProject(num) {
     item.classList.toggle('highlighted', item.dataset.project === String(num));
   });
   projectDisplay.scrollTop = 0;
+  projectContents.forEach(el => el.scrollTop = 0);
 
   // Update URL hash
   const activeItem = projectItems.find(item => item.dataset.project === String(num));
