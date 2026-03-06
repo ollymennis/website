@@ -571,35 +571,67 @@ function initGenDemo(el) {
     let codeInterval = null;
     let running = false;
 
-    const SVG_CODE = `<svg viewBox="0 0 24 24" fill="none">
-  <!-- trunk -->
-  <path d="M10 22C9.33 18 9.67 14.33
-    11 11C11.67 10.33 12.33 10.33
-    13 11C14.33 14.33 14.67 18
-    14 22H10Z"
-    stroke="#FF00FF" stroke-width="2"
-    stroke-linejoin="round"/>
-  <!-- left-lower frond -->
-  <path d="M12 8C9.33 6 6.33 5 3 5"
-    stroke="#FF00FF" stroke-width="2"/>
-  <!-- right-lower frond -->
-  <path d="M12 8C14.67 6 17.67 5 21 5"
-    stroke="#FF00FF" stroke-width="2"/>
-  <!-- left-upper frond -->
-  <path d="M12 8C10.67 4.67 8.67 2.67
-    6 2"
-    stroke="#FF00FF" stroke-width="2"/>
-  <!-- right-upper frond -->
-  <path d="M12 8C13.33 4.67 15.33 2.67
-    18 2"
-    stroke="#FF00FF" stroke-width="2"/>
-  <!-- left-mid frond -->
-  <path d="M12 8C10 8.67 8 10 6 12"
-    stroke="#FF00FF" stroke-width="2"/>
-  <!-- right-mid frond -->
-  <path d="M12 8C14 8.67 16 10 18 12"
-    stroke="#FF00FF" stroke-width="2"/>
-</svg>`;
+    const SVG_META = [
+      { file: 'palm-tree', labels: ['trunk', 'left-lower-frond', 'right-lower-frond', 'left-upper-frond', 'right-upper-frond', 'left-mid-frond', 'right-mid-frond'] },
+      { file: 'trash can', labels: ['handle', 'lid', 'can', 'lines'] },
+      { file: 'bike-better', name: 'bicycle', labels: ['back-wheel', 'front-wheel', 'frame', 'seat', 'fork', 'center-hub', 'rear-hub'] },
+      { file: 'constitution', labels: ['scroll', 'text', 'seal'] },
+      { file: 'seattle', labels: ['observation-deck', 'spire', 'shaft', 'base'] },
+      { file: 'singapore', labels: ['skypark', 'towers', 'waterline'] },
+      { file: 'cairo', labels: ['pyramid', 'horizon', 'sun'] },
+      { file: 'guadalajara', labels: ['left-tower', 'right-tower', 'dome', 'cross', 'doorway'] },
+      { file: 'cheeseburger', labels: ['top-bun', 'lettuce', 'patty', 'bottom-bun'] },
+      { file: 'christmas light', labels: ['wire', 'cord', 'base', 'bulb'] },
+      { file: 'coiled snake', labels: ['coil', 'head'] },
+      { file: 'los angeles', labels: ['fronds', 'trunk'] },
+    ];
+
+    function formatSvgCode(svgText, labels) {
+      const doc = new DOMParser().parseFromString(svgText, 'image/svg+xml');
+      const paths = doc.querySelectorAll('path');
+      let code = '<svg viewBox="0 0 24 24" fill="none">\n';
+      paths.forEach((p, i) => {
+        code += '  <!-- ' + (labels[i] || 'path-' + (i + 1)) + ' -->\n';
+        code += '  <path d="' + p.getAttribute('d') + '"\n';
+        const fill = p.getAttribute('fill');
+        if (fill && fill !== 'none') code += '    fill="' + fill + '"\n';
+        code += '    stroke="#FF00FF" stroke-width="2"\n';
+        code += '    stroke-linejoin="round"/>\n';
+      });
+      code += '</svg>';
+      return code;
+    }
+
+    function parseSvgPaths(svgText, labels) {
+      const doc = new DOMParser().parseFromString(svgText, 'image/svg+xml');
+      return Array.from(doc.querySelectorAll('path')).map((p, i) => {
+        const result = { label: labels[i] || 'path-' + (i + 1), d: p.getAttribute('d') };
+        if (p.getAttribute('fill') === '#FF00FF') result.fill = '#FF00FF';
+        return result;
+      });
+    }
+
+    let QUEUE = [];
+    let queueIdx = 0;
+    let SVG_CODE = '';
+
+    Promise.all(SVG_META.map(meta =>
+      fetch('/media/svg maker/decent/' + encodeURIComponent(meta.file) + '.svg')
+        .then(r => r.text())
+        .then(text => ({
+          name: meta.name || meta.file.replace(/-/g, ' '),
+          code: formatSvgCode(text, meta.labels),
+          paths: parseSvgPaths(text, meta.labels),
+        }))
+        .catch(() => null)
+    )).then(results => {
+      QUEUE = results.filter(Boolean);
+      if (QUEUE.length) {
+        SVG_CODE = QUEUE[0].code;
+        const promptLabel = container.querySelector('[style*="margin-bottom"]');
+        if (promptLabel) promptLabel.textContent = 'click to generate "' + QUEUE[0].name + '"';
+      }
+    });
 
     function startStreaming(duration) {
       if (!codeOut) return;
@@ -655,24 +687,48 @@ function initGenDemo(el) {
       loadingG.innerHTML = '';
     }
 
+    function buildPathsHTML(pathData) {
+      return pathData.map(p => {
+        const fill = p.fill ? ` fill="${p.fill}"` : ' fill="none"';
+        return `<g class="pl-path" data-label="${p.label}"><path d="${p.d}" stroke="#FF00FF" stroke-width="2" stroke-linejoin="round"${fill} class="pl-magenta"/><path d="${p.d}" stroke="#009CFF" stroke-width="0.12" stroke-linejoin="round" fill="none"/></g>`;
+      }).join('');
+    }
+
     function showResult() {
       stopLoading();
       stopStreaming();
+      const item = QUEUE[queueIdx];
+      if (item.paths) {
+        resultG.innerHTML = buildPathsHTML(item.paths);
+      }
       if (codeOut) {
         codeOut.textContent = SVG_CODE;
         const pre = codeOut.parentElement;
         if (pre) pre.scrollTo({ top: 0, behavior: 'smooth' });
       }
       resultG.style.display = '';
+      // Re-hide blue indicator paths on new content
+      resultG.querySelectorAll('.pl-path path:nth-child(2)').forEach(bp => { bp.style.opacity = '0'; });
       running = false;
+      // Update caption to next prompt and auto-queue
+      queueIdx = (queueIdx + 1) % QUEUE.length;
+      const promptLabel = container.querySelector('[style*="margin-bottom"]');
+      if (promptLabel) promptLabel.textContent = `click to generate "${QUEUE[queueIdx].name}"`;
     }
 
-    container.addEventListener('click', () => {
-      if (running) return;
-      const delay = 6000 + Math.random() * 3000;
+    function generateNext() {
+      if (running || !QUEUE.length) return;
+      const item = QUEUE[queueIdx];
+      SVG_CODE = item.code;
+      const delay = 4000 + Math.random() * 2000;
       startLoading();
       startStreaming(delay);
       setTimeout(showResult, delay);
+    }
+
+    container.addEventListener('click', () => {
+      if (running || !QUEUE.length) return;
+      generateNext();
     });
   });
 }
@@ -701,7 +757,8 @@ function initPathLabelDemo(el) {
         const g = el.closest('.pl-path');
         if (g && container.contains(g)) { hoveredPath = g; break; }
       }
-      paths.forEach(p => {
+      const currentPaths = container.querySelectorAll('.pl-path');
+      currentPaths.forEach(p => {
         p.style.opacity = hoveredPath ? (p === hoveredPath ? '1' : '0.15') : '1';
         p.querySelectorAll('.pl-magenta').forEach(m => { m.style.mixBlendMode = hoveredPath && p === hoveredPath ? 'multiply' : ''; });
         p.querySelectorAll('path:nth-child(2)').forEach(bp => { bp.style.opacity = hoveredPath && p === hoveredPath ? '1' : '0'; });
@@ -714,7 +771,8 @@ function initPathLabelDemo(el) {
       }
     });
     svg.addEventListener('mouseleave', () => {
-      paths.forEach(p => {
+      const currentPaths = container.querySelectorAll('.pl-path');
+      currentPaths.forEach(p => {
         p.style.opacity = '1';
         p.querySelectorAll('.pl-magenta').forEach(m => { m.style.mixBlendMode = ''; });
         p.querySelectorAll('path:nth-child(2)').forEach(bp => { bp.style.opacity = '0'; });

@@ -77,12 +77,14 @@ and then, on every screen the tower could reach, the moneybot opened its eyes.
 
 <hr />
 
+
 ### moneybot today
 
 the character of moneybot really comes alive in animation. each state has a distinct motion personality — idle is calm and ambient, success is quick and celebratory (not pictured)
 
 <div class="media-row" style="gap:3rem;justify-content:center;background:none;margin-top:2.5rem;margin-bottom:2.5rem"><div style="width:80px;height:80px;border-radius:50%;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden"><img class="media-fixed" style="width:60px;height:60px;mix-blend-mode:normal;margin:0" src="/media/moneybot/moneybot_idle01_looking_darkMode_20251113170205.gif" alt="moneybot looking dark" /></div><div style="width:80px;height:80px;border-radius:50%;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden"><img class="media-fixed" style="width:80px;height:80px;mix-blend-mode:normal;margin:0" src="/media/moneybot/moneybot_lookingAround_v01.gif" alt="moneybot looking around" /></div><div style="width:80px;height:80px;border-radius:50%;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden"><img class="media-fixed" style="width:60px;height:60px;mix-blend-mode:normal;margin:0" src="/media/moneybot/moneybot_idle03_breath_lightMode_20251113170025.gif" alt="moneybot breath light" /></div></div>
 
-## in spring of 2026, moneybot will launch to 57 million monthly active users
 
 <img style="border-radius:0" src="/media/moneybot/complete.png" alt="moneybot screens" />
+
+## in spring of 2026, moneybot will launch to 57 million monthly active users
