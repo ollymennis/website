@@ -1,7 +1,7 @@
 // --- Measure nav height for mobile sticky stacking ---
 const navEl = document.querySelector('.nav');
 function updateNavHeight() {
-  if (window.innerWidth <= 800) {
+  if (window.innerWidth <= 700) {
     document.documentElement.style.setProperty('--nav-height', navEl.offsetHeight + 'px');
   }
 }
@@ -52,7 +52,7 @@ function switchSection(indexOrName) {
 
   // Enable page scroll when work-work is active (content may be tall)
   // On mobile, CSS handles overflow — never set hidden
-  if (window.innerWidth > 800) {
+  if (window.innerWidth > 700) {
     document.documentElement.style.overflow = name === 'work-work' ? '' : 'hidden';
   } else {
     document.documentElement.style.overflow = '';
@@ -1214,7 +1214,7 @@ const fgObserver = new MutationObserver(() => {
 fgObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 
 function startScribble(x, y) {
-  if (window.innerWidth <= 800) return;
+  if (window.innerWidth <= 700) return;
   if (stickerDragging || cvModalOpen || activeProjectNum !== null || lightboxOpen) return;
   scribbling = true;
   document.body.classList.add('drawing');

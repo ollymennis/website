@@ -1091,7 +1091,7 @@ main {
   .project-body p,
   .project-body h3,
   .project-body .bullet-list {
-    max-width: 75%;
+    max-width: 100%;
     letter-spacing: -0.03em;
   }
   .media-row {
@@ -1227,7 +1227,7 @@ main {
   .project-body p,
   .project-body h3,
   .project-body .bullet-list {
-    max-width: 75%;
+    max-width: 100%;
     letter-spacing: -0.03em;
   }
   .project-body p,
