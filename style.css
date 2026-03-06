@@ -1031,7 +1031,6 @@ main {
   height: auto;
   object-fit: contain;
   border-radius: 18px;
-  pointer-events: none;
 }
 
 @media (max-width: 700px) {
