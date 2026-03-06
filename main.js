@@ -684,28 +684,42 @@ function initPathLabelDemo(el) {
     const paths = container.querySelectorAll('.pl-path');
     const label = container.querySelector('.pl-label');
     if (!paths.length || !label) return;
-    // Hide black path strokes by default
+    // Hide blue indicator paths by default
     paths.forEach(p => {
       p.style.cursor = 'pointer';
-      const blackPath = p.querySelectorAll('path:nth-child(2)');
-      blackPath.forEach(bp => { bp.style.opacity = '0'; });
-      p.addEventListener('mouseenter', () => {
-        paths.forEach(other => {
-          other.style.opacity = other === p ? '1' : '0.15';
-          other.querySelectorAll('.pl-magenta').forEach(m => { m.style.mixBlendMode = other === p ? 'multiply' : ''; });
-          other.querySelectorAll('path:nth-child(2)').forEach(bp => { bp.style.opacity = other === p ? '1' : '0'; });
-        });
-        label.textContent = `<!-- ${p.dataset.label} -->`;
+      p.querySelectorAll('path:nth-child(2)').forEach(bp => { bp.style.opacity = '0'; });
+    });
+    const svg = container.querySelector('svg');
+    if (!svg) return;
+    svg.addEventListener('mousemove', (e) => {
+      const rect = container.getBoundingClientRect();
+      label.style.left = (e.clientX - rect.left + 12) + 'px';
+      label.style.top = (e.clientY - rect.top + 12) + 'px';
+      const els = document.elementsFromPoint(e.clientX, e.clientY);
+      let hoveredPath = null;
+      for (const el of els) {
+        const g = el.closest('.pl-path');
+        if (g && container.contains(g)) { hoveredPath = g; break; }
+      }
+      paths.forEach(p => {
+        p.style.opacity = hoveredPath ? (p === hoveredPath ? '1' : '0.15') : '1';
+        p.querySelectorAll('.pl-magenta').forEach(m => { m.style.mixBlendMode = hoveredPath && p === hoveredPath ? 'multiply' : ''; });
+        p.querySelectorAll('path:nth-child(2)').forEach(bp => { bp.style.opacity = hoveredPath && p === hoveredPath ? '1' : '0'; });
+      });
+      if (hoveredPath) {
+        label.textContent = hoveredPath.dataset.label;
         label.style.opacity = '1';
-      });
-      p.addEventListener('mouseleave', () => {
-        paths.forEach(other => {
-          other.style.opacity = '1';
-          other.querySelectorAll('.pl-magenta').forEach(m => { m.style.mixBlendMode = ''; });
-          other.querySelectorAll('path:nth-child(2)').forEach(bp => { bp.style.opacity = '0'; });
-        });
+      } else {
         label.style.opacity = '0';
+      }
+    });
+    svg.addEventListener('mouseleave', () => {
+      paths.forEach(p => {
+        p.style.opacity = '1';
+        p.querySelectorAll('.pl-magenta').forEach(m => { m.style.mixBlendMode = ''; });
+        p.querySelectorAll('path:nth-child(2)').forEach(bp => { bp.style.opacity = '0'; });
       });
+      label.style.opacity = '0';
     });
   });
 }
