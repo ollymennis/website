@@ -269,12 +269,14 @@ contactItems.forEach(item => {
 });
 
 let emailCopied = false;
+let emailTimeout = null;
 document.getElementById('copy-email').addEventListener('click', () => {
-  navigator.clipboard.writeText('ollymennis@gmail.com');
+  navigator.clipboard.writeText('ollymennis@gmail.com').catch(() => {});
   const emailText = document.querySelector('#copy-email .contact-text');
   emailText.innerHTML = '01 <span style="opacity: 0.5;">copied ollymennis@gmail.com</span>';
   emailCopied = true;
-  setTimeout(() => { emailText.textContent = '01 email'; emailCopied = false; }, 3000);
+  clearTimeout(emailTimeout);
+  emailTimeout = setTimeout(() => { emailText.textContent = '01 email'; emailCopied = false; }, 3000);
 });
 
 // --- Dark mode ---
@@ -284,8 +286,6 @@ function toggleDarkMode() {
   darkMode = !darkMode;
   document.documentElement.setAttribute('data-theme', darkMode ? 'dark' : '');
 }
-
-let canvasOpen = false;
 
 // --- CV Modal ---
 const cvModal = document.getElementById('cv-modal');
@@ -413,7 +413,9 @@ async function loadProjectMd(el) {
     initIconIntroRow(el);
     return;
   }
-  const md = await fetch(mdPath).then(r => r.text());
+  const resp = await fetch(mdPath);
+  if (!resp.ok) return;
+  const md = await resp.text();
   const { title, subtitle, bodyHtml } = parseProjectMd(md);
   const html = `<div class="project-header"><h2>${title}</h2>${subtitle ? `<p class="project-subtitle">${subtitle}</p>` : '<p class="project-subtitle"></p>'}</div><div class="project-body">${bodyHtml}</div>`;
   projectMdCache[mdPath] = html;
@@ -1063,7 +1065,7 @@ window.addEventListener('hashchange', handleHash);
 
 // --- Load CV from markdown ---
 fetch('/cv/cv.md')
-  .then(r => r.text())
+  .then(r => { if (!r.ok) throw new Error(); return r.text(); })
   .then(md => {
     const lines = md.split('\n');
     let html = '';
@@ -1118,7 +1120,8 @@ fetch('/cv/cv.md')
 
     if (inList) html += '</ul></div>';
     document.getElementById('cv-content').innerHTML = html;
-  });
+  })
+  .catch(() => {});
 
 // --- Draggable Stickers ---
 let stickerZ = 100;
@@ -1205,6 +1208,7 @@ function startScribble(x, y) {
   scribbling = true;
   document.body.classList.add('drawing');
   strokes.push({ points: [{ x, y }], endTime: null });
+  startScribbleLoop();
 }
 
 function moveScribble(x, y) {
@@ -1259,9 +1263,19 @@ function renderScribble() {
   }
 
   scribbleCtx.globalAlpha = 1;
-  requestAnimationFrame(renderScribble);
+  if (strokes.length > 0) {
+    requestAnimationFrame(renderScribble);
+  } else {
+    scribbleAnimating = false;
+  }
 }
-requestAnimationFrame(renderScribble);
+let scribbleAnimating = false;
+function startScribbleLoop() {
+  if (!scribbleAnimating) {
+    scribbleAnimating = true;
+    requestAnimationFrame(renderScribble);
+  }
+}
 
 // --- Icon Row Animation ---
 const iconFiles = [

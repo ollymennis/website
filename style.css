@@ -166,6 +166,11 @@ main {
   transition: background 80ms, color 80ms, padding-left 120ms 60ms;
 }
 
+.nav-btn:focus-visible, .contact-item:focus-visible, .specimen-size-btn:focus-visible {
+  outline: 2px solid var(--fg);
+  outline-offset: 2px;
+}
+
 .nav-btn.disabled, .contact-item.disabled {
   color: var(--border);
   cursor: default;
@@ -439,9 +444,7 @@ main {
   overscroll-behavior: contain;
   padding: 3rem;
   scrollbar-width: none;
-  scrollbar-color: var(--fg) transparent;
   touch-action: pan-y;
-  -webkit-overflow-scrolling: touch;
 }
 
 .cv-modal-inner::-webkit-scrollbar {
@@ -554,7 +557,7 @@ main {
   scrollbar-width: thin;
   scrollbar-color: var(--fg) transparent;
   touch-action: pan-y;
-  -webkit-overflow-scrolling: touch;
+
 }
 
 .project-display::-webkit-scrollbar {
@@ -603,10 +606,6 @@ main {
 
 .project-subtitle:empty {
   display: none;
-}
-
-.project-body p,
-.project-body h3 {
 }
 
 .project-body p {
@@ -1001,7 +1000,6 @@ main {
   margin-top: -8%;
   border-radius: 0;
   margin-bottom: -1px;
-  border-radius: 0;
 }
 
 .project-body img[src$=".svg"] {
@@ -1089,7 +1087,7 @@ main {
     padding: 3rem 1.5rem;
     scrollbar-width: none;
     touch-action: pan-y;
-    -webkit-overflow-scrolling: touch;
+  
   }
   .project-display-close {
     display: block;
@@ -1108,8 +1106,6 @@ main {
   .media-row {
     flex-wrap: wrap;
     gap: 1rem;
-  }
-  .media-row {
     background: var(--bg);
     border-radius: 8px;
     padding: 0.5rem;
@@ -1224,7 +1220,7 @@ main {
     padding: 3rem 1.5rem;
     scrollbar-width: none;
     touch-action: pan-y;
-    -webkit-overflow-scrolling: touch;
+  
   }
   .project-display-close {
     display: block;
