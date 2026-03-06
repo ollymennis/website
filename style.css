@@ -955,6 +955,23 @@ main {
   cursor: url('/icons/mouse-hover.svg'), pointer;
 }
 
+.gallery {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.project-body .gallery img,
+.project-body .gallery video {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 0;
+  margin: 0;
+}
+
+
+
 .video-crop {
   width: 100%;
   overflow: hidden;
