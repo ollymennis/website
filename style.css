@@ -166,7 +166,7 @@ main {
   transition: background 80ms, color 80ms, padding-left 120ms 60ms;
 }
 
-.nav-btn.disabled {
+.nav-btn.disabled, .contact-item.disabled {
   color: var(--border);
   cursor: default;
   pointer-events: none;
