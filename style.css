@@ -535,7 +535,7 @@ main {
 /* --- Work Layout (project list + inline content) --- */
 .work-layout {
   display: flex;
-  gap: 4rem;
+  gap: 3rem;
 }
 
 .work-layout .contact-list {
@@ -546,7 +546,7 @@ main {
   display: none;
   position: fixed;
   top: 0;
-  left: 350px;
+  left: clamp(200px, 25vw, 350px);
   right: 0;
   bottom: 0;
   padding: 3rem;
@@ -1034,7 +1034,7 @@ main {
   pointer-events: none;
 }
 
-@media (max-width: 800px) {
+@media (max-width: 700px) {
   html {
     overflow: auto !important;
     height: auto;
@@ -1137,7 +1137,7 @@ main {
   }
 }
 
-@media (max-width: 800px) {
+@media (max-width: 700px) {
   .cv-modal {
     position: fixed;
     inset: 1rem;
