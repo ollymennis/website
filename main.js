@@ -58,17 +58,14 @@ function switchSection(indexOrName) {
     document.documentElement.style.overflow = '';
   }
 
-  // Stagger stickers out when entering work-work, back in when leaving
-  const stickers = document.querySelectorAll('.sticker');
-  stickers.forEach((sticker, i) => {
-    if (name === 'work-work') {
-      sticker.style.transitionDelay = `${i * 60}ms`;
-      sticker.classList.add('sticker-out');
-    } else {
+  // When leaving work-work, bring stickers back in
+  if (name !== 'work-work') {
+    const stickers = document.querySelectorAll('.sticker');
+    stickers.forEach((sticker, i) => {
       sticker.style.transitionDelay = `${i * 40}ms`;
       sticker.classList.remove('sticker-out');
-    }
-  });
+    });
+  }
 
 }
 
@@ -1003,6 +1000,13 @@ let activeProjectNum = null;
 function switchProject(num) {
   activeProjectNum = num;
   projectDisplay.classList.add('active');
+
+  // Stagger stickers out when opening a project
+  const stickers = document.querySelectorAll('.sticker');
+  stickers.forEach((sticker, i) => {
+    sticker.style.transitionDelay = `${i * 60}ms`;
+    sticker.classList.add('sticker-out');
+  });
   projectContents.forEach(el => el.classList.toggle('active', el.dataset.projectContent === String(num)));
   projectItems.forEach(item => {
     item.classList.toggle('highlighted', item.dataset.project === String(num));
@@ -1018,6 +1022,13 @@ function switchProject(num) {
 
 function closeProjectDisplay() {
   projectDisplay.classList.remove('active');
+
+  // Stagger stickers back in when closing a project
+  const stickers = document.querySelectorAll('.sticker');
+  stickers.forEach((sticker, i) => {
+    sticker.style.transitionDelay = `${i * 40}ms`;
+    sticker.classList.remove('sticker-out');
+  });
   projectContents.forEach(el => el.classList.remove('active'));
   highlightedProject = -1;
   activeProjectNum = null;
