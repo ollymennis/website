@@ -1,11 +1,11 @@
 # asset cabinet
 _semantic search for a cross-brand icon library_
 
-everyone at block searches for icons the same way: type a word, scroll through bad results, give up, ask a designer. fuzzy string matching hasn't meaningfully improved in years — and with thousands of icons across cash app, tidal, and block inc, the problem only gets worse
+everyone at block searches for icons the same way: type a word, scroll through bad results, give up, ask a designer. fuzzy string matching hasn't meaningfully improved in years — and with thousands of icons across cash app, square, goose, tidal, and proto, the problem only gets worse
 
 ### the goal
 
-build a search that understands intent, not just keywords. if someone searches "send money to a friend," surface the peer-to-peer transfer icon — even if no tag says "friend"
+build a search that understands intent, not just keywords. if someone searches "send money to a friend," surface the peer-to-peer transfer icon - even if no tag says "friend"
 
 <video src="/media/cabinet/main.mp4" autoplay loop muted playsinline></video>
 
@@ -17,13 +17,13 @@ keyword search fails when people describe what an icon *does* rather than what i
 
 ### choosing the model
 
-not all embeddings are equal. I benchmarked several models against real search queries from the design team, running structured evals to compare precision and recall across edge cases
+not all embeddings are equal. I benchmarked several models against real search queries ( + a few fascinating queries I picked up along the way), running structured evals to compare precision and recall across edge cases
 
 <img src="/media/icons-mcp/evals1.png" alt="evals" />
 
 <img src="/media/cabinet/evals-3.png" alt="evals" />
 
-the eval framework measured three things: did the right icon appear in the top 3? did related icons rank higher than unrelated ones? and how did cross-brand queries perform — searching for a cash app concept and getting the right tidal equivalent?
+the eval framework measured three things: did the right icon appear in the top 3? did related icons rank higher than unrelated ones? and how did cross-brand queries perform - searching for a cash app concept and getting the right square equivalent?
 
 ### debug mode
 
