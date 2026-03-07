@@ -1031,6 +1031,8 @@ function initGenDemo(el) {
       if (running || !QUEUE.length) return;
       const item = QUEUE[queueIdx];
       SVG_CODE = item.code;
+      const promptLabel = container.querySelector('[style*="margin-bottom"]');
+      if (promptLabel) promptLabel.textContent = `generating "${item.name}"`;
       const delay = 4000 + Math.random() * 2000;
       startLoading();
       startStreaming(delay);

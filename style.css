@@ -924,6 +924,7 @@ main {
   object-fit: contain;
   border-radius: 0;
   mix-blend-mode: multiply;
+  mix-blend-mode: multiply;
 }
 
 .icon-intro-row {
