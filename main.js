@@ -473,23 +473,33 @@ function initHoverIcons(el) {
     img.src = span.dataset.icon;
     if (span.dataset.iconWidth) img.style.width = span.dataset.iconWidth;
     span.appendChild(img);
-    span.addEventListener('mouseenter', (e) => {
-      img.style.display = 'block';
-      img.style.left = e.clientX + 'px';
-      img.style.top = (e.clientY - img.offsetHeight - 8) + 'px';
-    });
-    span.addEventListener('mousemove', (e) => {
-      img.style.left = e.clientX + 'px';
-      img.style.top = (e.clientY - img.offsetHeight - 8) + 'px';
-    });
-    span.addEventListener('mouseleave', () => {
-      img.style.display = 'none';
-    });
-    // Dismiss on scroll (mobile: no mouseleave fires)
-    const scrollParent = span.closest('.project-content') || span.closest('.project-display') || window;
-    (scrollParent === window ? window : scrollParent).addEventListener('scroll', () => {
-      if (img.style.display === 'block') img.style.display = 'none';
-    }, { passive: true });
+    if (isTouchDevice) {
+      span.addEventListener('touchstart', (e) => {
+        const touch = e.touches[0];
+        img.style.display = 'block';
+        img.style.left = touch.clientX + 'px';
+        img.style.top = (touch.clientY - img.offsetHeight - 8) + 'px';
+      }, { passive: true });
+      span.addEventListener('touchmove', () => {
+        if (img.style.display === 'block') img.style.display = 'none';
+      }, { passive: true });
+      span.addEventListener('touchend', () => {
+        setTimeout(() => { img.style.display = 'none'; }, 1500);
+      }, { passive: true });
+    } else {
+      span.addEventListener('mouseenter', (e) => {
+        img.style.display = 'block';
+        img.style.left = e.clientX + 'px';
+        img.style.top = (e.clientY - img.offsetHeight - 8) + 'px';
+      });
+      span.addEventListener('mousemove', (e) => {
+        img.style.left = e.clientX + 'px';
+        img.style.top = (e.clientY - img.offsetHeight - 8) + 'px';
+      });
+      span.addEventListener('mouseleave', () => {
+        img.style.display = 'none';
+      });
+    }
   });
 }
 
