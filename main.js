@@ -418,6 +418,8 @@ async function loadProjectMd(el) {
     initCabinetDemo(el);
     initIconIntroRow(el);
     initTeamAvatars(el);
+    initCellSpecimen(el);
+    initIconInspector(el);
     return;
   }
   const resp = await fetch(mdPath);
@@ -439,6 +441,8 @@ async function loadProjectMd(el) {
   initCabinetDemo(el);
   initIconIntroRow(el);
   initTeamAvatars(el);
+  initCellSpecimen(el);
+  initIconInspector(el);
 }
 
 let teamPrimedTimeout = null;
@@ -578,7 +582,7 @@ function initIconIntroRow(el) {
   el.querySelectorAll('.icon-intro-row').forEach(row => {
     if (row.dataset.initialized) return;
     row.dataset.initialized = '1';
-    const basePath = '/media/icons-refresh/';
+    const basePath = '/media/icons-refresh/icon-svgs/';
     const allNames = iconFiles.slice();
     const slots = Array.from(row.querySelectorAll('img'));
     let pool = [];
@@ -596,6 +600,111 @@ function initIconIntroRow(el) {
     }
     refill();
     setInterval(swapOne, 150);
+  });
+}
+
+function initCellSpecimen(el) {
+  el.querySelectorAll('.cell-specimen').forEach(specimen => {
+    if (specimen.dataset.initialized) return;
+    specimen.dataset.initialized = '1';
+  });
+}
+
+function initIconInspector(el) {
+  el.querySelectorAll('.icon-inspector').forEach(inspector => {
+    if (inspector.dataset.initialized) return;
+    inspector.dataset.initialized = '1';
+
+    const grid = inspector.querySelector('.inspector-grid');
+    if (!grid) return;
+
+    let popover = null;
+    let activeIcon = null;
+
+    function dismiss() {
+      if (popover) {
+        popover.classList.remove('active');
+        setTimeout(() => { if (popover && !popover.classList.contains('active')) { popover.remove(); popover = null; } }, 150);
+      }
+      if (activeIcon) {
+        activeIcon.classList.remove('inspector-expanded');
+        activeIcon = null;
+      }
+    }
+
+    grid.addEventListener('click', (e) => {
+      const iconEl = e.target.closest('.inspector-icon');
+      if (!iconEl) return;
+
+      const iconName = iconEl.dataset.icon;
+      if (!iconName) return;
+
+      // Clicking the same icon — dismiss
+      if (activeIcon === iconEl) {
+        dismiss();
+        return;
+      }
+
+      // Dismiss previous
+      dismiss();
+
+      iconEl.classList.add('inspector-expanded');
+      activeIcon = iconEl;
+
+      // Build popover
+      const pop = document.createElement('div');
+      pop.className = 'inspector-popover';
+      pop.innerHTML = `
+        <div class="inspector-popover-svg">
+          <img src="/media/icons-refresh/icon-svgs/${iconName}.svg" alt="${iconName}" />
+        </div>
+        <div class="inspector-popover-name">${iconName}</div>
+        <div class="inspector-popover-meta">24 × 24 · 2px stroke</div>
+      `;
+
+      // Position relative to the icon within the grid
+      iconEl.style.position = 'relative';
+      iconEl.appendChild(pop);
+
+      // Center popover above the icon
+      const iconRect = iconEl.getBoundingClientRect();
+      const gridRect = grid.getBoundingClientRect();
+      pop.style.left = '50%';
+      pop.style.transform = 'translateX(-50%) scale(0.9)';
+      pop.style.bottom = iconEl.offsetHeight + 8 + 'px';
+
+      // If popover would go above viewport or above grid, show below instead
+      pop.offsetHeight;
+      const popRect = pop.getBoundingClientRect();
+      if (popRect.top < gridRect.top || popRect.top < 8) {
+        pop.style.bottom = 'auto';
+        pop.style.top = iconEl.offsetHeight + 8 + 'px';
+      }
+
+      // Clamp horizontally within grid
+      const popLeft = popRect.left;
+      const popRight = popRect.right;
+      if (popLeft < gridRect.left) {
+        pop.style.left = '0';
+        pop.style.transform = 'scale(0.9)';
+      } else if (popRight > gridRect.right) {
+        pop.style.left = 'auto';
+        pop.style.right = '0';
+        pop.style.transform = 'scale(0.9)';
+      }
+
+      pop.offsetHeight;
+      pop.classList.add('active');
+      pop.style.transform = pop.style.transform.replace('scale(0.9)', 'scale(1)');
+      popover = pop;
+    });
+
+    // Click outside grid dismisses
+    document.addEventListener('click', (e) => {
+      if (popover && !grid.contains(e.target)) {
+        dismiss();
+      }
+    });
   });
 }
 
@@ -1023,7 +1132,7 @@ function initIconSpecimen(el) {
       item.className = 'specimen-icon';
 
       const img = document.createElement('img');
-      img.src = `/media/icons-refresh/${name}.svg`;
+      img.src = `/media/icons-refresh/icon-svgs/${name}.svg`;
       img.alt = name;
       item.appendChild(img);
 
@@ -1418,7 +1527,7 @@ function swapAllSlots() {
       const oldName = slot.src.split('/').pop().replace('.svg', '');
       const newName = iconAnimPool.pop();
       iconAnimPool.unshift(oldName);
-      slot.src = `/media/icons-refresh/${newName}.svg`;
+      slot.src = `/media/icons-refresh/icon-svgs/${newName}.svg`;
     }, delay);
   });
 }

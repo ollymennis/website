@@ -49,16 +49,16 @@ describe('required IDs', () => {
 });
 
 describe('project items', () => {
-  it('has 6 project items with data-project, data-slug', () => {
+  it('has 7 project items with data-project, data-slug', () => {
     const items = doc.querySelectorAll('.project-item[data-project][data-slug]');
-    expect(items.length).toBe(6);
+    expect(items.length).toBe(7);
   });
 });
 
 describe('project content divs', () => {
-  it('has 6 project content divs with data-project-content and data-md', () => {
+  it('has 7 project content divs with data-project-content and data-md', () => {
     const contents = doc.querySelectorAll('.project-content[data-project-content][data-md]');
-    expect(contents.length).toBe(6);
+    expect(contents.length).toBe(7);
   });
 
   it('project content numbers match project item numbers', () => {
