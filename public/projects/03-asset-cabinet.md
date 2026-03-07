@@ -3,7 +3,7 @@ _semantic search for a cross-brand icon library_
 
 everyone at block searches for icons the same way: type a word, scroll through bad results, give up, ask a designer. fuzzy string matching hasn't meaningfully improved in years — and with thousands of icons across cash app, square, goose, tidal, and proto, the problem only gets worse
 
-<div class="cabinet-demo" id="cabinet-demo">
+<!-- <div class="cabinet-demo" id="cabinet-demo">
   <svg style="position:absolute;width:0;height:0"><defs>
     <filter id="goo"><feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur"/>
     <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7" result="goo"/>
@@ -19,7 +19,7 @@ everyone at block searches for icons the same way: type a word, scroll through b
     <span class="cabinet-pill">proto</span>
     <span class="cabinet-pill">tidal</span>
   </div>
-</div>
+</div> -->
 
 ### the goal
 

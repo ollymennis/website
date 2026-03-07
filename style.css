@@ -1132,6 +1132,12 @@ main {
   .project-body pre {
     line-height: 1.2;
   }
+  .icon-grid-row {
+    flex-wrap: wrap !important;
+  }
+  .icon-grid-row > .early-example {
+    flex: 1 1 calc(50% - 0.5rem) !important;
+  }
 }
 
 @media (max-width: 1100px) {
