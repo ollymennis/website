@@ -441,6 +441,13 @@ async function loadProjectMd(el) {
   initTeamAvatars(el);
 }
 
+let teamPrimedTimeout = null;
+
+function clearTeamPrimed() {
+  clearTimeout(teamPrimedTimeout);
+  document.querySelectorAll('.team-avatar.primed').forEach(a => a.classList.remove('primed'));
+}
+
 function initTeamAvatars(el) {
   if (!isTouchDevice) return;
   el.querySelectorAll('.team-avatar').forEach(avatar => {
@@ -448,11 +455,11 @@ function initTeamAvatars(el) {
     avatar.dataset.initialized = 'true';
     avatar.addEventListener('click', (e) => {
       const isActive = avatar.classList.contains('primed');
-      // Always reset all avatars first
-      el.querySelectorAll('.team-avatar.primed').forEach(a => a.classList.remove('primed'));
+      clearTeamPrimed();
       if (!isActive) {
         e.preventDefault();
         avatar.classList.add('primed');
+        teamPrimedTimeout = setTimeout(clearTeamPrimed, 3000);
       }
       // If already primed, let the link navigate naturally
     });
@@ -1091,6 +1098,7 @@ function switchProject(num) {
 
 function closeProjectDisplay() {
   projectDisplay.classList.remove('active');
+  clearTeamPrimed();
 
   // Stagger stickers back in when closing a project
   const stickers = document.querySelectorAll('.sticker');
