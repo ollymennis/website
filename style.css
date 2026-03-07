@@ -1133,10 +1133,9 @@ main {
     line-height: 1.2;
   }
   .icon-grid-row {
-    flex-wrap: wrap !important;
-  }
-  .icon-grid-row > .early-example {
-    flex: 1 1 calc(50% - 0.5rem) !important;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem !important;
   }
 }
 
@@ -1270,6 +1269,15 @@ main {
   .project-body pre {
     line-height: 1.2;
   }
+}
+
+/* --- Grid diagrams: always square --- */
+.path-label-demo svg,
+.svg-grid-demo svg,
+.bezier-demo svg {
+  aspect-ratio: 1 / 1 !important;
+  width: 100%;
+  height: auto !important;
 }
 
 /* --- Cabinet Demo (gloopy pills) --- */
