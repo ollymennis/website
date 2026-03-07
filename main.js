@@ -1,3 +1,5 @@
+import { DotLottie } from '@lottiefiles/dotlottie-web';
+
 // --- Measure nav height for mobile sticky stacking ---
 const navEl = document.querySelector('.nav');
 function updateNavHeight() {
@@ -399,6 +401,14 @@ function inlineMd(text) {
     .replace(/_(.+?)_/g, '<em>$1</em>');
 }
 
+function initDotLottie(el) {
+  el.querySelectorAll('canvas[data-lottie-src]').forEach(canvas => {
+    if (canvas.dataset.initialized) return;
+    canvas.dataset.initialized = 'true';
+    new DotLottie({ canvas, src: canvas.dataset.lottieSrc, autoplay: true, loop: true });
+  });
+}
+
 const projectMdCache = {};
 
 async function loadProjectMd(el) {
@@ -420,6 +430,7 @@ async function loadProjectMd(el) {
     initTeamAvatars(el);
     initCellSpecimen(el);
     initIconInspector(el);
+    initDotLottie(el);
     return;
   }
   const resp = await fetch(mdPath);
@@ -443,6 +454,7 @@ async function loadProjectMd(el) {
   initTeamAvatars(el);
   initCellSpecimen(el);
   initIconInspector(el);
+  initDotLottie(el);
 }
 
 let teamPrimedTimeout = null;

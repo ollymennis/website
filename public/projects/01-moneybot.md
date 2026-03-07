@@ -67,7 +67,7 @@ she rendered it to final specs. it looked back at her. she transmitted, and for 
 
 and then, on every screen the tower could reach, the moneybot opened its eyes.
 
-<img class="media-fixed" style="width:100px;height:100px;margin-left:auto;margin-right:auto" src="/media/moneybot/moneybot_lookingAround_v01.gif" alt="moneybot looking around" />
+<div style="width:100px;aspect-ratio:1/1;margin:0 auto;border-radius:50%;background:#000;overflow:hidden"><canvas data-lottie-src="/media/moneybot/lottie/moneybot_idle01_looking_darkMode.lottie" width="200" height="200" style="width:100%;height:100%"></canvas></div>
 
 <!-- [placeholder: refinement rounds — showing the character getting tighter across 2-3 iterations, with notes on what changed] -->
 
@@ -82,7 +82,7 @@ and then, on every screen the tower could reach, the moneybot opened its eyes.
 
 moneybot's character is defined as much by how it moves as how it looks. each state (idle, thinking, success) carries a distinct motion personality, hand-animated by tyler dibiasio.
 
-<div class="media-row" style="gap:3rem;justify-content:center;background:none;margin-top:2.5rem;margin-bottom:2.5rem;flex-wrap:nowrap"><div style="width:80px;aspect-ratio:1/1;flex-shrink:1;border-radius:50%;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden"><img class="media-fixed" style="width:75%;height:75%;mix-blend-mode:normal;margin:0" src="/media/moneybot/moneybot_idle01_looking_darkMode_20251113170205.gif" alt="moneybot looking dark" /></div><div style="width:80px;aspect-ratio:1/1;flex-shrink:1;border-radius:50%;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden"><img class="media-fixed" style="width:100%;height:100%;mix-blend-mode:normal;margin:0" src="/media/moneybot/moneybot_lookingAround_v01.gif" alt="moneybot looking around" /></div><div style="width:80px;aspect-ratio:1/1;flex-shrink:1;border-radius:50%;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden"><img class="media-fixed" style="width:75%;height:75%;mix-blend-mode:normal;margin:0" src="/media/moneybot/moneybot_idle03_breath_lightMode_20251113170025.gif" alt="moneybot breath light" /></div></div>
+<div class="media-row" style="gap:3rem;justify-content:center;background:none;margin-top:2.5rem;margin-bottom:2.5rem;flex-wrap:nowrap"><div style="width:80px;aspect-ratio:1/1;flex-shrink:1;border-radius:50%;background:#000;overflow:hidden"><canvas data-lottie-src="/media/moneybot/lottie/moneybot_idle01_looking_darkMode.lottie" width="160" height="160" style="width:100%;height:100%"></canvas></div><div style="width:80px;aspect-ratio:1/1;flex-shrink:1;border-radius:50%;background:#000;overflow:hidden"><canvas data-lottie-src="/media/moneybot/lottie/moneybot_idle02_blink_darkMode.lottie" width="160" height="160" style="width:100%;height:100%"></canvas></div><div style="width:80px;aspect-ratio:1/1;flex-shrink:1;border-radius:50%;background:#000;overflow:hidden"><canvas data-lottie-src="/media/moneybot/lottie/moneybot_idle03_breath_darkMode.lottie" width="160" height="160" style="width:100%;height:100%"></canvas></div></div>
 
 
 ## in spring of 2026, moneybot will launch to 57 million monthly active users
