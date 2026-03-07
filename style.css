@@ -765,7 +765,7 @@ main {
   transform: translateX(-50%) scale(1);
 }
 
-.team-avatar.primed .team-name::after {
+.team-avatar .team-name::after {
   content: ' \2197';
 }
 
