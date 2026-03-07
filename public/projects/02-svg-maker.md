@@ -48,7 +48,7 @@ seeing even the slightest improvement becomes very motivating, so I kept tweakin
 + structural simplicity is preferred
 + reuse curve patterns from reference examples for visual consistency
 
-it is tempting to add style-specific guidelines to the system prompt, but there is more value in making tool that is flexible and works with any reasonable icon set provided
+it is tempting to add style-specific guidelines to the system prompt, but there is more value in making a tool that is flexible and works with any reasonable icon set provided
 
 the most significant improvements have been the result of adding embeddings (see <a href="#asset-cabinet">asset cabinet</a> for my embeddings origin story)
 
