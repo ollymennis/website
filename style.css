@@ -711,6 +711,7 @@ main {
 }
 
 .team-avatar {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -735,17 +736,35 @@ main {
   user-select: none;
 }
 
+.team-avatar .team-photo {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 0;
+}
+
 .team-avatar .team-name {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
   font-family: var(--mono);
   font-size: 0.6rem;
   color: var(--fg);
   white-space: nowrap;
   opacity: 0;
   transition: opacity 80ms;
+  pointer-events: none;
 }
 
-.team-avatar:hover .team-name {
+.team-avatar:hover .team-name,
+.team-avatar.primed .team-name {
   opacity: 1;
+}
+
+.team-avatar.primed .team-name::after {
+  content: ' \2197';
 }
 
 .project-body pre {

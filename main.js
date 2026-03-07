@@ -411,6 +411,7 @@ async function loadProjectMd(el) {
     initGenDemo(el);
     initCabinetDemo(el);
     initIconIntroRow(el);
+    initTeamAvatars(el);
     return;
   }
   const resp = await fetch(mdPath);
@@ -431,6 +432,25 @@ async function loadProjectMd(el) {
   initGenDemo(el);
   initCabinetDemo(el);
   initIconIntroRow(el);
+  initTeamAvatars(el);
+}
+
+function initTeamAvatars(el) {
+  if (!isTouchDevice) return;
+  el.querySelectorAll('.team-avatar').forEach(avatar => {
+    if (avatar.dataset.initialized) return;
+    avatar.dataset.initialized = 'true';
+    avatar.addEventListener('click', (e) => {
+      const isActive = avatar.classList.contains('primed');
+      // Always reset all avatars first
+      el.querySelectorAll('.team-avatar.primed').forEach(a => a.classList.remove('primed'));
+      if (!isActive) {
+        e.preventDefault();
+        avatar.classList.add('primed');
+      }
+      // If already primed, let the link navigate naturally
+    });
+  });
 }
 
 function initHoverIcons(el) {

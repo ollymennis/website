@@ -26,7 +26,7 @@ the cycle was always the same: she tinkered. she transmitted. the tower received
 
 her unit ran the relay. while she was building, they were the ones carrying each batch to the commander, holding formation in the review, filtering the noise on the return signal so she could stay locked in. every round, every batch, they kept the frequency clean so she didn't have to leave the lab.
 
-<div class="team-row"><a class="team-avatar" href="https://www.linkedin.com/in/jpdanks/" target="_blank" rel="noopener"><span class="team-initials">JD</span><span class="team-name">Justin Danks</span></a><a class="team-avatar" href="https://www.linkedin.com/in/bethanykjsnyder/" target="_blank" rel="noopener"><span class="team-initials">BS</span><span class="team-name">Bethany Snyder</span></a><a class="team-avatar" href="https://www.linkedin.com/in/simon-le-roux-561891101/" target="_blank" rel="noopener"><span class="team-initials">SL</span><span class="team-name">Simon Le Roux</span></a></div>
+<div class="team-row"><a class="team-avatar" href="https://www.linkedin.com/in/jpdanks/" target="_blank" rel="noopener"><img class="team-photo" src="/media/moneybot/danks.jpeg" alt="Justin Danks" /><span class="team-name">Justin Danks</span></a><a class="team-avatar" href="https://www.linkedin.com/in/bethanykjsnyder/" target="_blank" rel="noopener"><img class="team-photo" src="/media/moneybot/bethany.jpeg" alt="Bethany Snyder" /><span class="team-name">Bethany Snyder</span></a><a class="team-avatar" href="https://www.linkedin.com/in/simon-le-roux-561891101/" target="_blank" rel="noopener"><img class="team-photo" src="/media/moneybot/simon.jpeg" alt="Simon Le Roux" /><span class="team-name">Simon Le Roux</span></a></div>
 
 they translated the latest message:
 
@@ -84,7 +84,5 @@ moneybot's character is defined as much by how it moves as how it looks. each st
 
 <div class="media-row" style="gap:3rem;justify-content:center;background:none;margin-top:2.5rem;margin-bottom:2.5rem;flex-wrap:nowrap"><div style="width:80px;aspect-ratio:1/1;flex-shrink:1;border-radius:50%;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden"><img class="media-fixed" style="width:75%;height:75%;mix-blend-mode:normal;margin:0" src="/media/moneybot/moneybot_idle01_looking_darkMode_20251113170205.gif" alt="moneybot looking dark" /></div><div style="width:80px;aspect-ratio:1/1;flex-shrink:1;border-radius:50%;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden"><img class="media-fixed" style="width:100%;height:100%;mix-blend-mode:normal;margin:0" src="/media/moneybot/moneybot_lookingAround_v01.gif" alt="moneybot looking around" /></div><div style="width:80px;aspect-ratio:1/1;flex-shrink:1;border-radius:50%;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden"><img class="media-fixed" style="width:75%;height:75%;mix-blend-mode:normal;margin:0" src="/media/moneybot/moneybot_idle03_breath_lightMode_20251113170025.gif" alt="moneybot breath light" /></div></div>
 
-
-<img style="border-radius:0" src="/media/moneybot/complete.png" alt="moneybot screens" />
 
 ## in spring of 2026, moneybot will launch to 57 million monthly active users
