@@ -3,6 +3,24 @@ _semantic search for a cross-brand icon library_
 
 everyone at block searches for icons the same way: type a word, scroll through bad results, give up, ask a designer. fuzzy string matching hasn't meaningfully improved in years — and with thousands of icons across cash app, square, goose, tidal, and proto, the problem only gets worse
 
+<div class="cabinet-demo" id="cabinet-demo">
+  <svg style="position:absolute;width:0;height:0"><defs>
+    <filter id="goo"><feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur"/>
+    <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7" result="goo"/>
+    </filter>
+  </defs></svg>
+  <div class="cabinet-title">block icons</div>
+  <div class="cabinet-search"><img class="cabinet-search-icon" src="/media/cabinet/search.svg" alt="search" /><span class="cabinet-cursor">|</span></div>
+  <div class="cabinet-pills" style="filter:url(#goo)">
+    <span class="cabinet-pill active">all</span>
+    <span class="cabinet-pill">cash app</span>
+    <span class="cabinet-pill">square</span>
+    <span class="cabinet-pill">goose</span>
+    <span class="cabinet-pill">proto</span>
+    <span class="cabinet-pill">tidal</span>
+  </div>
+</div>
+
 ### the goal
 
 build a search that understands intent, not just keywords. if someone searches "send money to a friend," surface the peer-to-peer transfer icon - even if no tag says "friend"

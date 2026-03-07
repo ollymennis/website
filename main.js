@@ -409,6 +409,7 @@ async function loadProjectMd(el) {
     initBezierDemo(el);
     initPathLabelDemo(el);
     initGenDemo(el);
+    initCabinetDemo(el);
     initIconIntroRow(el);
     return;
   }
@@ -428,6 +429,7 @@ async function loadProjectMd(el) {
   initBezierDemo(el);
   initPathLabelDemo(el);
   initGenDemo(el);
+  initCabinetDemo(el);
   initIconIntroRow(el);
 }
 
@@ -546,6 +548,39 @@ function initIconIntroRow(el) {
     }
     refill();
     setInterval(swapOne, 150);
+  });
+}
+
+function initCabinetDemo(el) {
+  el.querySelectorAll('.cabinet-demo').forEach(container => {
+    if (container.dataset.initialized) return;
+    container.dataset.initialized = 'true';
+    const searchBar = container.querySelector('.cabinet-search');
+    const pills = container.querySelectorAll('.cabinet-pill');
+
+    // Stagger appear delays per pill
+    pills.forEach((pill, i) => {
+      pill.style.animationDelay = (i * 0.08) + 's';
+    });
+
+    // Click search bar → bubble pills in
+    searchBar.addEventListener('click', () => {
+      if (container.classList.contains('bubbled')) {
+        container.classList.remove('bubbled');
+        pills.forEach(p => { p.style.transform = 'scale(0)'; p.style.opacity = '0'; });
+        void container.offsetWidth;
+      }
+      container.classList.add('bubbled');
+      pills.forEach(p => { p.style.transform = ''; p.style.opacity = ''; });
+    });
+
+    // Click pills to toggle active
+    pills.forEach(pill => {
+      pill.addEventListener('click', () => {
+        pills.forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+      });
+    });
   });
 }
 
