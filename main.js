@@ -46,7 +46,14 @@ function switchSection(indexOrName) {
       item.classList.remove('project-item-in');
     });
     projectDisplay.classList.remove('active');
-    projectContents.forEach(el => el.classList.remove('active'));
+    clearTypewriters();
+    projectContents.forEach(el => {
+      el.classList.remove('active');
+      el.classList.remove('project-body-in');
+      el.querySelectorAll('.project-body > *').forEach(child => {
+        child.style.animationDelay = '';
+      });
+    });
   } else {
     // Stagger project items in
     projectItems.forEach((item, i) => {
@@ -422,36 +429,7 @@ function initDotLottie(el) {
 
 const projectMdCache = {};
 
-async function loadProjectMd(el) {
-  const mdPath = el.dataset.md;
-  if (!mdPath) return;
-  if (projectMdCache[mdPath]) {
-    el.innerHTML = projectMdCache[mdPath];
-    initHoverPreviews(el);
-    initHoverIcons(el);
-    initLoopAtVideos(el);
-    observeVideos(el);
-    initIconSpecimen(el);
-    initSvgGridDemo(el);
-    initBezierDemo(el);
-    initPathLabelDemo(el);
-    initGenDemo(el);
-    initCabinetDemo(el);
-    initTabBarDemo(el);
-    initIconIntroRow(el);
-    initTeamAvatars(el);
-    initCellSpecimen(el);
-    initIconInspector(el);
-    initDotLottie(el);
-    return;
-  }
-  const resp = await fetch(mdPath);
-  if (!resp.ok) return;
-  const md = await resp.text();
-  const { title, subtitle, bodyHtml } = parseProjectMd(md);
-  const html = `<div class="project-header"><h2>${title}</h2>${subtitle ? `<p class="project-subtitle">${subtitle}</p>` : '<p class="project-subtitle"></p>'}</div><div class="project-body">${bodyHtml}</div>`;
-  projectMdCache[mdPath] = html;
-  el.innerHTML = html;
+function initProjectDemos(el) {
   initHoverPreviews(el);
   initHoverIcons(el);
   initLoopAtVideos(el);
@@ -468,6 +446,32 @@ async function loadProjectMd(el) {
   initCellSpecimen(el);
   initIconInspector(el);
   initDotLottie(el);
+}
+
+// Render header immediately from data attributes
+function preloadProjectHeader(el) {
+  const title = el.dataset.title || '';
+  const subtitle = el.dataset.subtitle || '';
+  if (!title) return;
+  el.innerHTML = `<div class="project-header"><h2>${title}</h2>${subtitle ? `<p class="project-subtitle">${subtitle}</p>` : '<p class="project-subtitle"></p>'}</div><div class="project-body"></div>`;
+}
+
+async function loadProjectMd(el) {
+  const mdPath = el.dataset.md;
+  if (!mdPath) return;
+  if (projectMdCache[mdPath]) {
+    el.innerHTML = projectMdCache[mdPath];
+    initProjectDemos(el);
+    return;
+  }
+  const resp = await fetch(mdPath);
+  if (!resp.ok) return;
+  const md = await resp.text();
+  const { title, subtitle, bodyHtml } = parseProjectMd(md);
+  const html = `<div class="project-header"><h2>${title}</h2>${subtitle ? `<p class="project-subtitle">${subtitle}</p>` : '<p class="project-subtitle"></p>'}</div><div class="project-body">${bodyHtml}</div>`;
+  projectMdCache[mdPath] = html;
+  el.innerHTML = html;
+  initProjectDemos(el);
 }
 
 let teamPrimedTimeout = null;
@@ -896,14 +900,14 @@ function initGenDemo(el) {
     function formatSvgCode(svgText, labels) {
       const doc = new DOMParser().parseFromString(svgText, 'image/svg+xml');
       const paths = doc.querySelectorAll('path');
-      let code = '<svg viewBox="0 0 24 24" fill="none">\n';
+      let code = '<svg viewBox="0 0 24 24" fill="none">';
       paths.forEach((p, i) => {
-        code += '  <!-- ' + (labels[i] || 'path-' + (i + 1)) + ' -->\n';
-        code += '  <path d="' + p.getAttribute('d') + '"\n';
+        const label = labels[i] || 'path-' + (i + 1);
+        code += '<!-- ' + label + ' -->';
+        code += '<path d="' + p.getAttribute('d') + '"';
         const fill = p.getAttribute('fill');
-        if (fill && fill !== 'none') code += '    fill="' + fill + '"\n';
-        code += '    stroke="#FF00FF" stroke-width="2"\n';
-        code += '    stroke-linejoin="round"/>\n';
+        if (fill && fill !== 'none') code += ' fill="' + fill + '"';
+        code += ' stroke="#FF00FF" stroke-width="2" stroke-linejoin="round"/>';
       });
       code += '</svg>';
       return code;
@@ -1298,12 +1302,17 @@ function observeVideos(el) {
 }
 
 // Preload all project markdown
-document.querySelectorAll('.project-content[data-md]').forEach(el => loadProjectMd(el));
+// Render headers immediately, then load full content async
+document.querySelectorAll('.project-content[data-md]').forEach(el => {
+  preloadProjectHeader(el);
+  loadProjectMd(el);
+});
 
 // --- Inline Project Display ---
 const projectDisplay = document.getElementById('project-display');
 const projectContents = document.querySelectorAll('.project-content');
 let activeProjectNum = null;
+let typewriterTimers = [];
 
 function switchProject(num) {
   activeProjectNum = num;
@@ -1322,6 +1331,42 @@ function switchProject(num) {
   projectDisplay.scrollTop = 0;
   projectContents.forEach(el => el.scrollTop = 0);
 
+  // Staggered body children entrance animation
+  const activeContent = document.querySelector(`.project-content[data-project-content="${num}"]`);
+  if (activeContent) {
+    activeContent.classList.remove('project-body-in');
+    const bodyChildren = activeContent.querySelectorAll('.project-body > *');
+    bodyChildren.forEach((child, i) => {
+      child.style.animationDelay = `${100 + i * 40}ms`;
+    });
+    void activeContent.offsetWidth;
+    activeContent.classList.add('project-body-in');
+
+    // Typewriter effect for code blocks
+    clearTypewriters();
+    activeContent.querySelectorAll('.project-body pre code').forEach(code => {
+      const fullText = code.textContent;
+      if (!code.dataset.fullText) code.dataset.fullText = fullText;
+      code.textContent = '';
+      code.style.visibility = 'visible';
+      // Find the stagger delay of the parent <pre>
+      const pre = code.closest('pre');
+      const preDelay = pre ? parseFloat(pre.style.animationDelay) || 0 : 0;
+      let charIndex = 0;
+      const startTimer = setTimeout(() => {
+        const typeTimer = setInterval(() => {
+          // Type in chunks for speed
+          const chunk = Math.min(3, fullText.length - charIndex);
+          code.textContent += fullText.slice(charIndex, charIndex + chunk);
+          charIndex += chunk;
+          if (charIndex >= fullText.length) clearInterval(typeTimer);
+        }, 18);
+        typewriterTimers.push(typeTimer);
+      }, preDelay + 350);
+      typewriterTimers.push(startTimer);
+    });
+  }
+
   // Update URL hash
   const activeItem = projectItems.find(item => item.dataset.project === String(num));
   if (activeItem && activeItem.dataset.slug) {
@@ -1329,9 +1374,27 @@ function switchProject(num) {
   }
 }
 
+function clearTypewriters() {
+  typewriterTimers.forEach(id => { clearTimeout(id); clearInterval(id); });
+  typewriterTimers = [];
+  // Restore full text on any partially-typed code blocks
+  document.querySelectorAll('.project-body pre code[data-full-text]').forEach(code => {
+    code.textContent = code.dataset.fullText;
+  });
+}
+
 function closeProjectDisplay() {
   projectDisplay.classList.remove('active');
   clearTeamPrimed();
+  clearTypewriters();
+
+  // Clear body entrance animations
+  projectContents.forEach(el => {
+    el.classList.remove('project-body-in');
+    el.querySelectorAll('.project-body > *').forEach(child => {
+      child.style.animationDelay = '';
+    });
+  });
 
   // Stagger stickers back in when closing a project
   const stickers = document.querySelectorAll('.sticker');

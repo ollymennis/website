@@ -42,14 +42,14 @@ describe('icon-grid-row mobile', () => {
 });
 
 describe('code block line-height on mobile', () => {
-  it('code block line-height is 0.65 in 700px media query', () => {
+  it('code block line-height is not overridden in 700px media query', () => {
     const mobile = extractMediaBlock('\\(max-width:\\s*700px\\)');
-    expect(mobile).toContain('line-height: 0.65');
+    expect(mobile).not.toContain('line-height: 0.65');
   });
 
-  it('code block line-height is 0.65 in 1100px touch media query', () => {
+  it('code block line-height is not overridden in 1100px touch media query', () => {
     const touch = extractMediaBlock('\\(max-width:\\s*1100px\\)\\s*and\\s*\\(hover:\\s*none\\)');
-    expect(touch).toContain('line-height: 0.65');
+    expect(touch).not.toContain('line-height: 0.65');
   });
 });
 

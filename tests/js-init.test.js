@@ -86,8 +86,15 @@ describe('initCabinetDemo behavior', () => {
 });
 
 describe('loadProjectMd calls all init functions', () => {
-  it('calls all init functions in both cached and fresh paths', () => {
+  it('calls initProjectDemos in both cached and fresh paths', () => {
     const src = extractFunction('loadProjectMd');
+    const matches = src.match(/initProjectDemos/g);
+    expect(matches, 'initProjectDemos should be called in both paths').not.toBeNull();
+    expect(matches.length, 'initProjectDemos should be called exactly twice').toBe(2);
+  });
+
+  it('initProjectDemos contains all init functions', () => {
+    const src = extractFunction('initProjectDemos');
     const initCalls = [
       'initHoverPreviews',
       'initHoverIcons',
@@ -103,10 +110,7 @@ describe('loadProjectMd calls all init functions', () => {
     ];
 
     initCalls.forEach(fn => {
-      // Each init function should appear exactly twice - once for cache hit, once for fresh load
-      const matches = src.match(new RegExp(fn, 'g'));
-      expect(matches, `${fn} should be called in both paths`).not.toBeNull();
-      expect(matches.length, `${fn} should be called exactly twice`).toBe(2);
+      expect(src, `${fn} should be called in initProjectDemos`).toContain(fn);
     });
   });
 });
