@@ -52,7 +52,7 @@ she got back in the humming wagon of scandinavian integrity and went straight in
 
 she constructed a character. she made another. she assembled expression after expression - receiving updated coordinates with every round. some were too nostalgic. some were too robotic. too spacey, too cubic, too on-the-nose.
 
-by the 800th she could not see straight. 800 will do that to a person. she loaded them into a single grid — 40 across, 20 deep — and transmitted the message. somewhere in the grid was the one.
+by the 800th she could not see straight. 800 will do that to a person. she loaded them into the grid and transmitted the message. somewhere in the grid was the one.
 
 <img style="border-radius:0" src="/media/moneybot/800-glyphs.png" alt="800" />
 
