@@ -704,7 +704,7 @@ main {
 
 .team-row {
   display: flex;
-  gap: 1.5rem;
+  gap: 2rem;
   justify-content: center;
   margin-top: 2rem;
   margin-bottom: 1.5rem;
@@ -748,8 +748,7 @@ main {
   position: absolute;
   top: 100%;
   left: 50%;
-  translate: -50% 0;
-  transform: scale(0.6);
+  transform: translateX(-50%) scale(0.6);
   transform-origin: center top;
   font-family: var(--mono);
   font-size: 0.6rem;
@@ -763,7 +762,7 @@ main {
 .team-avatar:hover .team-name,
 .team-avatar.primed .team-name {
   opacity: 1;
-  transform: scale(1);
+  transform: translateX(-50%) scale(1);
 }
 
 .team-avatar.primed .team-name::after {
