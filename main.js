@@ -41,9 +41,20 @@ function switchSection(indexOrName) {
   if (name !== 'work-work') {
     highlightedProject = -1;
     activeProjectNum = null;
-    projectItems.forEach(item => item.classList.remove('highlighted'));
+    projectItems.forEach(item => {
+      item.classList.remove('highlighted');
+      item.classList.remove('project-item-in');
+    });
     projectDisplay.classList.remove('active');
     projectContents.forEach(el => el.classList.remove('active'));
+  } else {
+    // Stagger project items in
+    projectItems.forEach((item, i) => {
+      item.classList.remove('project-item-in');
+      void item.offsetWidth;
+      item.style.animationDelay = (i * 80) + 'ms';
+      item.classList.add('project-item-in');
+    });
   }
 
   // Update URL hash
