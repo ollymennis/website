@@ -1445,6 +1445,7 @@ function handleHash() {
   }
 }
 handleHash();
+document.documentElement.classList.remove('has-hash');
 window.addEventListener('hashchange', handleHash);
 
 // --- Load CV from markdown ---

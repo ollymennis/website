@@ -288,6 +288,17 @@ main {
   display: block;
 }
 
+/* Prevent flash of about panel when loading with a hash */
+.has-hash .content-panel[data-panel="about"].active {
+  display: none;
+}
+.has-hash .nav-btn[data-section="about"].active {
+  background: transparent;
+  color: var(--fg);
+  padding-left: 0;
+  padding-right: 0;
+}
+
 /* All content text inherits from .content-area */
 .content-area p,
 .content-area h3,
@@ -1485,12 +1496,51 @@ body.drawing a:hover {
 }
 
 /* --- Cell Specimens --- */
+/* --- Type Specimen --- */
+.type-specimen {
+  position: relative;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  margin: 1.5rem 0;
+  padding: 2.5rem 2rem;
+  background: var(--bg);
+  overflow: hidden;
+}
+
+.type-specimen-baselines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.type-specimen-text {
+  position: relative;
+  font-family: 'Cash Sans', sans-serif;
+  font-size: 8rem;
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  color: var(--fg);
+}
+
+.type-specimen-text::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0.183em;
+  height: 1px;
+  background: rgba(0, 120, 255, 0.9);
+}
+
 .cell-specimen {
   border: 1px solid var(--border);
   border-radius: 18px;
   padding: 0.75rem 1rem;
   margin: 1.5rem 0;
   background: var(--bg);
+  max-width: 300px;
 }
 
 .cell-row {
@@ -1594,6 +1644,19 @@ body.drawing a:hover {
   font-family: 'Cash Sans', sans-serif;
   font-size: 0.95rem;
   font-weight: 500;
+}
+
+.cell-icon-placeholder {
+  border: 1.5px dashed var(--border);
+  border-radius: 4px;
+}
+
+.cell-chevron {
+  flex-shrink: 0;
+  font-size: 1.4rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--fg);
 }
 
 /* --- Icon Inspector --- */
