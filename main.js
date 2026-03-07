@@ -452,6 +452,11 @@ function initHoverIcons(el) {
     span.addEventListener('mouseleave', () => {
       img.style.display = 'none';
     });
+    // Dismiss on scroll (mobile: no mouseleave fires)
+    const scrollParent = span.closest('.project-content') || span.closest('.project-display') || window;
+    (scrollParent === window ? window : scrollParent).addEventListener('scroll', () => {
+      if (img.style.display === 'block') img.style.display = 'none';
+    }, { passive: true });
   });
 }
 
