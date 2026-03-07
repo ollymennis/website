@@ -69,6 +69,7 @@
   padding: 0;
   box-sizing: border-box;
   cursor: inherit;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* --- Custom Properties --- */
