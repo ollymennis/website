@@ -505,7 +505,7 @@ function initHoverIcons(el) {
     img.className = 'hover-icon-img';
     img.src = span.dataset.icon;
     if (span.dataset.iconWidth) img.style.width = span.dataset.iconWidth;
-    span.appendChild(img);
+    document.body.appendChild(img);
     if (isTouchDevice) {
       span.addEventListener('touchstart', (e) => {
         const touch = e.touches[0];
@@ -541,7 +541,7 @@ function initHoverPreviews(el) {
     const img = document.createElement('img');
     img.className = 'preview-img';
     img.src = span.dataset.preview;
-    span.appendChild(img);
+    document.body.appendChild(img);
     span.addEventListener('mouseenter', () => {
       img.style.display = 'block';
       const rect = span.getBoundingClientRect();
@@ -1445,7 +1445,7 @@ function handleHash() {
   }
 }
 handleHash();
-document.documentElement.classList.remove('has-hash');
+delete document.documentElement.dataset.initSection;
 window.addEventListener('hashchange', handleHash);
 
 // --- Load CV from markdown ---

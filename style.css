@@ -288,15 +288,28 @@ main {
   display: block;
 }
 
-/* Prevent flash of about panel when loading with a hash */
-.has-hash .content-panel[data-panel="about"].active {
+/* Prevent flash when loading with a hash — hide about, show target section */
+[data-init-section] .nav-btn {
+  transition: none;
+}
+[data-init-section] .content-panel[data-panel="about"].active {
   display: none;
 }
-.has-hash .nav-btn[data-section="about"].active {
+[data-init-section] .nav-btn[data-section="about"].active {
   background: transparent;
   color: var(--fg);
   padding-left: 0;
   padding-right: 0;
+}
+[data-init-section="work-work"] .content-panel[data-panel="work-work"] {
+  display: block;
+}
+[data-init-section="information"] .content-panel[data-panel="information"] {
+  display: block;
+}
+[data-init-section] .sticker {
+  opacity: 0 !important;
+  transition: none !important;
 }
 
 /* All content text inherits from .content-area */
@@ -1038,7 +1051,7 @@ main {
   text-underline-offset: 3px;
 }
 
-.hover-icon .hover-icon-img {
+.hover-icon-img {
   display: none;
   position: fixed;
   width: 40px;
@@ -1055,7 +1068,7 @@ main {
   position: relative;
 }
 
-.hover-preview .preview-img {
+.preview-img {
   display: none;
   position: fixed;
   max-width: 900px;
