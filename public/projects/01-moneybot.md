@@ -20,7 +20,7 @@ she understood glyphs - she had created a thousand of them. she got to work.
 she assembled glyph after glyph after glyph, each batch transmitted back to the tower, batches to be rendered before the <span class="hover-icon" data-icon="/media/moneybot/jack.png">commander</span> himself.
 
 <img src="/media/moneybot/glyphs-intro.png" alt="glyphs intro" />
-> I lost a lot of work after the <span class="hover-icon" data-icon="/media/moneybot/nyt.png" data-icon-width="200px">thanos snap</span> but just pretend there are dozens of impressive iterations here
+> I lost a lot of work after the <span class="hover-icon" data-icon="/media/moneybot/theap.png" data-icon-width="200px">thanos snap</span> but just pretend there are dozens of impressive iterations here
 
 the cycle was always the same: she tinkered. she transmitted. the tower received. the coordinates shifted. she tinkered again.
 
