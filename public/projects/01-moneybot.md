@@ -4,15 +4,18 @@ _giving an AI financial assistant a face_
 moneybot is cash app's AI-powered personal financial assistant - it helps users manage, track, and optimize their money
 
 
+<video src="/media/moneybot/moneybot-full.mp4" autoplay loop muted playsinline style="display:block;max-width:200px;margin:0 auto 2rem;border-radius:30px"></video>
+
 ### part I: the message
 the year was 2025. in a small house on a hill in westchester, new york (which some people would call "upstate" but it's not really upstate) a woman's phone buzzed. a message from the tower:
 
 ```build a glyph. a mark. a symbol the people will recognize and turn to when things get tricky. warm but not soft. sharp but not unapproachable. the people need to trust it with their money, which is to say, the people need to trust it with their lives. you have 72 hours.
 ```
 
+<!-- <div class="tabbar-demo" data-no-face></div> -->
+
 she read it twice and closed the message. it had begun - they had been building toward this for moons and she knew she'd be the one called at the final transmission.
 
-<img src="/media/moneybot/moneybot-intro.png" alt="moneybot intro" />
 <!-- [placeholder: the initial brief or moodboard — what references or constraints you started with] -->
 
 she understood glyphs - she had created a thousand of them. she got to work.
@@ -67,7 +70,11 @@ she rendered it to final specs. it looked back at her. she transmitted, and for 
 
 and then, on every screen the tower could reach, the moneybot opened its eyes.
 
+&nbsp;
+
 <div style="width:100px;aspect-ratio:1/1;margin:0 auto;border-radius:50%;background:#000;overflow:hidden"><canvas data-lottie-src="/media/moneybot/lottie/moneybot_idle01_looking_darkMode.lottie" width="200" height="200" style="width:100%;height:100%"></canvas></div>
+
+<!-- <div class="tabbar-demo"></div> -->
 
 <!-- [placeholder: refinement rounds — showing the character getting tighter across 2-3 iterations, with notes on what changed] -->
 

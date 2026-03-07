@@ -426,6 +426,7 @@ async function loadProjectMd(el) {
     initPathLabelDemo(el);
     initGenDemo(el);
     initCabinetDemo(el);
+    initTabBarDemo(el);
     initIconIntroRow(el);
     initTeamAvatars(el);
     initCellSpecimen(el);
@@ -450,6 +451,7 @@ async function loadProjectMd(el) {
   initPathLabelDemo(el);
   initGenDemo(el);
   initCabinetDemo(el);
+  initTabBarDemo(el);
   initIconIntroRow(el);
   initTeamAvatars(el);
   initCellSpecimen(el);
@@ -750,6 +752,95 @@ function initCabinetDemo(el) {
         pill.classList.add('active');
       });
     });
+  });
+}
+
+const TABBAR_SVGS = [
+  '<svg width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6.6 11c.14 0 .21 0 .264.027a.252.252 0 0 1 .11.11C7 11.19 7 11.26 7 11.4v10.2c0 .14 0 .21-.027.263a.252.252 0 0 1-.11.11C6.81 22 6.74 22 6.6 22H4.4c-.14 0-.21 0-.264-.027a.251.251 0 0 1-.109-.11C4 21.81 4 21.74 4 21.6V11.4c0-.14 0-.21.027-.263a.251.251 0 0 1 .11-.11C4.19 11 4.26 11 4.4 11h2.2Zm6.5 0c.14 0 .21 0 .264.027a.252.252 0 0 1 .11.11c.026.053.026.123.026.263v10.2c0 .14 0 .21-.027.263a.252.252 0 0 1-.11.11C13.31 22 13.24 22 13.1 22h-2.2c-.14 0-.21 0-.264-.027a.25.25 0 0 1-.109-.11c-.027-.053-.027-.124-.027-.263V11.4c0-.14 0-.21.027-.263a.25.25 0 0 1 .11-.11C10.69 11 10.76 11 10.9 11h2.2Zm6.5 0c.14 0 .21 0 .264.027a.252.252 0 0 1 .11.11c.026.053.026.123.026.263v10.2c0 .14 0 .21-.027.263a.252.252 0 0 1-.11.11C19.81 22 19.74 22 19.6 22h-2.2c-.14 0-.21 0-.264-.027a.25.25 0 0 1-.109-.11C17 21.81 17 21.74 17 21.6V11.4c0-.14 0-.21.027-.263a.25.25 0 0 1 .11-.11C17.19 11 17.26 11 17.4 11h2.2Zm-8.323-8.814c.45-.248.996-.248 1.446 0l10.964 6.03c.123.067.184.102.218.151.03.044.044.096.043.149-.002.06-.036.12-.104.243l-1.06 1.928c-.068.122-.101.184-.15.217a.25.25 0 0 1-.149.043c-.06-.002-.122-.035-.244-.102L12.193 5.318c-.07-.038-.105-.058-.143-.066a.254.254 0 0 0-.1 0c-.037.008-.072.028-.143.066L1.76 10.845c-.122.067-.184.1-.244.102a.25.25 0 0 1-.148-.043c-.05-.033-.084-.095-.152-.217L.155 8.759c-.066-.122-.1-.184-.103-.243a.251.251 0 0 1 .043-.149c.034-.05.095-.084.218-.151l10.964-6.03Z" fill="currentColor"/></svg>',
+  '<svg width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M16.038 1c.23 0 .4.226.352.465l-.442 2.168c1.507.493 2.731 1.378 3.488 2.47a.381.381 0 0 1-.067.498l-1.857 1.62c-.164.143-.406.105-.54-.07-.938-1.227-2.411-1.92-4.006-1.92-1.735 0-2.893.82-2.893 2 0 .974.868 1.487 3.519 2.102h.002c3.374.77 4.917 2.257 4.917 4.77 0 3.15-2.412 5.475-6.176 5.721l-.368 1.871a.367.367 0 0 1-.353.305H8.698c-.232 0-.403-.232-.35-.473l.467-2.094c-1.877-.569-3.384-1.677-4.257-3.043a.383.383 0 0 1 .08-.495l2.037-1.687c.168-.139.411-.092.536.092 1.073 1.583 2.716 2.52 4.694 2.52 1.784 0 3.134-.922 3.134-2.255 0-1.026-.675-1.488-2.94-2-3.905-.872-5.448-2.412-5.448-4.924 0-2.916 2.303-5.118 5.778-5.404l.38-1.932A.366.366 0 0 1 13.163 1h2.876Z" fill="currentColor"/></svg>',
+  '<svg width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3.868 3.868c4.491-4.49 11.773-4.49 16.264 0 4.49 4.491 4.49 11.773 0 16.264-4.491 4.49-11.773 4.49-16.264 0-4.49-4.491-4.49-11.773 0-16.264ZM18.011 5.99A8.5 8.5 0 1 0 5.989 18.012 8.5 8.5 0 0 0 18.011 5.989ZM12.75 7a.25.25 0 0 1 .25.25v4c0 .138.112.25.25.25h3.5a.25.25 0 0 1 .25.25v2.5a.25.25 0 0 1-.25.25H11.5A1.5 1.5 0 0 1 10 13V7.25a.25.25 0 0 1 .25-.25h2.5Z" fill="currentColor"/></svg>'
+];
+const TABBAR_LABELS = ['Money', 'Cash', 'Activity'];
+
+function initTabBarDemo(el) {
+  el.querySelectorAll('.tabbar-demo').forEach(wrapper => {
+    if (wrapper.dataset.initialized) return;
+    wrapper.dataset.initialized = 'true';
+
+    const glassBar = document.createElement('div');
+    glassBar.className = 'tabbar-glass';
+
+    const blob = document.createElement('div');
+    blob.className = 'tabbar-blob';
+    glassBar.appendChild(blob);
+
+    const tabs = [];
+    function moveBlob(target, animate) {
+      const barRect = glassBar.getBoundingClientRect();
+      const tabRect = target.getBoundingClientRect();
+      const l = tabRect.left - barRect.left;
+      const t = tabRect.top - barRect.top;
+      if (animate) {
+        blob.classList.add('tabbar-blob-moving');
+        blob.style.transform = 'scaleX(1.35) scaleY(0.82)';
+        blob.style.left = l + 'px';
+        blob.style.top = t + 'px';
+        blob.style.width = tabRect.width + 'px';
+        blob.style.height = tabRect.height + 'px';
+        setTimeout(() => { blob.style.transform = 'scaleX(1) scaleY(1)'; }, 180);
+      } else {
+        blob.style.left = l + 'px';
+        blob.style.top = t + 'px';
+        blob.style.width = tabRect.width + 'px';
+        blob.style.height = tabRect.height + 'px';
+      }
+    }
+    TABBAR_LABELS.forEach((label, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'tabbar-tab' + (i === 0 ? ' active' : '');
+      btn.setAttribute('aria-label', label);
+      btn.innerHTML = TABBAR_SVGS[i];
+      btn.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        btn.classList.add('active');
+        moveBlob(btn, true);
+      });
+      glassBar.appendChild(btn);
+      tabs.push(btn);
+    });
+    wrapper.appendChild(glassBar);
+    // Position blob on first active tab after layout
+    requestAnimationFrame(() => moveBlob(tabs[0], false));
+
+    const noFace = wrapper.hasAttribute('data-no-face');
+    const mbCircle = document.createElement('div');
+    mbCircle.className = 'tabbar-moneybot';
+    if (!noFace) {
+      mbCircle.innerHTML = '<svg width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M5.155 14.195a.214.214 0 0 0-.278.04l-1.33 1.563a.192.192 0 0 0 .033.282c.657.462 1.402.803 2.151 1.083 1.49.558 3.716 1.088 6.769 1.088s5.278-.53 6.768-1.088c.75-.28 1.495-.621 2.152-1.083a.192.192 0 0 0 .033-.282l-1.33-1.564a.215.215 0 0 0-.279-.039c-.455.297-.96.52-1.468.71-1.204.45-3.127.927-5.876.927-2.75 0-4.672-.477-5.876-.928-.508-.19-1.013-.412-1.469-.709ZM16.071 5.98a.3.3 0 0 0-.3.3v3.49a.3.3 0 0 0 .3.3h1.854a.3.3 0 0 0 .3-.3V6.28a.3.3 0 0 0-.3-.3h-1.854Zm-12.271 0a.3.3 0 0 0-.3.3v3.49a.3.3 0 0 0 .3.3h1.854a.3.3 0 0 0 .3-.3V6.28c0-.166-.135-.3-.3-.3H3.8Z" fill="currentColor"/></svg>';
+    }
+    wrapper.appendChild(mbCircle);
+
+    if (noFace) {
+      mbCircle.classList.add('tabbar-moneybot-static');
+      const hover = document.createElement('span');
+      hover.className = 'tabbar-moneybot-hover';
+      hover.textContent = '??????';
+      mbCircle.appendChild(hover);
+      mbCircle.style.cursor = "url('/icons/mouse-hover.svg'), pointer";
+      mbCircle.addEventListener('mousemove', (e) => {
+        hover.style.display = 'block';
+        hover.style.left = e.clientX + 'px';
+        hover.style.top = (e.clientY - hover.offsetHeight - 8) + 'px';
+      });
+      mbCircle.addEventListener('mouseleave', () => { hover.style.display = 'none'; });
+    } else {
+      function playPop() {
+        wrapper.classList.remove('moneybot-entered');
+        void wrapper.offsetWidth;
+        wrapper.classList.add('moneybot-entered');
+      }
+      setTimeout(() => { playPop(); setInterval(playPop, 5000); }, 600);
+    }
   });
 }
 
