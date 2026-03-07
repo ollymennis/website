@@ -58,9 +58,15 @@ function switchSection(indexOrName) {
     document.documentElement.style.overflow = '';
   }
 
-  // When leaving work-work, bring stickers back in
-  if (name !== 'work-work') {
-    const stickers = document.querySelectorAll('.sticker');
+  // On touch: pop stickers out when entering work-work
+  // On desktop: stickers pop out when a project is selected (in switchProject)
+  const stickers = document.querySelectorAll('.sticker');
+  if (name === 'work-work' && isTouchDevice) {
+    stickers.forEach((sticker, i) => {
+      sticker.style.transitionDelay = `${i * 60}ms`;
+      sticker.classList.add('sticker-out');
+    });
+  } else if (name !== 'work-work') {
     stickers.forEach((sticker, i) => {
       sticker.style.transitionDelay = `${i * 40}ms`;
       sticker.classList.remove('sticker-out');
