@@ -53,7 +53,7 @@ this became the primary tool for iterating on the embedding pipeline — adjusti
 
 ### exploring the edges
 
-with semantic search working, I pushed into more experimental territory: visual similarity browsing (click an icon, see what "looks like" it), auto-categorization, and cross-library deduplication
+with semantic search working, I pushed into more experimental territory:
 
 <video src="/media/cabinet/wild-1.mp4" autoplay loop muted playsinline></video>
 
