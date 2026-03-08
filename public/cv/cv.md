@@ -2,7 +2,7 @@
 
 designer, new york
 
-designer and builder with 12 years shipping across mobile, web, brand, hardware, and dev tools. spent 5 years on cash app's systems & standards team — owning component architecture, icon design, and token pipelines. most recently built an mcp server connecting asset token libraries to internal ai agents, automating the full experience from request through svg generation.
+designer with 12 years shipping across mobile, web, brand, hardware, and dev tools. spent 5 years on cash app's systems & standards team — owning component architecture, icon design, and token pipelines. most recently built an mcp server connecting asset token libraries to internal ai agents, automating the full experience from request through svg generation.
 
 ## cash app (block) · senior designer, systems & standards · 2021–2026
 
@@ -36,4 +36,4 @@ designer and builder with 12 years shipping across mobile, web, brand, hardware,
 
 ## education
 
-full sail university · bachelor of science, digital art & design · 2011
+## full sail university · bachelor of science, digital art & design · 2011

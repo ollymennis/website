@@ -1,7 +1,7 @@
 # svg maker
 _teaching a machine to draw_
 
-I am building (it is ongoing) a tool that generates SVG icons from short, natural language prompts — matching existing library styles, shape conventions, and grid constraints
+building (it is ongoing) a tool that generates SVG icons from short, natural language prompts — matching existing library styles, shape conventions, and grid constraints
 
 <hr />
 

@@ -1,0 +1,25 @@
+<svg width="25" height="25" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+<circle cx="4.0177" cy="7.0177" r="3" stroke="#0294E7" stroke-width="0.05"/>
+<circle cx="20.0177" cy="7.0177" r="3" stroke="#0294E7" stroke-width="0.05"/>
+<circle cx="4.0177" cy="17.0177" r="3" stroke="#0294E7" stroke-width="0.05"/>
+<circle cx="20.0177" cy="17.0177" r="3" stroke="#0294E7" stroke-width="0.05"/>
+<path d="M1.0177 21.0177V3.0177" stroke="#0294E7" stroke-width="0.05"/>
+<path d="M23.0177 21.0177V3.0177" stroke="#0294E7" stroke-width="0.05"/>
+<path d="M3.0177 24.0177L3.0177 0.0177002" stroke="#0294E7" stroke-width="0.05"/>
+<path d="M4.0177 24.0177L4.0177 0.0177002" stroke="#0294E7" stroke-width="0.05"/>
+<path d="M20.0177 24.0177L20.0177 0.0177002" stroke="#0294E7" stroke-width="0.05"/>
+<path d="M21.0177 24.0177L21.0177 0.0177002" stroke="#0294E7" stroke-width="0.05"/>
+<path d="M24.0177 21.0177H0.0177002" stroke="#0294E7" stroke-width="0.05"/>
+<path d="M24.0177 20.0177H0.0177002" stroke="#0294E7" stroke-width="0.05"/>
+<path d="M24.0177 4.0177H0.0177002" stroke="#0294E7" stroke-width="0.05"/>
+<path d="M24.0177 5.0177H0.0177002" stroke="#0294E7" stroke-width="0.05"/>
+<path d="M12.0177 24.0177L12.0177 0.0177002" stroke="#0294E7" stroke-width="0.05"/>
+<path d="M24.0177 12.0177H0.0177002" stroke="#0294E7" stroke-width="0.05"/>
+<path d="M24.0177 19.0177H0.0177002" stroke="#0294E7" stroke-width="0.05"/>
+<path d="M24.0177 3.0177H0.0177002" stroke="#0294E7" stroke-width="0.05"/>
+<path d="M24.0177 24.0177L0.0177002 0.0177002" stroke="#0294E7" stroke-width="0.05"/>
+<path d="M24.0177 0.0177002L0.0177002 24.0177" stroke="#0294E7" stroke-width="0.05"/>
+<path d="M19.0177 24.0177L19.0177 0.0177002" stroke="#0294E7" stroke-width="0.05"/>
+<path d="M5.0177 24.0177L5.0177 0.0177002" stroke="#0294E7" stroke-width="0.05"/>
+<path d="M20.0177 5.0177H4.0177C2.91313 5.0177 2.0177 5.91313 2.0177 7.0177V17.0177C2.0177 18.1223 2.91313 19.0177 4.0177 19.0177H20.0177C21.1223 19.0177 22.0177 18.1223 22.0177 17.0177V7.0177C22.0177 5.91313 21.1223 5.0177 20.0177 5.0177Z" stroke="#3F524C" stroke-opacity="0.4" stroke-width="2" stroke-linejoin="round"/>
+</svg>

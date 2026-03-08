@@ -1,7 +1,7 @@
 # <img src="/media/moneybot/navigation/moneybot-alt.svg" alt="" class="project-title-icon" /> moneybot
 _giving an AI financial assistant a face_
 
-moneybot is cash app's AI-powered personal financial assistant - it helps users manage, track, and optimize their money
+moneybot is cash app's AI-powered personal financial assistant - it helps users manage, track, and optimize their money.
 
 
 <video src="/media/moneybot/moneybot-full.mp4" autoplay loop muted playsinline style="display:block;max-width:200px;margin:0 auto 2rem;border-radius:30px"></video>
