@@ -1562,6 +1562,12 @@ function switchProject(num) {
   if (activeContent) {
     activeContent.classList.remove('project-body-in');
     const bodyChildren = activeContent.querySelectorAll('.project-body > *');
+    bodyChildren.forEach(child => {
+      child.style.animation = '';
+      child.style.opacity = '';
+      child.style.animationDelay = '';
+    });
+    void activeContent.offsetWidth;
     bodyChildren.forEach((child, i) => {
       child.style.animationDelay = `${100 + i * 40}ms`;
       child.addEventListener('animationend', () => {
@@ -1569,7 +1575,6 @@ function switchProject(num) {
         child.style.opacity = '1';
       }, { once: true });
     });
-    void activeContent.offsetWidth;
     activeContent.classList.add('project-body-in');
 
     // Typewriter effect for code blocks
