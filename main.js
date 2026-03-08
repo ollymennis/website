@@ -1140,9 +1140,31 @@ function initBezierDemo(el) {
       };
     }
 
+    // Add larger invisible hit areas for touch
+    const hit1 = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    const hit2 = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    svg.style.touchAction = 'none';
+    [hit1, hit2].forEach(hit => {
+      hit.setAttribute('r', '2.5');
+      hit.setAttribute('fill', 'transparent');
+      hit.style.cursor = 'grab';
+      svg.appendChild(hit);
+    });
+    hit1.setAttribute('cx', c1.x); hit1.setAttribute('cy', c1.y);
+    hit2.setAttribute('cx', c2.x); hit2.setAttribute('cy', c2.y);
+
+    const origUpdate = update;
+    update = function() {
+      origUpdate();
+      hit1.setAttribute('cx', c1.x); hit1.setAttribute('cy', c1.y);
+      hit2.setAttribute('cx', c2.x); hit2.setAttribute('cy', c2.y);
+    };
+
     function onDown(target) {
-      return e => { e.preventDefault(); dragging = target; cp1.style.cursor = cp2.style.cursor = 'grabbing'; };
+      return e => { e.preventDefault(); dragging = target; hit1.style.cursor = hit2.style.cursor = cp1.style.cursor = cp2.style.cursor = 'grabbing'; };
     }
+    hit1.addEventListener('pointerdown', onDown(c1));
+    hit2.addEventListener('pointerdown', onDown(c2));
     cp1.addEventListener('pointerdown', onDown(c1));
     cp2.addEventListener('pointerdown', onDown(c2));
 
@@ -1154,7 +1176,7 @@ function initBezierDemo(el) {
       update();
     });
     window.addEventListener('pointerup', () => {
-      if (dragging) { dragging = null; cp1.style.cursor = cp2.style.cursor = 'grab'; }
+      if (dragging) { dragging = null; hit1.style.cursor = hit2.style.cursor = cp1.style.cursor = cp2.style.cursor = 'grab'; }
     });
   });
 }
