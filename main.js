@@ -426,6 +426,10 @@ function initProjectDemos(el) {
   initCabinetDemo(el);
   initTabBarDemo(el);
   initIconIntroRow(el);
+  initIconGrid(el);
+  initAuditGrid(el);
+  initBeforeAfterCells(el);
+  initCollapseIndicators(el);
   initTeamAvatars(el);
   initCellSpecimen(el);
   initIconInspector(el);
@@ -613,6 +617,90 @@ function initIconIntroRow(el) {
     }
     refill();
     setInterval(swapOne, 150);
+  });
+}
+
+function initIconGrid(el) {
+  el.querySelectorAll('.icon-grid').forEach(grid => {
+    if (grid.dataset.initialized) return;
+    grid.dataset.initialized = '1';
+    const basePath = '/media/icons-refresh/icon-svgs/';
+    const allNames = iconFiles.slice();
+    const slots = Array.from(grid.querySelectorAll('img'));
+    let pool = [];
+    function refill() {
+      pool = allNames.filter(n => !slots.some(s => s.src.includes(n)));
+      for (let i = pool.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [pool[i], pool[j]] = [pool[j], pool[i]];
+      }
+    }
+    function swapOne() {
+      if (pool.length === 0) refill();
+      const idx = Math.floor(Math.random() * slots.length);
+      slots[idx].src = basePath + pool.pop() + '.svg';
+    }
+    refill();
+    setInterval(swapOne, 150);
+  });
+}
+
+function initBeforeAfterCells(el) {
+  el.querySelectorAll('.ba-grid').forEach(grid => {
+    if (grid.dataset.initialized) return;
+    grid.dataset.initialized = '1';
+    const cells = Array.from(grid.querySelectorAll('.ba-cell'));
+    const caption = grid.querySelector('.ba-caption');
+    let showingAfter = false;
+
+    function toggle() {
+      showingAfter = !showingAfter;
+      cells.forEach((cell, i) => {
+        setTimeout(() => {
+          cell.classList.toggle('showing-after', showingAfter);
+        }, i * 120);
+      });
+      if (caption) {
+        caption.textContent = showingAfter ? 'after' : 'before';
+      }
+    }
+
+    setInterval(toggle, 3000);
+  });
+}
+
+function initCollapseIndicators(el) {
+  el.querySelectorAll('.project-collapse').forEach(details => {
+    if (details.dataset.initialized) return;
+    details.dataset.initialized = '1';
+    const indicator = details.querySelector('.collapse-indicator');
+    if (!indicator) return;
+    details.addEventListener('toggle', () => {
+      indicator.src = details.open
+        ? '/media/icons-refresh/icon-svgs/Minus.svg'
+        : '/media/icons-refresh/icon-svgs/Plus.svg';
+    });
+  });
+}
+
+function initAuditGrid(el) {
+  el.querySelectorAll('.icon-audit-grid').forEach(grid => {
+    if (grid.dataset.initialized) return;
+    grid.dataset.initialized = '1';
+    const cells = Array.from(grid.querySelectorAll('.audit-cell'));
+    let showingUpdated = false;
+
+    function toggle() {
+      showingUpdated = !showingUpdated;
+      cells.forEach((cell, i) => {
+        setTimeout(() => {
+          if (showingUpdated) cell.classList.add('swapped');
+          else cell.classList.remove('swapped');
+        }, i * 120);
+      });
+    }
+
+    setInterval(toggle, 3000);
   });
 }
 
@@ -1791,9 +1879,9 @@ function swapAllSlots() {
 }
 
 function startIconAnimation() {
-  const row = document.getElementById('icon-row');
-  if (!row) return;
-  iconAnimSlots = Array.from(row.querySelectorAll('img'));
+  const container = document.getElementById('icon-row') || document.getElementById('icon-grid');
+  if (!container) return;
+  iconAnimSlots = Array.from(container.querySelectorAll('img'));
   iconAnimPool = iconFiles.filter(f => !iconAnimSlots.some(s => s.src.includes(f)));
   shuffleArray(iconAnimPool);
   if (iconInterval) return;
@@ -1811,7 +1899,7 @@ function stopIconAnimation() {
 const _origSwitchProject = switchProject;
 switchProject = function(num) {
   _origSwitchProject(num);
-  if (num === 7) startIconAnimation();
+  if (num === 5) startIconAnimation();
   else stopIconAnimation();
 };
 
