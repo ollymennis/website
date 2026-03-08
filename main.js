@@ -64,10 +64,23 @@ function switchSection(indexOrName) {
     });
   }
 
+  // Stagger information contact items
+  const infoPanel = document.querySelector('[data-panel="information"]');
+  const infoItems = infoPanel.querySelectorAll('.contact-item');
+  if (name !== 'information') {
+    infoItems.forEach(item => item.classList.remove('contact-item-in'));
+  } else {
+    infoItems.forEach((item, i) => {
+      item.classList.remove('contact-item-in');
+      void item.offsetWidth;
+      item.style.animationDelay = (i * 80) + 'ms';
+      item.classList.add('contact-item-in');
+    });
+  }
+
   // Update URL hash
   history.replaceState(null, '', name === 'about' ? location.pathname : '#' + name);
 
-  if (cvModal.open) closeCvModal();
   primedItem = null;
 
   // Enable page scroll when work-work is active (content may be tall)
@@ -153,12 +166,6 @@ document.addEventListener('keydown', (e) => {
   if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
   if (e.code === 'Escape') {
     if (activeProjectNum !== null) { closeProjectDisplay(); return; }
-    if (cvModal.open) { closeCvModal(); return; }
-  }
-  if (cvModal.open && e.code === 'Space') {
-    e.preventDefault();
-    cvModal.querySelector('.cv-modal-inner').scrollBy(0, e.shiftKey ? -200 : 200);
-    return;
   }
 
   const key = e.code;
@@ -308,30 +315,6 @@ function toggleDarkMode() {
   darkMode = !darkMode;
   document.documentElement.setAttribute('data-theme', darkMode ? 'dark' : '');
 }
-
-// --- CV Modal ---
-const cvModal = document.getElementById('cv-modal');
-const cvLink = document.querySelector('[data-default="03 cv"]');
-
-function openCvModal() {
-  cvModal.showModal();
-}
-
-function closeCvModal() {
-  cvModal.close();
-}
-
-cvLink.addEventListener('click', (e) => {
-  e.preventDefault();
-  if (cvModal.open) closeCvModal();
-  else openCvModal();
-});
-
-document.getElementById('cv-close').addEventListener('click', () => closeCvModal());
-
-cvModal.addEventListener('click', (e) => {
-  if (e.target === cvModal) closeCvModal();
-});
 
 // --- Project Markdown Loader ---
 function parseProjectMd(md) {
@@ -1622,7 +1605,7 @@ fgObserver.observe(document.documentElement, { attributes: true, attributeFilter
 
 function startScribble(x, y) {
   if (window.innerWidth <= 700) return;
-  if (stickerDragging || cvModal.open || activeProjectNum !== null) return;
+  if (stickerDragging || activeProjectNum !== null) return;
   scribbling = true;
   document.body.classList.add('drawing');
   strokes.push({ points: [{ x, y }], endTime: null });
@@ -1643,7 +1626,7 @@ function endScribble() {
 }
 
 function isInteractive(el) {
-  return el.closest('button, a, .nav-btn, .contact-item, .sticker, .cv-modal, .project-display');
+  return el.closest('button, a, .nav-btn, .contact-item, .sticker, .project-display');
 }
 
 document.addEventListener('mousedown', (e) => { if (!isInteractive(e.target)) startScribble(e.clientX, e.clientY); });

@@ -445,12 +445,14 @@ main {
   text-decoration: none;
 }
 
-.project-item {
+.project-item,
+[data-panel="information"] .contact-item {
   opacity: 0;
   transform: translateY(12px);
 }
 
-.project-item.project-item-in {
+.project-item.project-item-in,
+[data-panel="information"] .contact-item.contact-item-in {
   animation: project-enter 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
@@ -515,60 +517,6 @@ main {
   z-index: 1;
 }
 
-/* --- CV Modal --- */
-.cv-modal {
-  position: fixed;
-  top: 3rem;
-  left: 300px;
-  bottom: 3rem;
-  max-width: 500px;
-  font-family: var(--mono);
-  font-size: var(--text-base);
-  line-height: 1.5;
-  color: var(--fg);
-  background: var(--bg);
-  border: 2px solid var(--fg);
-  padding: 0;
-}
-
-.cv-modal::backdrop {
-  background: transparent;
-}
-
-.cv-modal-inner {
-  height: 100%;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  padding: 3rem;
-  scrollbar-width: none;
-  touch-action: pan-y;
-}
-
-.cv-modal-inner::-webkit-scrollbar {
-  width: 2px;
-}
-
-.cv-modal-inner::-webkit-scrollbar-track {
-  background: transparent;
-  margin-top: 24px;
-}
-
-.cv-modal-inner::-webkit-scrollbar-thumb {
-  background: var(--fg);
-}
-
-.cv-close {
-  position: absolute;
-  top: 4px;
-  right: 4px;
-  background: none;
-  border: none;
-  cursor: url('/icons/mouse-hover.svg'), pointer;
-  padding: 1rem;
-  line-height: 0;
-  color: var(--fg);
-  z-index: 1;
-}
 
 
 /* --- Work Layout (project list + inline content) --- */
@@ -741,8 +689,9 @@ main {
 
 .project-body hr {
   border: none;
-  border-top: 2px solid var(--fg);
-  opacity: 0.08;
+  height: 2px;
+  background: var(--fg);
+  opacity: 0.1 !important;
   margin: 4rem 0 1.5rem;
 }
 
@@ -1214,32 +1163,6 @@ main {
 }
 
 @media (max-width: 700px) {
-  .cv-modal {
-    left: auto;
-    inset: 1rem;
-    max-width: none;
-  }
-  .cv-modal-inner {
-    padding: 1rem;
-  }
-  .content-area {
-    margin-left: 2rem;
-  }
-  .nav {
-    gap: 1.25rem;
-  }
-  .nav-btn {
-    padding: 0.25rem 0;
-  }
-  .nav-btn.active {
-    padding-left: 2rem;
-  }
-  .contact-list {
-    gap: 0.5rem;
-  }
-  .content-area .contact-item {
-    padding: 0.15rem 0;
-  }
   .project-display {
     position: fixed;
     inset: 1rem;

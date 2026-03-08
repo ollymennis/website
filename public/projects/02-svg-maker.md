@@ -3,6 +3,8 @@ _teaching a machine to draw_
 
 I am building (it is ongoing) a tool that generates SVG icons from short, natural language prompts — matching existing library styles, shape conventions, and grid constraints
 
+<hr />
+
 ### the (lofty) goal
 I've created about 1,000 finalized svgs for Block libraries. they have consistent stroke weights, standardized corner radii, precise visual centers. my goal is to generate new icons that belong next to those, but mostly I enjoy the process of tweaking, testing, and learning about LLMs.
 

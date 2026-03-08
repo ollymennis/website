@@ -3,6 +3,8 @@ _an icon server for AI agents_
 
 icons are a consistency tax. every time someone builds a feature, they manually sift through libraries, pick something close enough, and move on. multiply that across every engineer, every AI coding tool, every ticket — and you're spending real hours on what should be automatic
 
+<hr />
+
 ### the idea
 
 what if AI agents could search, match, and generate icons on their own? not by memorizing an icon list, but by understanding what the product needs in context

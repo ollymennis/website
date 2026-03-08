@@ -6,6 +6,8 @@ moneybot is cash app's AI-powered personal financial assistant - it helps users 
 
 <video src="/media/moneybot/moneybot-full.mp4" autoplay loop muted playsinline style="display:block;max-width:200px;margin:0 auto 2rem;border-radius:30px"></video>
 
+<hr />
+
 ### part I: the message
 the year was 2025. in a small house on a hill in westchester, new york (which some people would call "upstate" but it's not really upstate) a woman's phone buzzed. a message from the tower:
 
@@ -22,7 +24,7 @@ she understood glyphs - she had created a thousand of them. she got to work.
 
 she assembled glyph after glyph after glyph, each batch transmitted back to the tower, batches to be rendered before the <span class="hover-icon" data-icon="/media/moneybot/jack.png">commander</span> himself.
 
-<img src="/media/moneybot/glyphs-intro.png" alt="glyphs intro" />
+<img style="border-radius:0" src="/media/moneybot/iterations.svg" alt="iterations" />
 > I lost a lot of work after the <span class="hover-icon" data-icon="/media/moneybot/theap.png" data-icon-width="200px">thanos snap</span> but just pretend there are dozens of impressive iterations here
 
 the cycle was always the same: she tinkered. she transmitted. the tower received. the coordinates shifted. she tinkered again.

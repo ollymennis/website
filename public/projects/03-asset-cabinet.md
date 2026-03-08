@@ -1,7 +1,7 @@
 # asset cabinet
 _semantic search for a cross-brand icon library_
 
-everyone at block searches for icons the same way: type a word, scroll through bad results, give up, ask a designer. fuzzy string matching hasn't meaningfully improved in years — and with thousands of icons across cash app, square, goose, tidal, and proto, the problem only gets worse
+designers and engineers at block search for icons the same way: type a word, scroll through bad results, give up, slack the systems team. fuzzy string matching hasn't meaningfully improved in years, and with thousands of icons across cash app, square, goose, tidal, and proto, the problem only gets worse
 
 <!-- <div class="cabinet-demo" id="cabinet-demo">
   <svg style="position:absolute;width:0;height:0"><defs>
@@ -20,6 +20,8 @@ everyone at block searches for icons the same way: type a word, scroll through b
     <span class="cabinet-pill">tidal</span>
   </div>
 </div> -->
+
+<hr />
 
 ### the goal
 
