@@ -744,14 +744,13 @@ function initCabinetDemo(el) {
         container.classList.remove('phase-results', 'bubbled');
         pills.forEach(p => { p.style.transform = 'scale(0)'; p.style.opacity = '0'; });
         pills.forEach(p => p.classList.remove('active'));
-        pills[0].classList.add('active');
-        searchText.textContent = '';
+        pills[1].classList.add('active'); // pre-select cash app
+        searchText.textContent = '|';
         cards.forEach(c => { c.style.transform = 'scale(0)'; c.style.opacity = '0'; c.style.animation = ''; });
       }
 
       function runLoop() {
         resetDemo();
-        let step = 0;
 
         // Phase 1: bubble pills in after a pause
         setTimeout(() => {
@@ -759,14 +758,8 @@ function initCabinetDemo(el) {
           pills.forEach(p => { p.style.transform = ''; p.style.opacity = ''; });
         }, 600);
 
-        // Phase 2: select "cash app" pill
-        setTimeout(() => {
-          pills.forEach(p => p.classList.remove('active'));
-          pills[1].classList.add('active');
-        }, 1400);
-
-        // Phase 3: type "michael jordan"
-        const typeStart = 1800;
+        // Phase 2: type "michael jordan"
+        const typeStart = 1200;
         const typeSpeed = 70;
         for (let i = 0; i < query.length; i++) {
           setTimeout(() => {

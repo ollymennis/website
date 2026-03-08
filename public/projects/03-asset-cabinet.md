@@ -10,7 +10,7 @@ designers and engineers at block search for icons the same way: type a word, scr
     </filter>
   </defs></svg>
   <div class="cabinet-title">block icons</div>
-  <div class="cabinet-search"><img class="cabinet-search-icon" src="/media/cabinet/search.svg" alt="search" /><span class="cabinet-search-text"></span><span class="cabinet-cursor">|</span></div>
+  <div class="cabinet-search"><img class="cabinet-search-icon" src="/media/cabinet/search.svg" alt="search" /><span class="cabinet-search-text">|</span></div>
   <div class="cabinet-pills" style="filter:url(#goo)">
     <span class="cabinet-pill active">all</span>
     <span class="cabinet-pill">cash app</span>
