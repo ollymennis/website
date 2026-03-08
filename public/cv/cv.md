@@ -9,7 +9,7 @@ designer with 12 years shipping across mobile, web, brand, hardware, and dev too
 - founding member of cash app's systems & standards team (~25 members); led the strategy to transform a fragmented asset/token system into a cohesive, scalable system across ios, android, and web
 - designed and maintained 1,000+ icons across block — cash app, square, goose, bitkey, and tidal — streamlining production workflows to ship library updates independently, removing engineers from the critical path
 - built an mcp server connecting token libraries to internal ai agents leveraging semantic search through image and text embeddings; benchmarked across embedding models using structured evals to optimize retrieval accuracy
-- led interaction and motion efforts to establish the foundational elements of cash app's motion system; translated cel animations and complex files into tokenized, prototype-ready animated components
+- led motion efforts to establish the foundational elements of cash app's motion system; translated cel animations and complex files into tokenized, prototype-ready animated components
 - second among 500 design team members across block to ship production prs; ranked top 10 on the company leaderboard for both pr volume (8th) and repo diversity (3rd)
 - championed designer-to-production culture, mentoring teammates to open their first prs and pushing systems & standards to become the first team at block in which 100% of designers shipped to production
 - fostered early adoption of ai tools to accelerate design workflows; led a rapid creative asset sprint using image generation tools, defining a new asset style and visual language for brand studio partners
@@ -33,7 +33,5 @@ designer with 12 years shipping across mobile, web, brand, hardware, and dev too
 - designed, launched, and maintained web and mobile products for shake shack, anheuser-busch, rockefeller center, otis elevators, the huffington post, and stupid cancer — several including cms-driven content systems for non-technical teams
 
 ## various fashion startups · frontend web developer · 2011–2014
-
-## education
 
 ## full sail university · bachelor of science, digital art & design · 2011

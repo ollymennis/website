@@ -31,10 +31,11 @@ function switchSection(indexOrName) {
     panel.classList.toggle('active', panel.dataset.panel === name);
   });
 
-  // Clear contact highlight when leaving information
+  // Clear contact highlight and close CV when leaving information
   if (name !== 'information') {
     highlightedContact = -1;
     contactItems.forEach(item => item.classList.remove('highlighted'));
+    document.getElementById('cv-modal').classList.remove('active');
   }
 
   // Clear project highlight and hide display when leaving work-work
@@ -165,6 +166,7 @@ function getActiveSlideController() {
 document.addEventListener('keydown', (e) => {
   if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
   if (e.code === 'Escape') {
+    if (cvModal.classList.contains('active')) { cvModal.classList.remove('active'); return; }
     if (activeProjectNum !== null) { closeProjectDisplay(); return; }
   }
 
@@ -376,10 +378,10 @@ function parseProjectMd(md) {
     // h2 and h3 (check h3 first since ### also starts with ##)
     if (trimmed.startsWith('### ')) { bodyHtml += `<h3>${inlineMd(trimmed.slice(4))}</h3>\n`; continue; }
     if (trimmed.startsWith('## ')) { bodyHtml += `<h2>${inlineMd(trimmed.slice(3))}</h2>\n`; continue; }
-    // Bullet lists (+ or →)
-    if (trimmed.startsWith('+ ') || trimmed.startsWith('→')) {
-      const text = trimmed.startsWith('+ ') ? trimmed.slice(2) : trimmed.slice(1).trim();
-      const marker = trimmed[0];
+    // Bullet lists (+, -, or →)
+    if (trimmed.startsWith('+ ') || trimmed.startsWith('- ') || trimmed.startsWith('→')) {
+      const text = (trimmed.startsWith('+ ') || trimmed.startsWith('- ')) ? trimmed.slice(2) : trimmed.slice(1).trim();
+      const marker = trimmed[0] === '-' ? '+' : trimmed[0];
       if (!inBulletList) { bodyHtml += `<ul class="bullet-list">`; inBulletList = true; }
       bodyHtml += `<li><span class="bullet-marker">${marker}</span>${inlineMd(text)}</li>\n`;
       continue;
@@ -1655,6 +1657,31 @@ projectItems.forEach(item => {
 });
 
 document.getElementById('project-display-close').addEventListener('click', closeProjectDisplay);
+
+// --- CV Display ---
+const cvModal = document.getElementById('cv-modal');
+const cvContent = document.getElementById('cv-content');
+const cvClose = document.getElementById('cv-close');
+let cvLoaded = false;
+
+document.querySelector('[data-default="03 cv"]').addEventListener('click', async (e) => {
+  e.preventDefault();
+  if (!cvLoaded) {
+    const resp = await fetch('/cv/cv.md');
+    if (!resp.ok) return;
+    const md = await resp.text();
+    const { title, subtitle, bodyHtml } = parseProjectMd(md);
+    cvContent.innerHTML =
+      `<div class="project-header"><h2>${title}</h2>${subtitle ? `<p class="project-subtitle">${subtitle}</p>` : ''}</div>` +
+      `<p class="cv-download"><a href="/cv/molly-ennis-cv.pdf" target="_blank" rel="noopener">download pdf</a></p>` +
+      `<div class="project-body">${bodyHtml}</div>`;
+    cvLoaded = true;
+  }
+  cvModal.classList.add('active');
+});
+
+cvClose.addEventListener('click', () => cvModal.classList.remove('active'));
+
 
 // --- Handle URL hash for deep linking ---
 function handleHash() {
