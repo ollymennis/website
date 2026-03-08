@@ -888,7 +888,7 @@ main {
   grid-template-columns: repeat(7, 24px);
   justify-content: space-between;
   gap: 1.5rem;
-  margin: 1rem 0 -2rem;
+  margin: 1rem 0 0;
 }
 
 
@@ -911,6 +911,7 @@ main {
 .project-collapse summary {
   list-style: none;
   cursor: pointer;
+  display: inline-block;
 }
 
 .project-collapse summary::-webkit-details-marker {
@@ -921,12 +922,8 @@ main {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  margin-top: 2.5rem;
+  margin-top: 0;
   margin-bottom: 0;
-}
-
-.project-collapse + .project-collapse summary h2 {
-  margin-top: 1.5rem;
 }
 
 .collapse-content {
