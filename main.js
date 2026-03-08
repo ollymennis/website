@@ -727,13 +727,85 @@ function initCabinetDemo(el) {
     container.dataset.initialized = 'true';
     const searchBar = container.querySelector('.cabinet-search');
     const pills = container.querySelectorAll('.cabinet-pill');
+    const isLoop = container.classList.contains('cabinet-demo-loop');
 
     // Stagger appear delays per pill
     pills.forEach((pill, i) => {
       pill.style.animationDelay = (i * 0.08) + 's';
     });
 
-    // Click search bar → bubble pills in
+    if (isLoop) {
+      const searchText = container.querySelector('.cabinet-search-text');
+      const cards = container.querySelectorAll('.cabinet-result-card');
+      const query = 'michael jordan';
+      let loopTimer = null;
+
+      function resetDemo() {
+        container.classList.remove('phase-results', 'bubbled');
+        pills.forEach(p => { p.style.transform = 'scale(0)'; p.style.opacity = '0'; });
+        pills.forEach(p => p.classList.remove('active'));
+        pills[0].classList.add('active');
+        searchText.textContent = '';
+        cards.forEach(c => { c.style.transform = 'scale(0)'; c.style.opacity = '0'; c.style.animation = ''; });
+      }
+
+      function runLoop() {
+        resetDemo();
+        let step = 0;
+
+        // Phase 1: bubble pills in after a pause
+        setTimeout(() => {
+          container.classList.add('bubbled');
+          pills.forEach(p => { p.style.transform = ''; p.style.opacity = ''; });
+        }, 600);
+
+        // Phase 2: select "cash app" pill
+        setTimeout(() => {
+          pills.forEach(p => p.classList.remove('active'));
+          pills[1].classList.add('active');
+        }, 1400);
+
+        // Phase 3: type "michael jordan"
+        const typeStart = 1800;
+        const typeSpeed = 70;
+        for (let i = 0; i < query.length; i++) {
+          setTimeout(() => {
+            searchText.textContent = query.slice(0, i + 1);
+          }, typeStart + i * typeSpeed);
+        }
+
+        // Phase 4: show results
+        const resultsStart = typeStart + query.length * typeSpeed + 500;
+        setTimeout(() => {
+          container.classList.add('phase-results');
+        }, resultsStart);
+
+        // Phase 5: pop cards in staggered
+        cards.forEach((card, i) => {
+          setTimeout(() => {
+            card.style.animation = 'card-pop 0.4s cubic-bezier(0.28, 1.28, 0.5, 1) forwards';
+          }, resultsStart + 200 + i * 150);
+        });
+
+        // Phase 6: hold, then reset and loop
+        const totalDuration = resultsStart + 200 + cards.length * 150 + 3000;
+        loopTimer = setTimeout(runLoop, totalDuration);
+      }
+
+      // Start loop when scrolled into view
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            runLoop();
+            observer.disconnect();
+          }
+        });
+      }, { threshold: 0.5 });
+      observer.observe(container);
+      return;
+    }
+
+    // Non-loop: original click behavior
     searchBar.addEventListener('click', () => {
       if (container.classList.contains('bubbled')) {
         container.classList.remove('bubbled');
@@ -744,7 +816,6 @@ function initCabinetDemo(el) {
       pills.forEach(p => { p.style.transform = ''; p.style.opacity = ''; });
     });
 
-    // Click pills to toggle active
     pills.forEach(pill => {
       pill.addEventListener('click', () => {
         pills.forEach(p => p.classList.remove('active'));

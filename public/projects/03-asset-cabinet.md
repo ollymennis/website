@@ -3,14 +3,14 @@ _semantic search for a cross-brand icon library_
 
 designers and engineers at block search for icons the same way: type a word, scroll through bad results, give up, slack the systems team. fuzzy string matching hasn't meaningfully improved in years, and with thousands of icons across cash app, square, goose, tidal, and proto, the problem only gets worse
 
-<!-- <div class="cabinet-demo" id="cabinet-demo">
+<div class="cabinet-demo cabinet-demo-loop" id="cabinet-demo">
   <svg style="position:absolute;width:0;height:0"><defs>
     <filter id="goo"><feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur"/>
     <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7" result="goo"/>
     </filter>
   </defs></svg>
   <div class="cabinet-title">block icons</div>
-  <div class="cabinet-search"><img class="cabinet-search-icon" src="/media/cabinet/search.svg" alt="search" /><span class="cabinet-cursor">|</span></div>
+  <div class="cabinet-search"><img class="cabinet-search-icon" src="/media/cabinet/search.svg" alt="search" /><span class="cabinet-search-text"></span><span class="cabinet-cursor">|</span></div>
   <div class="cabinet-pills" style="filter:url(#goo)">
     <span class="cabinet-pill active">all</span>
     <span class="cabinet-pill">cash app</span>
@@ -19,7 +19,13 @@ designers and engineers at block search for icons the same way: type a word, scr
     <span class="cabinet-pill">proto</span>
     <span class="cabinet-pill">tidal</span>
   </div>
-</div> -->
+  <div class="cabinet-results">
+    <div class="cabinet-result-card"><div class="cabinet-result-name">jewelry</div><div class="cabinet-result-brand">cash app</div><img src="/media/icons-refresh/icon-svgs/categoryJewelry24.svg" alt="jewelry" /></div>
+    <div class="cabinet-result-card"><div class="cabinet-result-name">shoes</div><div class="cabinet-result-brand">cash app</div><img src="/media/icons-refresh/icon-svgs/categoryShoes24.svg" alt="shoes" /></div>
+    <div class="cabinet-result-card"><div class="cabinet-result-name">fitness</div><div class="cabinet-result-brand">cash app</div><img src="/media/icons-refresh/icon-svgs/categoryFitness24.svg" alt="fitness" /></div>
+    <div class="cabinet-result-card"><div class="cabinet-result-name">media</div><div class="cabinet-result-brand">cash app</div><img src="/media/icons-refresh/icon-svgs/categoryMedia24.svg" alt="media" /></div>
+  </div>
+</div>
 
 <hr />
 
@@ -27,7 +33,7 @@ designers and engineers at block search for icons the same way: type a word, scr
 
 build a search that understands intent, not just keywords. if someone searches "send money to a friend," surface the peer-to-peer transfer icon - even if no tag says "friend"
 
-<video src="/media/cabinet/main.mp4" autoplay loop muted playsinline></video>
+<div class="video-crop"><video src="/media/cabinet/blockicons.mp4" autoplay loop muted playsinline onloadedmetadata="this.playbackRate=1.5"></video></div>
 
 ### why embeddings
 
