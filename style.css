@@ -690,7 +690,7 @@ main {
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: none;
   }
 }
 
@@ -923,7 +923,14 @@ main {
   height: 80px;
   object-fit: contain;
   border-radius: 0;
-  mix-blend-mode: multiply;
+}
+
+.media-row {
+  animation: none !important;
+  opacity: 1 !important;
+}
+
+.media-blend {
   mix-blend-mode: multiply;
 }
 
@@ -1234,7 +1241,6 @@ main {
   .media-row img.media-fixed {
     width: 60px;
     height: 60px;
-    mix-blend-mode: multiply;
   }
   .icon-grid-row {
     display: grid !important;

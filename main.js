@@ -1340,6 +1340,10 @@ function switchProject(num) {
     const bodyChildren = activeContent.querySelectorAll('.project-body > *');
     bodyChildren.forEach((child, i) => {
       child.style.animationDelay = `${100 + i * 40}ms`;
+      child.addEventListener('animationend', () => {
+        child.style.animation = 'none';
+        child.style.opacity = '1';
+      }, { once: true });
     });
     void activeContent.offsetWidth;
     activeContent.classList.add('project-body-in');
