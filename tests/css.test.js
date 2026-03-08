@@ -35,8 +35,8 @@ describe('dark mode overrides', () => {
 });
 
 describe('font-face declarations', () => {
-  it('declares Commit Mono font-face', () => {
-    expect(cssText).toMatch(/font-family:\s*['"]Commit Mono['"]/);
+  it('declares JetBrains Mono font-face', () => {
+    expect(cssText).toMatch(/font-family:\s*['"]JetBrains Mono['"]/);
   });
 
   it('declares Cash Sans font-face', () => {
