@@ -67,7 +67,7 @@ function switchSection(indexOrName) {
   // Update URL hash
   history.replaceState(null, '', name === 'about' ? location.pathname : '#' + name);
 
-  if (cvModalOpen) closeCvModal();
+  if (cvModal.open) closeCvModal();
   primedItem = null;
 
   // Enable page scroll when work-work is active (content may be tall)
@@ -153,9 +153,9 @@ document.addEventListener('keydown', (e) => {
   if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
   if (e.code === 'Escape') {
     if (activeProjectNum !== null) { closeProjectDisplay(); return; }
-    if (cvModalOpen) { closeCvModal(); return; }
+    if (cvModal.open) { closeCvModal(); return; }
   }
-  if (cvModalOpen && e.code === 'Space') {
+  if (cvModal.open && e.code === 'Space') {
     e.preventDefault();
     cvModal.querySelector('.cv-modal-inner').scrollBy(0, e.shiftKey ? -200 : 200);
     return;
@@ -312,25 +312,26 @@ function toggleDarkMode() {
 // --- CV Modal ---
 const cvModal = document.getElementById('cv-modal');
 const cvLink = document.querySelector('[data-default="03 cv"]');
-let cvModalOpen = false;
 
 function openCvModal() {
-  cvModal.classList.add('active');
-  cvModalOpen = true;
+  cvModal.showModal();
 }
 
 function closeCvModal() {
-  cvModal.classList.remove('active');
-  cvModalOpen = false;
+  cvModal.close();
 }
 
 cvLink.addEventListener('click', (e) => {
   e.preventDefault();
-  if (cvModalOpen) closeCvModal();
+  if (cvModal.open) closeCvModal();
   else openCvModal();
 });
 
 document.getElementById('cv-close').addEventListener('click', () => closeCvModal());
+
+cvModal.addEventListener('click', (e) => {
+  if (e.target === cvModal) closeCvModal();
+});
 
 // --- Project Markdown Loader ---
 function parseProjectMd(md) {
@@ -1540,66 +1541,6 @@ handleHash();
 delete document.documentElement.dataset.initSection;
 window.addEventListener('hashchange', handleHash);
 
-// --- Load CV from markdown ---
-fetch('/cv/cv.md')
-  .then(r => { if (!r.ok) throw new Error(); return r.text(); })
-  .then(md => {
-    const lines = md.split('\n');
-    let html = '';
-    let inList = false;
-
-    for (const line of lines) {
-      // Skip h1 (name) and the line right after (subtitle) — already shown on site
-      if (line.startsWith('# ')) {
-        const name = line.slice(2).trim();
-        html += `<h2 class="cv-name">${name}</h2>`;
-        continue;
-      }
-
-      // h2 — role headers or education header
-      if (line.startsWith('## ')) {
-        if (inList) { html += '</ul></div>'; inList = false; }
-        const heading = line.slice(3).trim();
-        if (heading.toLowerCase() === 'education') continue;
-        html += `<div class="cv-role"><p class="cv-role-header">${heading.replace(/ · /g, ' \u00b7 ').replace(/–/g, '\u2013')}</p>`;
-        continue;
-      }
-
-      // List items
-      if (line.startsWith('- ')) {
-        if (!inList) { html += '<ul>'; inList = true; }
-        html += `<li>${line.slice(2).replace(/—/g, '\u2014')}</li>`;
-        continue;
-      }
-
-      // Plain text lines (subtitle, summary, education)
-      const trimmed = line.trim();
-      if (!trimmed) {
-        if (inList) { html += '</ul></div>'; inList = false; }
-        continue;
-      }
-
-      // Subtitle line (comes right after name)
-      if (html.includes('cv-name') && !html.includes('cv-subtitle')) {
-        html += `<p class="cv-subtitle">${trimmed}</p>`;
-        continue;
-      }
-
-      // Summary paragraph (before first h2)
-      if (!html.includes('cv-role')) {
-        html += `<p class="cv-summary">${trimmed.replace(/—/g, '\u2014')}</p>`;
-        continue;
-      }
-
-      // Education line
-      html += `<p class="cv-education">${trimmed.replace(/ · /g, ' \u00b7 ').replace(/–/g, '\u2013')}</p>`;
-    }
-
-    if (inList) html += '</ul></div>';
-    document.getElementById('cv-content').innerHTML = html;
-  })
-  .catch(() => {});
-
 // --- Draggable Stickers ---
 let stickerZ = 100;
 
@@ -1681,7 +1622,7 @@ fgObserver.observe(document.documentElement, { attributes: true, attributeFilter
 
 function startScribble(x, y) {
   if (window.innerWidth <= 700) return;
-  if (stickerDragging || cvModalOpen || activeProjectNum !== null) return;
+  if (stickerDragging || cvModal.open || activeProjectNum !== null) return;
   scribbling = true;
   document.body.classList.add('drawing');
   strokes.push({ points: [{ x, y }], endTime: null });
