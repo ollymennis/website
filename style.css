@@ -769,6 +769,7 @@ main {
 }
 
 .project-body blockquote p {
+  font-size: var(--text-code);
   margin-bottom: 0;
 }
 
