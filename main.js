@@ -1246,6 +1246,70 @@ function initSvgGridDemo(el) {
         codeSpans.forEach(s => { s.style.opacity = '1'; });
       }
     });
+
+    // Touch: slide to explore coordinates
+    let touching = false;
+    function handleTouch(e) {
+      const touch = e.touches[0];
+      const rect = svg.getBoundingClientRect();
+      const x = ((touch.clientX - rect.left) / rect.width) * 24;
+      const y = ((touch.clientY - rect.top) / rect.height) * 24;
+      const rx = Math.round(x);
+      const ry = Math.round(y);
+      if (rx < 0 || rx > 24 || ry < 0 || ry > 24) return;
+      e.preventDefault();
+      let hoveredPath = null;
+      if (plPaths.length) {
+        const els = document.elementsFromPoint(touch.clientX, touch.clientY);
+        for (const el of els) {
+          const g = el.closest('.pl-path');
+          if (g) { hoveredPath = g; break; }
+        }
+      }
+      coord.textContent = `(${rx}, ${ry})`;
+      const cRect = container.getBoundingClientRect();
+      if (dot) {
+        dot.style.display = 'block';
+        dot.style.left = (rect.left - cRect.left + rx / 24 * rect.width) + 'px';
+        dot.style.top = (rect.top - cRect.top + ry / 24 * rect.height) + 'px';
+      }
+      if (plPaths.length) {
+        plPaths.forEach(p => {
+          p.style.opacity = hoveredPath ? (p === hoveredPath ? '1' : '0.15') : '1';
+          p.querySelectorAll('path:nth-child(2)').forEach(bp => { bp.style.opacity = hoveredPath && p === hoveredPath ? '1' : '0'; });
+        });
+        codeSpans.forEach(s => {
+          s.style.opacity = hoveredPath ? (s.dataset.pathCode === hoveredPath.dataset.label ? '1' : '0.25') : '1';
+        });
+      }
+      coord.style.position = 'absolute';
+      coord.style.display = 'block';
+      coord.style.left = (touch.clientX - cRect.left + 12) + 'px';
+      coord.style.top = (touch.clientY - cRect.top - 30) + 'px';
+      coord.style.right = 'auto';
+    }
+    container.addEventListener('touchstart', e => {
+      touching = true;
+      handleTouch(e);
+    }, { passive: false });
+    container.addEventListener('touchmove', e => {
+      if (touching) handleTouch(e);
+    }, { passive: false });
+    container.addEventListener('touchend', () => {
+      touching = false;
+      setTimeout(() => {
+        coord.textContent = '';
+        coord.style.display = 'none';
+        if (dot) dot.style.display = 'none';
+        if (plPaths.length) {
+          plPaths.forEach(p => {
+            p.style.opacity = '1';
+            p.querySelectorAll('path:nth-child(2)').forEach(bp => { bp.style.opacity = '0'; });
+          });
+          codeSpans.forEach(s => { s.style.opacity = '1'; });
+        }
+      }, 1000);
+    });
   });
 }
 
