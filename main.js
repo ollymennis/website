@@ -1128,6 +1128,7 @@ function initGenDemo(el) {
 
     function startStreaming(duration) {
       if (!codeOut) return;
+      stopStreaming();
       const pre = codeOut.parentElement;
       codeOut.textContent = '';
       if (pre) pre.scrollTop = 0;
