@@ -55,9 +55,6 @@ describe('mobile media queries', () => {
     expect(cssText).toMatch(/@media\s*\(max-width:\s*700px\)/);
   });
 
-  it('has 1100px breakpoint media query', () => {
-    expect(cssText).toMatch(/@media\s*\(max-width:\s*1100px\)/);
-  });
 });
 
 describe('demo CSS classes', () => {

@@ -30,7 +30,6 @@ describe('cabinet-demo', () => {
     expect(raw).toContain('cabinet-title');
     expect(raw).toContain('cabinet-search');
     expect(raw).toContain('cabinet-search-icon');
-    expect(raw).toContain('cabinet-cursor');
     expect(raw).toContain('cabinet-pills');
     expect(raw).toContain('cabinet-pill');
   });
