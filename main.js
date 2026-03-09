@@ -1044,6 +1044,12 @@ function initGenDemo(el) {
       { file: 'christmas light', labels: ['wire', 'cord', 'base', 'bulb'] },
       { file: 'coiled snake', labels: ['coil', 'head'] },
       { file: 'los angeles', labels: ['fronds', 'trunk'] },
+      { file: 'agave', labels: ['stem', 'left-leaf', 'left-leaf', 'left-leaf', 'right-leaf', 'right-leaf', 'right-leaf', 'base'] },
+      { file: 'duffel bag', labels: ['body', 'handle', 'divider', 'side-handles'] },
+      { file: 'mariachi', labels: ['brim', 'crown', 'ruffle', 'body'] },
+      { file: 'muji pen', labels: ['barrel', 'ink-line', 'highlight'] },
+      { file: 'noguchi lamp', labels: ['shade', 'stem', 'tripod', 'base'] },
+      { file: 'wedding cake', labels: ['tiers', 'tier-line', 'tier-line', 'candle', 'candle', 'topper'] },
     ];
 
     function formatSvgCode(svgText, labels) {
@@ -1075,6 +1081,9 @@ function initGenDemo(el) {
     let queueIdx = 0;
     let SVG_CODE = '';
 
+    let autoplayTimer = null;
+    let autoplayObserver = null;
+
     Promise.all(SVG_META.map(meta =>
       fetch('/media/svg maker/decent/' + encodeURIComponent(meta.file) + '.svg')
         .then(r => r.text())
@@ -1085,12 +1094,36 @@ function initGenDemo(el) {
         }))
         .catch(() => null)
     )).then(results => {
-      QUEUE = results.filter(Boolean);
-      if (QUEUE.length) {
-        SVG_CODE = QUEUE[0].code;
-        const promptLabel = container.querySelector('[style*="margin-bottom"]');
-        if (promptLabel) promptLabel.textContent = 'click to generate "' + QUEUE[0].name + '"';
+      // Remove icons already shown in the static content below
+      const shownBelow = new Set(['constitution', 'seattle', 'cairo', 'guadalajara', 'cheeseburger', 'christmas light', 'coiled snake', 'los angeles']);
+      QUEUE = results.filter(Boolean).filter(q => !shownBelow.has(q.name));
+      // Shuffle
+      for (let i = QUEUE.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [QUEUE[i], QUEUE[j]] = [QUEUE[j], QUEUE[i]];
       }
+      if (!QUEUE.length) return;
+      SVG_CODE = QUEUE[0].code;
+      // Clear the hardcoded initial SVG state
+      resultG.style.display = 'none';
+      resultG.innerHTML = '';
+      if (codeOut) codeOut.textContent = '';
+      const promptLabel = container.querySelector('.gen-demo-prompt');
+      if (promptLabel) promptLabel.textContent = 'generating "' + QUEUE[0].name + '"';
+
+      // Autoplay loop via IntersectionObserver
+      autoplayObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting && !running && !autoplayTimer) {
+            generateNext();
+          }
+          if (!entry.isIntersecting && autoplayTimer) {
+            clearTimeout(autoplayTimer);
+            autoplayTimer = null;
+          }
+        });
+      }, { threshold: 0.3 });
+      autoplayObserver.observe(container);
     });
 
     function startStreaming(duration) {
@@ -1170,28 +1203,25 @@ function initGenDemo(el) {
       // Re-hide blue indicator paths on new content
       resultG.querySelectorAll('.pl-path path:nth-child(2)').forEach(bp => { bp.style.opacity = '0'; });
       running = false;
-      // Update caption to next prompt and auto-queue
+      // Queue next generation after a hold period
       queueIdx = (queueIdx + 1) % QUEUE.length;
-      const promptLabel = container.querySelector('[style*="margin-bottom"]');
-      if (promptLabel) promptLabel.textContent = `click to generate "${QUEUE[queueIdx].name}"`;
+      autoplayTimer = setTimeout(() => {
+        autoplayTimer = null;
+        generateNext();
+      }, 2000);
     }
 
     function generateNext() {
       if (running || !QUEUE.length) return;
       const item = QUEUE[queueIdx];
       SVG_CODE = item.code;
-      const promptLabel = container.querySelector('[style*="margin-bottom"]');
+      const promptLabel = container.querySelector('.gen-demo-prompt');
       if (promptLabel) promptLabel.textContent = `generating "${item.name}"`;
-      const delay = 4000 + Math.random() * 2000;
+      const delay = 2500 + Math.random() * 1000;
       startLoading();
       startStreaming(delay);
       setTimeout(showResult, delay);
     }
-
-    container.addEventListener('click', () => {
-      if (running || !QUEUE.length) return;
-      generateNext();
-    });
   });
 }
 
