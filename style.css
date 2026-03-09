@@ -1246,6 +1246,34 @@ main {
   border-radius: 0;
 }
 
+.demo-grid {
+  display: flex;
+  gap: 1rem;
+  margin: 2.5rem 0;
+}
+
+.demo-grid > div {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.demo-grid svg {
+  display: block;
+  width: 50%;
+  height: auto;
+}
+
+.demo-grid .demo-label {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--fg);
+  margin-top: 0.5rem;
+  text-align: center;
+}
+
 .img-pair {
   display: flex;
   gap: 1rem;
@@ -1351,47 +1379,6 @@ main {
     border: 2px solid var(--fg);
     padding: 3rem 1.5rem;
     overflow-y: auto;
-  }
-}
-
-@media (max-width: 700px) {
-  .project-display {
-    position: fixed;
-    inset: 1rem;
-    left: 1rem;
-    top: 1rem;
-    right: 1rem;
-    bottom: 1rem;
-    z-index: 150;
-    background: var(--bg);
-    overflow: hidden;
-    border: 2px solid var(--fg);
-    padding: 0;
-  }
-  .project-display.active {
-    display: block;
-  }
-  .project-display.active .project-content.active {
-    height: 100%;
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    padding: 3rem 1.5rem;
-    scrollbar-width: none;
-    touch-action: pan-y;
-  
-  }
-  .project-display-close {
-    display: block;
-  }
-  .project-header,
-  .project-body {
-    max-width: none;
-  }
-  .project-header,
-  .project-body p,
-  .project-body h3,
-  .project-body .bullet-list {
-    max-width: 100%;
   }
 }
 

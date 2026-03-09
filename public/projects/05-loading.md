@@ -1,7 +1,7 @@
 # loading
 _coming soon_
 
-led motion efforts to establish the foundational elements of cash app's motion system
+led motion efforts to establish the foundational elements of cash app's motion system (not these)
 
 <div class="media-row">
 <img class="media-fixed" src="/media/loadies/loadie_.gif" alt="" />
