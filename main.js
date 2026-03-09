@@ -1094,14 +1094,9 @@ function initGenDemo(el) {
         }))
         .catch(() => null)
     )).then(results => {
-      // Remove icons already shown in the static content below
-      const shownBelow = new Set(['constitution', 'seattle', 'cairo', 'guadalajara', 'cheeseburger', 'christmas light', 'coiled snake', 'los angeles']);
-      QUEUE = results.filter(Boolean).filter(q => !shownBelow.has(q.name));
-      // Shuffle
-      for (let i = QUEUE.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [QUEUE[i], QUEUE[j]] = [QUEUE[j], QUEUE[i]];
-      }
+      const allResults = results.filter(Boolean);
+      const order = ['agave', 'noguchi lamp', 'muji pen', 'palm tree', 'wedding cake', 'trash can', 'mariachi', 'duffel bag', 'bicycle'];
+      QUEUE = order.map(name => allResults.find(r => r.name === name)).filter(Boolean);
       if (!QUEUE.length) return;
       SVG_CODE = QUEUE[0].code;
       // Clear the hardcoded initial SVG state
