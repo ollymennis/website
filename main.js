@@ -1180,7 +1180,10 @@ function initGenDemo(el) {
 
     function buildPathsHTML(pathData) {
       return pathData.map(p => {
-        const fill = p.fill ? ` fill="${p.fill}"` : ' fill="none"';
+        if (p.fill) {
+          return `<g class="pl-path" data-label="${p.label}"><path d="${p.d}" fill="${p.fill}" class="pl-magenta"/><path d="${p.d}" fill="none" stroke="#009CFF" stroke-width="0.12" stroke-linejoin="round"/></g>`;
+        }
+        const fill = ' fill="none"';
         return `<g class="pl-path" data-label="${p.label}"><path d="${p.d}" stroke="#FF00FF" stroke-width="2" stroke-linejoin="round"${fill} class="pl-magenta"/><path d="${p.d}" stroke="#009CFF" stroke-width="0.12" stroke-linejoin="round" fill="none"/></g>`;
       }).join('');
     }
