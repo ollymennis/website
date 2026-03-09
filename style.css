@@ -1242,13 +1242,20 @@ main {
   margin-top: 0.5rem;
   text-align: center;
 }
+.demo-grid circle.demo-accent,
+.demo-grid .demo-accent-line {
+  opacity: 0;
+}
 .demo-grid > div:hover path.demo-accent,
 .demo-grid > div:active path.demo-accent {
   fill: #FF00FF;
 }
 .demo-grid > div:hover circle.demo-accent,
-.demo-grid > div:active circle.demo-accent {
+.demo-grid > div:active circle.demo-accent,
+.demo-grid > div:hover .demo-accent-line,
+.demo-grid > div:active .demo-accent-line {
   stroke: #FF00FF;
+  opacity: 1;
 }
 
 .img-pair {
