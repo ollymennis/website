@@ -19,7 +19,7 @@
   <link rel="stylesheet" href="/style.css" />
   <script>
   if(location.hash){
-    var s=location.hash.slice(1),t=['about','work-work','independent-work','information'];
+    var s=location.hash.slice(1),t=['about','work-work','information'];
     var target=t.indexOf(s)!==-1?s:'work-work';
     if(target!=='about')document.documentElement.dataset.initSection=target;
   }
@@ -34,9 +34,6 @@ about
       </button>
       <button class="nav-btn" data-section="work-work" data-text="[+] work work">
 work work
-      </button>
-      <button class="nav-btn" data-section="independent-work" data-text="[+] independent work" style="display:none">
-independent work
       </button>
       <button class="nav-btn" data-section="information" data-text="[+] information">
 information
@@ -78,8 +75,6 @@ information
         </div>
       </div>
 
-      <div class="content-panel" data-panel="independent-work">
-      </div>
 
       <div class="content-panel" data-panel="information">
         <div class="work-layout">

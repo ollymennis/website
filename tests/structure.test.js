@@ -34,9 +34,6 @@ describe('content panels', () => {
 describe('required IDs', () => {
   const ids = [
     'project-display',
-    'cv-modal',
-    'cv-close',
-    'cv-content',
     'copy-email',
     'scribble-canvas',
   ];

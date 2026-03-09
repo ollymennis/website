@@ -616,6 +616,7 @@ main {
 .project-header,
 .project-body {
   max-width: 600px;
+  container-type: inline-size;
 }
 
 .project-header {
@@ -1334,9 +1335,6 @@ main {
     grid-template-columns: 1fr 1fr;
     gap: 1rem !important;
   }
-  .cabinet-results {
-    flex-wrap: wrap;
-  }
 }
 
 /* --- Inconsistency diagrams --- */
@@ -1569,6 +1567,12 @@ main {
   0% { transform: scale(0); opacity: 0; }
   70% { transform: scale(1.04); opacity: 1; }
   100% { transform: scale(1); opacity: 1; }
+}
+
+@container (max-width: 500px) {
+  .cabinet-demo {
+    zoom: 0.65;
+  }
 }
 
 /* --- Drawing state: disable hovers --- */

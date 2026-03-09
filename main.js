@@ -152,12 +152,10 @@ function createSlideController(panelSelector, counterId) {
 }
 
 const workSlides = createSlideController('[data-panel="work-work"]', 'work-current');
-const indieSlides = createSlideController('[data-panel="independent-work"]', 'indie-current');
 
 function getActiveSlideController() {
   const name = sections[currentNav];
   if (name === 'work-work') return workSlides;
-  if (name === 'independent-work') return indieSlides;
   return null;
 }
 
