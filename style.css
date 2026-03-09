@@ -1242,6 +1242,14 @@ main {
   margin-top: 0.5rem;
   text-align: center;
 }
+.demo-grid > div:hover path.demo-accent,
+.demo-grid > div:active path.demo-accent {
+  fill: #FF00FF;
+}
+.demo-grid > div:hover circle.demo-accent,
+.demo-grid > div:active circle.demo-accent {
+  stroke: #FF00FF;
+}
 
 .img-pair {
   display: flex;
