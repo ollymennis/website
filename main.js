@@ -162,7 +162,7 @@ function getActiveSlideController() {
 // --- Keyboard navigation ---
 document.addEventListener('keydown', (e) => {
   if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-  if (e.code === 'Escape') {
+  if (e.code === 'Escape' || e.code === 'KeyX' || e.code === 'Backspace') {
     if (activeProjectNum !== null) { closeProjectDisplay(); return; }
   }
 
@@ -187,19 +187,34 @@ document.addEventListener('keydown', (e) => {
     return;
   }
 
-  // Work-work: arrow keys cycle projects, number keys switch directly
+  // Work-work: left/right navigate
   if (sections[currentNav] === 'work-work') {
-    if (key === 'ArrowRight' || key === 'KeyD') {
-      e.preventDefault();
-      const nextNum = Math.min(projectItems.length, activeProjectNum + 1);
-      switchProject(nextNum);
-      return;
-    }
-    if (key === 'ArrowLeft' || key === 'KeyA') {
-      e.preventDefault();
-      const prevNum = Math.max(1, activeProjectNum - 1);
-      switchProject(prevNum);
-      return;
+    // When a project is open, left/right switch between projects
+    if (activeProjectNum !== null) {
+      if (key === 'ArrowRight' || key === 'KeyD') {
+        e.preventDefault();
+        const nextNum = Math.min(projectItems.length, activeProjectNum + 1);
+        switchProject(nextNum);
+        return;
+      }
+      if (key === 'ArrowLeft' || key === 'KeyA') {
+        e.preventDefault();
+        const prevNum = Math.max(1, activeProjectNum - 1);
+        switchProject(prevNum);
+        return;
+      }
+    } else {
+      // When no project is open, left/right highlight items in the list
+      if (key === 'ArrowRight' || key === 'KeyD') {
+        e.preventDefault();
+        highlightProject(Math.min(projectItems.length - 1, highlightedProject + 1));
+        return;
+      }
+      if (key === 'ArrowLeft' || key === 'KeyA') {
+        e.preventDefault();
+        highlightProject(Math.max(0, highlightedProject - 1));
+        return;
+      }
     }
     const num = key.match(/^Digit(\d)$/);
     if (num) {
