@@ -1050,6 +1050,8 @@ function initGenDemo(el) {
       { file: 'muji pen', labels: ['barrel', 'ink-line', 'highlight'] },
       { file: 'noguchi lamp', labels: ['shade', 'stem', 'tripod', 'base'] },
       { file: 'wedding cake', labels: ['tiers', 'tier-line', 'tier-line', 'candle', 'candle', 'topper'] },
+      { file: 'submarine', labels: ['hull', 'conning-tower', 'periscope', 'rudder', 'porthole', 'porthole', 'porthole'] },
+      { file: 'rocket', labels: ['body', 'left-fin', 'right-fin', 'exhaust', 'window'] },
     ];
 
     function formatSvgCode(svgText, labels) {
@@ -1095,7 +1097,7 @@ function initGenDemo(el) {
         .catch(() => null)
     )).then(results => {
       const allResults = results.filter(Boolean);
-      const order = ['agave', 'noguchi lamp', 'muji pen', 'palm tree', 'wedding cake', 'trash can', 'mariachi', 'duffel bag', 'bicycle'];
+      const order = ['agave', 'submarine', 'noguchi lamp', 'muji pen', 'palm tree', 'wedding cake', 'trash can', 'mariachi', 'duffel bag', 'bicycle', 'rocket'];
       QUEUE = order.map(name => allResults.find(r => r.name === name)).filter(Boolean);
       if (!QUEUE.length) return;
       SVG_CODE = QUEUE[0].code;
