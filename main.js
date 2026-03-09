@@ -35,7 +35,6 @@ function switchSection(indexOrName) {
   if (name !== 'information') {
     highlightedContact = -1;
     contactItems.forEach(item => item.classList.remove('highlighted'));
-    document.getElementById('cv-modal').classList.remove('active');
   }
 
   // Clear project highlight and hide display when leaving work-work
@@ -166,7 +165,6 @@ function getActiveSlideController() {
 document.addEventListener('keydown', (e) => {
   if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
   if (e.code === 'Escape') {
-    if (cvModal.classList.contains('active')) { cvModal.classList.remove('active'); return; }
     if (activeProjectNum !== null) { closeProjectDisplay(); return; }
   }
 
@@ -1662,29 +1660,6 @@ projectItems.forEach(item => {
 
 document.getElementById('project-display-close').addEventListener('click', closeProjectDisplay);
 
-// --- CV Display ---
-const cvModal = document.getElementById('cv-modal');
-const cvContent = document.getElementById('cv-content');
-const cvClose = document.getElementById('cv-close');
-let cvLoaded = false;
-
-document.querySelector('[data-default="03 cv"]').addEventListener('click', async (e) => {
-  e.preventDefault();
-  if (!cvLoaded) {
-    const resp = await fetch('/cv/cv.md');
-    if (!resp.ok) return;
-    const md = await resp.text();
-    const { title, subtitle, bodyHtml } = parseProjectMd(md);
-    cvContent.innerHTML =
-      `<div class="project-header"><h2>${title}</h2>${subtitle ? `<p class="project-subtitle">${subtitle}</p>` : ''}</div>` +
-      `<p class="cv-download"><a href="/cv/molly-ennis-cv.pdf" target="_blank" rel="noopener">download pdf</a></p>` +
-      `<div class="project-body">${bodyHtml}</div>`;
-    cvLoaded = true;
-  }
-  cvModal.classList.add('active');
-});
-
-cvClose.addEventListener('click', () => cvModal.classList.remove('active'));
 
 
 // --- Handle URL hash for deep linking ---

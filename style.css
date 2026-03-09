@@ -577,39 +577,6 @@ main {
   to { opacity: 1; }
 }
 
-/* --- CV Display --- */
-.cv-display {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: clamp(200px, 25vw, 350px);
-  right: 0;
-  bottom: 0;
-  padding: 3rem;
-  max-width: 640px;
-  background: var(--bg);
-  z-index: 90;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  scrollbar-width: thin;
-  scrollbar-color: var(--fg) transparent;
-}
-
-.cv-display.active {
-  display: block;
-}
-
-.cv-download {
-  margin-bottom: 1.5rem;
-}
-
-.cv-download a {
-  font-family: var(--mono);
-  font-size: var(--text-base);
-  color: var(--fg);
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
 
 @keyframes project-header-enter {
   from {
@@ -1369,16 +1336,6 @@ main {
   }
   .cabinet-results {
     flex-wrap: wrap;
-  }
-  .cv-display.active {
-    position: fixed;
-    inset: 1rem;
-    max-width: none;
-    z-index: 150;
-    background: var(--bg);
-    border: 2px solid var(--fg);
-    padding: 3rem 1.5rem;
-    overflow-y: auto;
   }
 }
 
