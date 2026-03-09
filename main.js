@@ -413,7 +413,8 @@ function inlineMd(text) {
   return text
     .replace(/`([^`]+)`/g, (_, code) => `<code>${code.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</code>`)
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/_(.+?)_/g, '<em>$1</em>');
+    .replace(/_(.+?)_/g, '<em>$1</em>')
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
 }
 
 function initDotLottie(el) {
@@ -1704,7 +1705,59 @@ projectItems.forEach(item => {
 
 document.getElementById('project-display-close').addEventListener('click', closeProjectDisplay);
 
+// --- Info Section Project Display ---
+const infoProjectDisplay = document.getElementById('info-project-display');
+const infoProjectContents = document.querySelectorAll('.project-content[data-info-project-content]');
+const infoProjectItems = Array.from(document.querySelectorAll('.info-project-item'));
 
+function switchInfoProject(num) {
+  infoProjectDisplay.classList.add('active');
+  infoProjectContents.forEach(el => el.classList.toggle('active', el.dataset.infoProjectContent === String(num)));
+  infoProjectItems.forEach(item => {
+    item.classList.toggle('highlighted', item.dataset.infoProject === String(num));
+  });
+  infoProjectDisplay.scrollTop = 0;
+
+  const activeContent = document.querySelector(`.project-content[data-info-project-content="${num}"]`);
+  if (activeContent) {
+    activeContent.classList.remove('project-body-in');
+    const bodyChildren = activeContent.querySelectorAll('.project-body > *');
+    bodyChildren.forEach(child => {
+      child.style.animation = '';
+      child.style.opacity = '';
+      child.style.animationDelay = '';
+    });
+    void activeContent.offsetWidth;
+    bodyChildren.forEach((child, i) => {
+      child.style.animationDelay = `${100 + i * 40}ms`;
+      child.addEventListener('animationend', () => {
+        child.style.animation = 'none';
+        child.style.opacity = '1';
+      }, { once: true });
+    });
+    activeContent.classList.add('project-body-in');
+  }
+
+  const activeItem = infoProjectItems.find(item => item.dataset.infoProject === String(num));
+  if (activeItem && activeItem.dataset.slug) {
+    history.replaceState(null, '', '#' + activeItem.dataset.slug);
+  }
+}
+
+function closeInfoProjectDisplay() {
+  infoProjectDisplay.classList.remove('active');
+  infoProjectContents.forEach(el => el.classList.remove('active'));
+  infoProjectItems.forEach(item => item.classList.remove('highlighted'));
+  history.replaceState(null, '', '#information');
+}
+
+infoProjectItems.forEach(item => {
+  item.addEventListener('click', () => {
+    switchInfoProject(parseInt(item.dataset.infoProject));
+  });
+});
+
+document.getElementById('info-project-display-close').addEventListener('click', closeInfoProjectDisplay);
 
 // --- Handle URL hash for deep linking ---
 function handleHash() {
@@ -1720,6 +1773,13 @@ function handleHash() {
   if (match) {
     switchSection('work-work');
     switchProject(parseInt(match.dataset.project));
+    return;
+  }
+  // Check info projects
+  const infoMatch = infoProjectItems.find(item => item.dataset.slug === slug);
+  if (infoMatch) {
+    switchSection('information');
+    switchInfoProject(parseInt(infoMatch.dataset.infoProject));
   }
 }
 handleHash();
