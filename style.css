@@ -694,6 +694,7 @@ main {
   height: 2px;
   background: var(--fg);
   opacity: 0.1 !important;
+  animation: none !important;
   margin: 4rem 0 1.5rem;
 }
 
@@ -1570,8 +1571,31 @@ main {
 }
 
 @container (max-width: 500px) {
-  .cabinet-demo {
-    zoom: 0.65;
+  .cabinet-results {
+    position: static;
+    display: none;
+  }
+  .cabinet-demo-loop.phase-results .cabinet-title,
+  .cabinet-demo-loop.phase-results .cabinet-search,
+  .cabinet-demo-loop.phase-results .cabinet-pills {
+    display: none;
+  }
+  .cabinet-demo-loop.phase-results .cabinet-results {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    padding: 1rem;
+    opacity: 1;
+    max-width: 80%;
+    margin: 0 auto;
+  }
+  .cabinet-result-card {
+    flex: none;
+  }
+  .cabinet-result-card img {
+    width: 17% !important;
+    height: auto !important;
+    max-width: none;
   }
 }
 
