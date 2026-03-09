@@ -1281,7 +1281,7 @@ function initBezierDemo(el) {
     // Add larger invisible hit areas for touch
     const hit1 = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
     const hit2 = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    svg.style.touchAction = 'none';
+    svg.style.touchAction = 'pan-y';
     [hit1, hit2].forEach(hit => {
       hit.setAttribute('r', '2.5');
       hit.setAttribute('fill', 'transparent');
@@ -1299,7 +1299,7 @@ function initBezierDemo(el) {
     };
 
     function onDown(target) {
-      return e => { e.preventDefault(); dragging = target; hit1.style.cursor = hit2.style.cursor = cp1.style.cursor = cp2.style.cursor = 'grabbing'; };
+      return e => { e.preventDefault(); dragging = target; svg.style.touchAction = 'none'; hit1.style.cursor = hit2.style.cursor = cp1.style.cursor = cp2.style.cursor = 'grabbing'; };
     }
     hit1.addEventListener('pointerdown', onDown(c1));
     hit2.addEventListener('pointerdown', onDown(c2));
@@ -1314,7 +1314,7 @@ function initBezierDemo(el) {
       update();
     });
     window.addEventListener('pointerup', () => {
-      if (dragging) { dragging = null; hit1.style.cursor = hit2.style.cursor = cp1.style.cursor = cp2.style.cursor = 'grab'; }
+      if (dragging) { dragging = null; svg.style.touchAction = 'pan-y'; hit1.style.cursor = hit2.style.cursor = cp1.style.cursor = cp2.style.cursor = 'grab'; }
     });
   });
 }
@@ -1395,7 +1395,6 @@ function initSvgGridDemo(el) {
       const rx = Math.round(x);
       const ry = Math.round(y);
       if (rx < 0 || rx > 24 || ry < 0 || ry > 24) return;
-      e.preventDefault();
       let hoveredPath = null;
       if (plPaths.length) {
         const els = document.elementsFromPoint(touch.clientX, touch.clientY);
@@ -1429,10 +1428,10 @@ function initSvgGridDemo(el) {
     container.addEventListener('touchstart', e => {
       touching = true;
       handleTouch(e);
-    }, { passive: false });
+    }, { passive: true });
     container.addEventListener('touchmove', e => {
       if (touching) handleTouch(e);
-    }, { passive: false });
+    }, { passive: true });
     container.addEventListener('touchend', () => {
       touching = false;
       setTimeout(() => {
