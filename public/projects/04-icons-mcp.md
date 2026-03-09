@@ -18,7 +18,7 @@ icons-mcp is a pipeline-agnostic server that gives any AI tool — chat interfac
 the server combines two tools I built separately:
 <a href="#asset-cabinet">asset cabinet</a> + <a href="#svg-maker">svg maker</a> 
 
-semantic multimodal searches across all icon sets at block, using vector + full-text search with confidence scoring. compound queries auto-decompose into facets. cross-brand resolution maps icons between cash app, square, goose, tidal, and proto automatically. when no existing icon fits, the LLM can decide whether generating a new one from a text prompt is the ideal next step. the generator produces SVGs that match the target library's style constraints*
+semantic multimodal searches across all icon sets at Block, using vector + full-text search with confidence scoring. compound queries auto-decompose into facets. cross-brand resolution maps icons between cash app, square, goose, tidal, and proto automatically. when no existing icon fits, the LLM can decide whether generating a new one from a text prompt is the ideal next step. the generator produces SVGs that match the target library's style constraints*
 
 
 <!-- [placeholder: simple architecture diagram showing the two systems feeding into the MCP server, with arrows to the various consumer tools] -->

@@ -1,7 +1,7 @@
 # asset cabinet
 _semantic search for a cross-brand icon library_
 
-designers and engineers at block search for icons the same way: type a word, scroll through bad results, give up, slack the systems team. fuzzy string matching hasn't meaningfully improved in years, and with thousands of icons across cash app, square, goose, tidal, and proto, the problem only gets worse
+designers and engineers at Block search for icons the same way: type a word, scroll through bad results, give up, slack the systems team. fuzzy string matching hasn't meaningfully improved in years, and with thousands of icons across cash app, square, goose, tidal, and proto, the problem only gets worse
 
 <div class="cabinet-demo cabinet-demo-loop" id="cabinet-demo">
   <svg style="position:absolute;width:0;height:0"><defs>
@@ -71,4 +71,4 @@ with semantic search working, I pushed into more experimental territory:
 
 ### outcome
 
-asset cabinet went from a basic keyword lookup to the internal search tool for icons across block. it also became the foundation for <a href="#icons-mcp">icons-mcp</a> — extending the same search to AI agents
+asset cabinet went from a basic keyword lookup to the internal search tool for icons across Block. it also became the foundation for <a href="#icons-mcp">icons-mcp</a> — extending the same search to AI agents
