@@ -260,7 +260,7 @@ document.addEventListener('keydown', (e) => {
 });
 
 // --- Information keyboard nav ---
-const contactItems = Array.from(document.querySelectorAll('.contact-item'));
+const contactItems = Array.from(document.querySelectorAll('[data-panel="information"] .contact-item'));
 let highlightedContact = -1;
 
 function highlightContact(index) {
