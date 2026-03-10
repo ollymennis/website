@@ -1242,9 +1242,21 @@ main {
   margin-top: 0.5rem;
   text-align: center;
 }
+.demo-grid path.demo-accent {
+  transition: fill 0.3s ease;
+}
 .demo-grid circle.demo-accent,
 .demo-grid .demo-accent-line {
-  opacity: 0;
+  stroke: transparent;
+  stroke-dasharray: 60;
+  stroke-dashoffset: 60;
+  transition: stroke-dashoffset 0.8s ease, stroke 0s 0.8s;
+}
+.demo-grid > div:hover circle.demo-accent,
+.demo-grid > div:active circle.demo-accent,
+.demo-grid > div:hover .demo-accent-line,
+.demo-grid > div:active .demo-accent-line {
+  transition: stroke-dashoffset 0.8s ease, stroke 0s;
 }
 .demo-grid > div:hover path.demo-accent,
 .demo-grid > div:active path.demo-accent {
@@ -1255,7 +1267,18 @@ main {
 .demo-grid > div:hover .demo-accent-line,
 .demo-grid > div:active .demo-accent-line {
   stroke: #FF00FF;
-  opacity: 1;
+  stroke-dashoffset: 0;
+}
+.demo-grid .demo-accent-rect {
+  opacity: 0;
+  transform-origin: 6.5px 7.5px;
+  transform: scaleY(0);
+  transition: opacity 0.2s ease, transform 0.8s ease;
+}
+.demo-grid > div:hover .demo-accent-rect,
+.demo-grid > div:active .demo-accent-rect {
+  opacity: 0.4;
+  transform: scaleY(1);
 }
 
 .img-pair {
