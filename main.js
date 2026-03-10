@@ -452,10 +452,7 @@ function initProjectDemos(el) {
 
 // Render header immediately from data attributes
 function preloadProjectHeader(el) {
-  const title = el.dataset.title || '';
-  const subtitle = el.dataset.subtitle || '';
-  if (!title) return;
-  el.innerHTML = `<div class="project-header"><h2>${title}</h2>${subtitle ? `<p class="project-subtitle">${subtitle}</p>` : '<p class="project-subtitle"></p>'}</div><div class="project-body"></div>`;
+  // no-op: title and subtitle now come exclusively from markdown
 }
 
 async function loadProjectMd(el) {
