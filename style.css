@@ -1,3 +1,5 @@
+.nowrap { white-space: nowrap; }
+
 /* --- Font --- */
 @font-face {
   font-family: 'JetBrains Mono';
