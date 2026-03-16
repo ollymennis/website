@@ -2243,7 +2243,7 @@ function initFigcliDemo(el) {
           typeInterval = null;
           if (callback) setTimeout(callback, 300);
         }
-      }, 60);
+      }, 70);
     }
 
     function showResult(item, svgCode) {
@@ -2259,7 +2259,7 @@ function initFigcliDemo(el) {
       autoTimer = setTimeout(() => {
         autoTimer = null;
         generateNext();
-      }, 2500);
+      }, 3500);
     }
 
     function generateNext() {
@@ -2304,7 +2304,7 @@ function initFigcliDemo(el) {
           }, { once: true });
         }
 
-        const delay = 2500 + Math.random() * 500;
+        const delay = 2600 + Math.random() * 500;
         startLoading();
         startStreaming(svgCode, delay);
         setTimeout(() => showResult(item, svgCode), delay);
