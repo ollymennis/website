@@ -1,9 +1,30 @@
 # svg maker
 _teaching a machine to draw_
 
-building (it is ongoing) a tool that generates SVG icons from short, natural language prompts — matching existing library styles, shape conventions, and grid constraints
+I built a tool that generates SVG icons from short, natural language prompts — matching existing library styles, shape conventions, and grid constraints
 
-<div class="gen-demo" style="position:relative;width:100%;max-width:800px;margin:2.5rem auto;user-select:none"><div class="gen-demo-prompt" style="font-family:var(--mono);font-size:0.7rem;color:var(--fg);margin-bottom:0.5rem">generating "palm tree"</div><div class="gen-demo-row" style="display:flex;gap:1rem"><div class="path-label-demo" style="flex:0 0 50%;aspect-ratio:1;position:relative"><svg viewBox="0 0 24 24" width="100%" height="100%" style="display:block;background:var(--bg);border:1px solid var(--fg);border-radius:0"><defs><pattern id="grid-gen" width="1" height="1" patternUnits="userSpaceOnUse"><rect width="1" height="1" fill="none" stroke="var(--fg)" stroke-width="0.03" opacity="0.12"/></pattern></defs><rect width="24" height="24" fill="url(#grid-gen)"/><g class="gen-loading" style="display:none"></g><g class="gen-result" style="display:none"><g class="pl-path" data-label="trunk"><path d="M10 22C9.33334 18 9.66667 14.3333 11 11C11.6667 10.3333 12.3333 10.3333 13 11C14.3333 14.3333 14.6667 18 14 22H10Z" stroke="#FF00FF" stroke-width="2" stroke-linejoin="round" fill="none" class="pl-magenta"/><path d="M10 22C9.33334 18 9.66667 14.3333 11 11C11.6667 10.3333 12.3333 10.3333 13 11C14.3333 14.3333 14.6667 18 14 22H10Z" stroke="#009CFF" stroke-width="0.12" stroke-linejoin="round" fill="none"/></g><g class="pl-path" data-label="left-lower-frond"><path d="M12 8C9.33333 6 6.33333 5 3 5" stroke="#FF00FF" stroke-width="2" stroke-linejoin="round" fill="none" class="pl-magenta"/><path d="M12 8C9.33333 6 6.33333 5 3 5" stroke="#009CFF" stroke-width="0.12" stroke-linejoin="round" fill="none"/></g><g class="pl-path" data-label="right-lower-frond"><path d="M12 8C14.6667 6 17.6667 5 21 5" stroke="#FF00FF" stroke-width="2" stroke-linejoin="round" fill="none" class="pl-magenta"/><path d="M12 8C14.6667 6 17.6667 5 21 5" stroke="#009CFF" stroke-width="0.12" stroke-linejoin="round" fill="none"/></g><g class="pl-path" data-label="left-upper-frond"><path d="M12 8C10.6667 4.66667 8.66667 2.66667 6 2" stroke="#FF00FF" stroke-width="2" stroke-linejoin="round" fill="none" class="pl-magenta"/><path d="M12 8C10.6667 4.66667 8.66667 2.66667 6 2" stroke="#009CFF" stroke-width="0.12" stroke-linejoin="round" fill="none"/></g><g class="pl-path" data-label="right-upper-frond"><path d="M12 8C13.3333 4.66667 15.3333 2.66667 18 2" stroke="#FF00FF" stroke-width="2" stroke-linejoin="round" fill="none" class="pl-magenta"/><path d="M12 8C13.3333 4.66667 15.3333 2.66667 18 2" stroke="#009CFF" stroke-width="0.12" stroke-linejoin="round" fill="none"/></g><g class="pl-path" data-label="left-mid-frond"><path d="M12 8C10 8.66667 8 10 6 12" stroke="#FF00FF" stroke-width="2" stroke-linejoin="round" fill="none" class="pl-magenta"/><path d="M12 8C10 8.66667 8 10 6 12" stroke="#009CFF" stroke-width="0.12" stroke-linejoin="round" fill="none"/></g><g class="pl-path" data-label="right-mid-frond"><path d="M12 8C14 8.66667 16 10 18 12" stroke="#FF00FF" stroke-width="2" stroke-linejoin="round" fill="none" class="pl-magenta"/><path d="M12 8C14 8.66667 16 10 18 12" stroke="#009CFF" stroke-width="0.12" stroke-linejoin="round" fill="none"/></g></g></svg><div class="pl-label" style="position:absolute;font-family:var(--mono);font-size:0.75rem;font-weight:bold;color:var(--fg);background:var(--bg);padding:0.1rem 0.3rem;pointer-events:none;white-space:nowrap;opacity:0;z-index:10"></div></div><div style="flex:1;position:relative"><pre class="gen-code" style="position:absolute;inset:0;margin:0;overflow-y:hidden"><code class="gen-code-output"></code></pre></div></div></div>
+<div class="figcli-demo">
+<div class="figcli-screen">
+<div class="figcli-top">
+<div class="figcli-canvas">
+<div class="figcli-canvas-title">SVG GENERATOR</div>
+<div class="figcli-canvas-preview"></div>
+</div>
+<div class="figcli-code-stack">
+<div class="figcli-code-panel figcli-code-panel-active"><div class="figcli-code-tab">SVG</div><pre class="figcli-code-pre"><code class="figcli-code-out"></code></pre></div>
+<div class="figcli-code-panel"><div class="figcli-code-tab">JSON</div></div>
+</div>
+</div>
+<div class="figcli-library-row">
+<div class="figcli-library-rail"><div class="figcli-library-title">~</div><div class="figcli-library-grid figcli-library-grid-sm"></div></div>
+<div class="figcli-library-main"><div class="figcli-library-title">Library</div><div class="figcli-library-grid figcli-library-grid-lg"></div></div>
+</div>
+<div class="figcli-input-row">
+<div class="figcli-stop"><div class="figcli-stop-icon"></div></div>
+<div class="figcli-prompt"><span class="figcli-prompt-text"></span><span class="figcli-prompt-cursor"></span></div>
+</div>
+</div>
+</div>
 
 <hr />
 

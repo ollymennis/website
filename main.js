@@ -448,6 +448,7 @@ function initProjectDemos(el) {
   initCellSpecimen(el);
   initIconInspector(el);
   initDotLottie(el);
+  initFigcliDemo(el);
 }
 
 // Render header immediately from data attributes
@@ -2000,6 +2001,336 @@ function stopIconAnimation() {
   clearInterval(iconInterval);
   iconInterval = null;
   iconAnimSlots = null;
+}
+
+function initFigcliDemo(el) {
+  el.querySelectorAll('.figcli-demo').forEach(demo => {
+    if (demo.dataset.initialized) return;
+    demo.dataset.initialized = 'true';
+
+    const codeOut = demo.querySelector('.figcli-code-out');
+    const codeStack = demo.querySelector('.figcli-code-stack');
+    const titleEl = demo.querySelector('.figcli-canvas-title');
+    const promptText = demo.querySelector('.figcli-prompt-text');
+    const railGrid = demo.querySelector('.figcli-library-grid-sm');
+    const mainGrid = demo.querySelector('.figcli-library-grid-lg');
+    const preview = demo.querySelector('.figcli-canvas-preview');
+
+    // Build SVGs in JS to guarantee SVG namespace
+    const SVGNS = 'http://www.w3.org/2000/svg';
+    function makeSvg(cls, vb) {
+      const s = document.createElementNS(SVGNS, 'svg');
+      s.setAttribute('class', cls);
+      s.setAttribute('viewBox', vb);
+      s.setAttribute('fill', 'none');
+      return s;
+    }
+
+    // Grid SVG
+    const gridSvg = makeSvg('figcli-grid', '0 0 24 24');
+    const defs = document.createElementNS(SVGNS, 'defs');
+    const pat = document.createElementNS(SVGNS, 'pattern');
+    pat.setAttribute('id', 'figcli-g');
+    pat.setAttribute('width', '1'); pat.setAttribute('height', '1');
+    pat.setAttribute('patternUnits', 'userSpaceOnUse');
+    const patRect = document.createElementNS(SVGNS, 'rect');
+    patRect.setAttribute('width', '1'); patRect.setAttribute('height', '1');
+    patRect.setAttribute('fill', 'none'); patRect.setAttribute('stroke', 'currentColor');
+    patRect.setAttribute('stroke-width', '0.03'); patRect.setAttribute('opacity', '0.12');
+    pat.appendChild(patRect); defs.appendChild(pat); gridSvg.appendChild(defs);
+    const bgRect = document.createElementNS(SVGNS, 'rect');
+    bgRect.setAttribute('width', '24'); bgRect.setAttribute('height', '24');
+    bgRect.setAttribute('fill', 'url(#figcli-g)');
+    gridSvg.appendChild(bgRect);
+    preview.appendChild(gridSvg);
+
+    // Artwork SVG
+    const artSvg = makeSvg('figcli-artwork', '0 0 24 24');
+    const loadingG = document.createElementNS(SVGNS, 'g');
+    loadingG.setAttribute('class', 'figcli-loading');
+    const resultG = document.createElementNS(SVGNS, 'g');
+    resultG.setAttribute('class', 'figcli-result');
+    resultG.style.display = 'none';
+    artSvg.appendChild(loadingG);
+    artSvg.appendChild(resultG);
+    preview.appendChild(artSvg);
+
+    // Library icons from icon-svgs
+    const libraryIcons = [
+      'Plus', 'Minus', 'block', 'cardActive', 'cashAppPay',
+      'biometricsFace', 'cardBasic', 'deposit', 'fast',
+      'governmentFlag', 'hyperlink', 'idea', 'instant',
+      'international', 'location', 'music', 'next', 'note',
+      'notifications', 'overdraftProtection', 'photo', 'qr',
+      'recurringAutomatic', 'savingsApy', 'symbols', 'traffic',
+      'avatar', 'bankAccount', 'categoryHome', 'categoryTravel',
+      'categoryCafe', 'categoryTech', 'categorySports', 'fpoShrimp',
+      'coffee', 'categoryBar', 'categoryKids', 'categoryRent',
+      'documentPaystub', 'documentQuill', 'cardCredit', 'depositCheck',
+    ];
+
+    // Similarities icons per prompt (~ rail)
+    const similarityMap = {
+      'agave': ['categoryHome', 'categoryDiy', 'categoryCafe', 'coffee', 'fpoShrimp', 'categoryGrocery', 'categoryBar', 'categoryFurniture', 'categoryKids', 'categorySports'],
+      'submarine': ['categoryTransportation', 'categoryTravel', 'international', 'location', 'fast', 'next', 'categoryTech', 'categoryTourism', 'categorySports', 'idea'],
+      'noguchi lamp': ['categoryFurniture', 'categoryHome', 'categoryDiy', 'idea', 'categoryTech', 'categoryRent', 'categoryMedia24', 'categoryEntertainment', 'categoryBar', 'coffee'],
+      'muji pen': ['categoryDiy', 'categoryTech', 'documentQuill', 'documentPaystub', 'note', 'idea', 'categoryHome', 'categoryFurniture', 'coffee', 'categoryBar'],
+      'wedding cake': ['categoryCafe', 'fpoShrimp', 'categoryBar', 'categoryGrocery', 'coffee', 'categoryHome', 'categoryKids', 'categoryEntertainment', 'music', 'categoryFurniture'],
+      'trash can': ['categoryHome', 'categoryDiy', 'categoryRent', 'categoryFurniture', 'categoryTech', 'categoryKids', 'categoryGrocery', 'coffee', 'idea', 'note'],
+      'mariachi': ['music', 'categoryEntertainment', 'categoryBar', 'categoryTravel', 'international', 'categoryTourism', 'coffee', 'categorySports', 'categoryHome', 'fpoShrimp'],
+      'duffel bag': ['categoryTravel', 'categorySports', 'categoryFitness24', 'categoryApparel', 'categoryAccessories', 'categoryTourism', 'international', 'fast', 'categoryTransportation', 'location'],
+      'rocket': ['categoryTech', 'fast', 'categoryTransportation', 'categoryTravel', 'idea', 'categorySports', 'international', 'next', 'categoryTourism', 'traffic'],
+    };
+
+    function fillGrid(grid, icons, basePath) {
+      if (!grid) return;
+      grid.innerHTML = '';
+      icons.forEach(name => {
+        const img = document.createElement('img');
+        img.src = basePath + encodeURIComponent(name) + '.svg';
+        img.alt = '';
+        grid.appendChild(img);
+      });
+    }
+    fillGrid(mainGrid, libraryIcons, '/media/icons-refresh/icon-svgs/');
+
+    // SVG queue — uses the original gen-demo icon set, fetched at runtime
+    const SVG_META = [
+      { file: 'agave', labels: ['stem', 'left-leaf', 'left-leaf', 'left-leaf', 'right-leaf', 'right-leaf', 'right-leaf', 'base'] },
+      { file: 'submarine', labels: ['hull', 'conning-tower', 'periscope', 'rudder', 'porthole', 'porthole', 'porthole'] },
+      { file: 'noguchi lamp', labels: ['shade', 'stem', 'tripod', 'base'] },
+      { file: 'muji pen', labels: ['barrel', 'ink-line', 'highlight'] },
+      { file: 'wedding cake', labels: ['tiers', 'tier-line', 'tier-line', 'candle', 'candle', 'topper'] },
+      { file: 'trash can', labels: ['handle', 'lid', 'can', 'lines'] },
+      { file: 'mariachi', labels: ['brim', 'crown', 'ruffle', 'body'] },
+      { file: 'duffel bag', labels: ['body', 'handle', 'divider', 'side-handles'] },
+      { file: 'rocket', labels: ['body', 'left-fin', 'right-fin', 'exhaust', 'window'] },
+    ];
+
+    function parseSvgPaths(svgText, labels) {
+      const doc = new DOMParser().parseFromString(svgText, 'image/svg+xml');
+      return Array.from(doc.querySelectorAll('path')).map((p, i) => {
+        const result = { label: labels[i] || 'path-' + (i + 1), d: p.getAttribute('d') };
+        if (p.getAttribute('fill') === '#FF00FF') result.fill = true;
+        return result;
+      });
+    }
+
+    function formatSvgCode(item) {
+      let code = '<svg viewBox="0 0 24 24" fill="none">\n';
+      item.paths.forEach(p => {
+        code += '  <!-- ' + p.label + ' -->\n';
+        code += '  <path d="' + p.d + '"';
+        if (p.fill) code += '\n    fill="#FF00FF"';
+        code += '\n    stroke="#FF00FF" stroke-width="2"\n    stroke-linejoin="round"/>\n';
+      });
+      code += '</svg>';
+      return code;
+    }
+
+    function buildResultPaths(item) {
+      const frag = document.createDocumentFragment();
+      item.paths.forEach(p => {
+        const path = document.createElementNS(SVGNS, 'path');
+        path.setAttribute('d', p.d);
+        if (p.fill) {
+          path.setAttribute('fill', '#FF00FF');
+        } else {
+          path.setAttribute('stroke', '#FF00FF');
+          path.setAttribute('stroke-width', '2');
+          path.setAttribute('stroke-linejoin', 'round');
+          path.setAttribute('fill', 'none');
+        }
+        frag.appendChild(path);
+      });
+      return frag;
+    }
+
+    // Fetch SVGs and build the queue
+    let QUEUE = [];
+    Promise.all(SVG_META.map(meta =>
+      fetch('/media/svg maker/decent/' + encodeURIComponent(meta.file) + '.svg')
+        .then(r => r.text())
+        .then(text => ({
+          name: meta.file.replace(/-/g, ' '),
+          paths: parseSvgPaths(text, meta.labels),
+        }))
+        .catch(() => null)
+    )).then(results => {
+      QUEUE = results.filter(Boolean);
+      if (QUEUE.length) startObserver();
+    });
+
+    // Loading animation — matches gen-demo exactly
+    const LOADING_PATH = [
+      [0, 0], [1, 0], [2, 0], [3, 0],
+      [3, 1], [2, 1], [1, 1], [0, 1],
+      [0, 2], [1, 2], [2, 2], [3, 2],
+      [3, 3], [2, 3], [1, 3], [0, 3],
+      [0, 2], [1, 2], [2, 2], [3, 2],
+      [3, 1], [2, 1], [1, 1], [0, 1],
+    ];
+    const OX = 10, OY = 10;
+    let loadInterval = null;
+    let codeInterval = null;
+    let typeInterval = null;
+    let running = false;
+    let autoTimer = null;
+    let queueIdx = 0;
+    let codeStackOpened = false;
+    let railRevealed = false;
+
+    function startLoading() {
+      resultG.style.display = 'none';
+      while (resultG.firstChild) resultG.removeChild(resultG.firstChild);
+      loadingG.style.display = '';
+      let idx = 0, trail = [];
+      loadInterval = setInterval(() => {
+        trail = [idx, ...trail].slice(0, 10);
+        idx = (idx + 1) % LOADING_PATH.length;
+        while (loadingG.firstChild) loadingG.removeChild(loadingG.firstChild);
+        for (let i = 0; i < trail.length; i++) {
+          const [tx, ty] = LOADING_PATH[trail[i]];
+          const op = 0.6 - (i * 0.06);
+          if (op <= 0) continue;
+          const r = document.createElementNS(SVGNS, 'rect');
+          r.setAttribute('x', OX+tx); r.setAttribute('y', OY+ty);
+          r.setAttribute('width', '1'); r.setAttribute('height', '1');
+          r.setAttribute('fill', '#FF00FF'); r.setAttribute('opacity', op);
+          loadingG.appendChild(r);
+        }
+        const [cx, cy] = LOADING_PATH[idx];
+        const cr = document.createElementNS(SVGNS, 'rect');
+        cr.setAttribute('x', OX+cx); cr.setAttribute('y', OY+cy);
+        cr.setAttribute('width', '1'); cr.setAttribute('height', '1');
+        cr.setAttribute('fill', '#FF00FF'); cr.setAttribute('opacity', '1');
+        loadingG.appendChild(cr);
+      }, 120);
+    }
+
+    function stopLoading() {
+      clearInterval(loadInterval);
+      loadInterval = null;
+      loadingG.style.display = 'none';
+      while (loadingG.firstChild) loadingG.removeChild(loadingG.firstChild);
+    }
+
+    function startStreaming(svgCode, duration) {
+      if (!codeOut) return;
+      codeOut.textContent = '';
+      let charIdx = 0;
+      const charsPerTick = 2;
+      const totalTicks = Math.ceil(svgCode.length / charsPerTick);
+      const tickMs = duration / totalTicks;
+      codeInterval = setInterval(() => {
+        const end = Math.min(charIdx + charsPerTick, svgCode.length);
+        codeOut.textContent += svgCode.slice(charIdx, end);
+        charIdx = end;
+        const pre = codeOut.closest('pre');
+        if (pre) pre.scrollTop = pre.scrollHeight;
+        if (charIdx >= svgCode.length) clearInterval(codeInterval);
+      }, tickMs);
+    }
+
+    function typePrompt(text, callback) {
+      promptText.textContent = '';
+      let i = 0;
+      typeInterval = setInterval(() => {
+        promptText.textContent += text[i];
+        i++;
+        if (i >= text.length) {
+          clearInterval(typeInterval);
+          typeInterval = null;
+          if (callback) setTimeout(callback, 300);
+        }
+      }, 60);
+    }
+
+    function showResult(item, svgCode) {
+      stopLoading();
+      clearInterval(codeInterval);
+      while (resultG.firstChild) resultG.removeChild(resultG.firstChild);
+      resultG.appendChild(buildResultPaths(item));
+      resultG.style.display = '';
+      if (codeOut) codeOut.textContent = svgCode;
+      running = false;
+      // Queue next
+      queueIdx = (queueIdx + 1) % QUEUE.length;
+      autoTimer = setTimeout(() => {
+        autoTimer = null;
+        generateNext();
+      }, 2500);
+    }
+
+    function generateNext() {
+      if (running || !QUEUE.length) return;
+      running = true;
+      const item = QUEUE[queueIdx];
+      const svgCode = formatSvgCode(item);
+
+      // Clear previous result
+      resultG.style.display = 'none';
+      while (resultG.firstChild) resultG.removeChild(resultG.firstChild);
+      if (codeOut) codeOut.textContent = '';
+
+      // Type the prompt
+      titleEl.textContent = 'SVG GENERATOR';
+      typePrompt(item.name, () => {
+        // "Submit" — transition to streaming
+        titleEl.textContent = 'GENERATING \u201C' + item.name.toUpperCase() + '\u201D';
+        demo.classList.add('is-streaming');
+
+        // Update similarities rail on submit
+        const simIcons = similarityMap[item.name] || [];
+        fillGrid(railGrid, simIcons, '/media/icons-refresh/icon-svgs/');
+
+        // Open code stack (first time animates, then stays open)
+        if (!codeStackOpened) {
+          codeStack.classList.add('is-animating');
+          codeStackOpened = true;
+          codeStack.addEventListener('animationend', () => {
+            codeStack.classList.remove('is-animating');
+            codeStack.classList.add('is-open');
+          }, { once: true });
+        }
+
+        // Reveal rail (first time animates, then stays visible)
+        if (!railRevealed) {
+          railGrid.closest('.figcli-library-rail').classList.add('is-animating');
+          railRevealed = true;
+          railGrid.closest('.figcli-library-rail').addEventListener('animationend', () => {
+            railGrid.closest('.figcli-library-rail').classList.remove('is-animating');
+            railGrid.closest('.figcli-library-rail').classList.add('is-revealed');
+          }, { once: true });
+        }
+
+        const delay = 2500 + Math.random() * 500;
+        startLoading();
+        startStreaming(svgCode, delay);
+        setTimeout(() => showResult(item, svgCode), delay);
+      });
+    }
+
+    // Autoplay when visible — only after QUEUE is loaded
+    function startObserver() {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting && !running && !autoTimer) {
+            generateNext();
+          }
+          if (!entry.isIntersecting) {
+            clearTimeout(autoTimer);
+            autoTimer = null;
+            clearInterval(typeInterval);
+            stopLoading();
+            clearInterval(codeInterval);
+            running = false;
+          }
+        });
+      }, { threshold: 0.3 });
+      observer.observe(demo);
+    }
+  });
 }
 
 // Hook into switchProject to start/stop animation

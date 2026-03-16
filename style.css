@@ -3,6 +3,14 @@
 /* --- Font --- */
 @font-face {
   font-family: 'JetBrains Mono';
+  src: url('/fonts/JetBrainsMono/JetBrainsMono-ExtraLight.woff2') format('woff2');
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
   src: url('/fonts/JetBrainsMono/JetBrainsMono-Regular.woff2') format('woff2');
   font-weight: 400;
   font-style: normal;
@@ -2240,6 +2248,332 @@ body.drawing a:hover {
 }
 
 /* Dark theme overrides */
+/* --- Figcli Demo --- */
+.figcli-demo {
+  --figcli-cream: #fffaf0;
+  --figcli-ink: #28190a;
+  --figcli-accent: #F73B23;
+  --figcli-sage: #c6d1c4;
+  --figcli-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  width: 100%;
+  max-width: 720px;
+  margin: 2rem auto;
+  user-select: none;
+}
+
+.figcli-screen {
+  display: grid;
+  grid-template-rows: 1fr auto 44px;
+  background: var(--figcli-cream);
+  border: 0.75px solid var(--figcli-ink);
+  border-radius: 4px;
+  overflow: hidden;
+  aspect-ratio: 16 / 10;
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  color: var(--figcli-ink);
+}
+
+/* Top row: canvas + code stack */
+.figcli-top {
+  display: flex;
+  border-bottom: 0.75px solid var(--figcli-ink);
+  overflow: hidden;
+}
+
+.figcli-canvas {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  padding: 10px 12px 10px;
+  min-width: 0;
+}
+
+.figcli-canvas-title {
+  font-size: 0.85rem;
+  font-weight: 200;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.figcli-canvas-preview {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.figcli-canvas-preview svg {
+  position: absolute;
+  width: clamp(80px, 50%, 180px);
+  height: clamp(80px, 50%, 180px);
+}
+
+.figcli-grid { color: var(--figcli-ink); }
+
+/* Code stack — starts collapsed, animates open once */
+.figcli-code-stack {
+  width: 0;
+  flex: 0 0 0px;
+  opacity: 0;
+  display: flex;
+  flex-direction: column;
+  border-left: 0.75px solid var(--figcli-ink);
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.figcli-code-stack.is-open {
+  width: 220px;
+  flex: 0 0 220px;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.figcli-code-stack.is-animating {
+  animation: figcliCodePushIn 320ms var(--figcli-ease) both;
+  pointer-events: auto;
+}
+
+.figcli-code-panel {
+  flex: 0 0 28px;
+  background: var(--figcli-sage);
+  border-bottom: 0.75px solid var(--figcli-ink);
+  overflow: hidden;
+}
+
+.figcli-code-panel-active {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.figcli-code-stack.is-animating .figcli-code-panel {
+  animation: figcliContentIn 260ms var(--figcli-ease) both;
+}
+.figcli-code-stack.is-animating .figcli-code-panel:nth-child(2) { animation-delay: 35ms; }
+.figcli-code-stack.is-animating .figcli-code-panel:nth-child(3) { animation-delay: 70ms; }
+
+.figcli-code-tab {
+  font-size: 0.72rem;
+  font-weight: 200;
+  padding: 6px 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.figcli-code-pre {
+  flex: 1;
+  margin: 0 !important;
+  padding: 0 10px 6px !important;
+  font-size: 0.35rem;
+  line-height: 1.35;
+  overflow: hidden;
+  white-space: pre-wrap;
+  word-break: break-all;
+  color: var(--figcli-ink);
+  background: transparent !important;
+  border: none !important;
+}
+
+.figcli-code-out {
+  font-family: var(--mono);
+  font-size: 0.35rem;
+  line-height: 1.35;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  margin: 0;
+}
+
+/* Library row */
+.figcli-library-row {
+  display: grid;
+  grid-template-columns: 0fr 1fr;
+  border-bottom: 0.75px solid var(--figcli-ink);
+  overflow: hidden;
+  transition: grid-template-columns 320ms var(--figcli-ease);
+}
+
+/* Idle: full-width library, rail hidden */
+.figcli-library-rail {
+  border-right: 0.75px solid var(--figcli-ink);
+  padding: 0;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.figcli-library-main {
+  padding: 10px 12px;
+}
+
+.figcli-library-main,
+.figcli-library-rail {
+  opacity: 1;
+}
+
+/* Streaming: rail appears, library splits */
+.figcli-demo.is-streaming .figcli-library-row {
+  grid-template-columns: 23% 1fr;
+}
+
+.figcli-demo.is-streaming .figcli-library-rail {
+  padding: 10px 6px 10px 12px;
+}
+
+.figcli-library-rail.is-revealed {
+  opacity: 1;
+  clip-path: inset(0 0 0 0);
+}
+
+.figcli-library-rail.is-animating {
+  animation: figcliSectionReveal 320ms var(--figcli-ease) 40ms both;
+}
+
+.figcli-demo.is-streaming .figcli-library-main {
+  animation: figcliSectionReveal 320ms var(--figcli-ease) 90ms both;
+}
+
+.figcli-library-title {
+  font-size: 0.78rem;
+  font-weight: 200;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 12px;
+}
+
+.figcli-library-grid {
+  display: grid;
+  overflow: hidden;
+  gap: 16px;
+  --icon: 16px;
+  max-height: calc(var(--icon) * 2 + 16px);
+}
+
+.figcli-library-grid-sm {
+  grid-template-columns: repeat(auto-fill, var(--icon));
+}
+
+.figcli-library-grid-lg {
+  grid-template-columns: repeat(auto-fill, var(--icon));
+}
+
+.figcli-library-grid img {
+  width: var(--icon);
+  height: var(--icon);
+  display: block;
+  margin: 0;
+  padding: 0;
+  border: none;
+  filter: brightness(0) saturate(100%) invert(8%) sepia(30%) saturate(2000%) hue-rotate(10deg);
+}
+
+/* Input row — stop button column expands */
+.figcli-input-row {
+  display: grid;
+  grid-template-columns: 0px minmax(0, 1fr);
+  overflow: hidden;
+}
+
+.figcli-demo.is-streaming .figcli-input-row {
+  animation: figcliInputExpand 320ms var(--figcli-ease) both;
+}
+
+.figcli-stop {
+  background: var(--figcli-ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.figcli-stop-icon {
+  width: 10px;
+  height: 10px;
+  background: var(--figcli-cream);
+  border-radius: 0;
+  flex-shrink: 0;
+}
+
+.figcli-prompt {
+  background: var(--figcli-accent);
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  gap: 1px;
+  overflow: hidden;
+}
+
+.figcli-prompt-text {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--figcli-cream);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.figcli-prompt-cursor {
+  width: 9px;
+  height: 18px;
+  background: var(--figcli-cream);
+  animation: figcliCursorBlink 1s step-end infinite;
+  flex-shrink: 0;
+}
+
+/* Keyframes */
+@keyframes figcliCodePushIn {
+  from { width: 0; flex-basis: 0; opacity: 0.2; }
+  to { width: 220px; flex-basis: 220px; opacity: 1; }
+}
+
+@keyframes figcliContentIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes figcliSectionReveal {
+  from { opacity: 0; clip-path: inset(12% 0 0 0); }
+  to { opacity: 1; clip-path: inset(0 0 0 0); }
+}
+
+@keyframes figcliInputExpand {
+  from { grid-template-columns: 0px minmax(0, 1fr); }
+  to { grid-template-columns: 44px minmax(0, 1fr); }
+}
+
+@keyframes figcliCursorBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.25; }
+}
+
+/* Dark theme */
+@media (max-width: 500px) {
+  .figcli-library-grid { max-height: var(--icon); }
+}
+
+@media (max-width: 400px) {
+  .figcli-library-grid { display: none; }
+  .figcli-library-title { margin-bottom: 0; }
+  .figcli-screen { grid-template-rows: 1fr auto 36px; }
+  .figcli-input-row { grid-template-columns: 0px minmax(0, 1fr); }
+  @keyframes figcliCodePushIn {
+    from { width: 0; flex-basis: 0; opacity: 0.2; }
+    to { width: 50%; flex-basis: 50%; opacity: 1; }
+  }
+  .figcli-code-stack.is-open { width: 50%; flex: 0 0 50%; }
+}
+
+[data-theme="dark"] .figcli-demo {
+  --figcli-cream: #1a1a1a;
+  --figcli-ink: #e0d6c8;
+  --figcli-sage: #2a3028;
+}
+
 [data-theme="dark"] .tabbar-glass {
   background: rgba(255, 255, 255, 0.08);
   border-color: rgba(255, 255, 255, 0.12);
