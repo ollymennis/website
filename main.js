@@ -2075,7 +2075,7 @@ function initFigcliDemo(el) {
       'submarine': ['categoryTransportation', 'categoryTravel', 'international', 'location', 'fast', 'next', 'categoryTech', 'categoryTourism', 'categorySports', 'idea'],
       'noguchi lamp': ['categoryFurniture', 'categoryHome', 'categoryDiy', 'idea', 'categoryTech', 'categoryRent', 'categoryMedia24', 'categoryEntertainment', 'categoryBar', 'coffee'],
       'muji pen': ['categoryDiy', 'categoryTech', 'documentQuill', 'documentPaystub', 'note', 'idea', 'categoryHome', 'categoryFurniture', 'coffee', 'categoryBar'],
-      'wedding cake': ['categoryCafe', 'fpoShrimp', 'categoryBar', 'categoryGrocery', 'coffee', 'categoryHome', 'categoryKids', 'categoryEntertainment', 'music', 'categoryFurniture'],
+      'wedding cake': ['anniversary 1', 'categoryCafe', 'fpoShrimp', 'categoryBar', 'categoryGrocery', 'coffee', 'categoryHome', 'categoryKids', 'categoryEntertainment', 'music'],
       'trash can': ['categoryHome', 'categoryDiy', 'categoryRent', 'categoryFurniture', 'categoryTech', 'categoryKids', 'categoryGrocery', 'coffee', 'idea', 'note'],
       'mariachi': ['music', 'categoryEntertainment', 'categoryBar', 'categoryTravel', 'international', 'categoryTourism', 'coffee', 'categorySports', 'categoryHome', 'fpoShrimp'],
       'duffel bag': ['categoryTravel', 'categorySports', 'categoryFitness24', 'categoryApparel', 'categoryAccessories', 'categoryTourism', 'international', 'fast', 'categoryTransportation', 'location'],
