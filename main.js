@@ -2082,14 +2082,26 @@ function initFigcliDemo(el) {
       'rocket': ['categoryTech', 'fast', 'categoryTransportation', 'categoryTravel', 'idea', 'categorySports', 'international', 'next', 'categoryTourism', 'traffic'],
     };
 
-    function fillGrid(grid, icons, basePath) {
+    function fillGrid(grid, icons, basePath, stagger) {
       if (!grid) return;
       grid.innerHTML = '';
-      icons.forEach(name => {
+      icons.forEach((name, i) => {
         const img = document.createElement('img');
         img.src = basePath + encodeURIComponent(name) + '.svg';
         img.alt = '';
-        grid.appendChild(img);
+        if (stagger) {
+          img.style.opacity = '0';
+          img.style.transform = 'translateY(4px)';
+          img.style.transition = 'opacity 180ms ease, transform 180ms ease';
+          img.style.transitionDelay = (i * 30) + 'ms';
+          grid.appendChild(img);
+          requestAnimationFrame(() => {
+            img.style.opacity = '1';
+            img.style.transform = 'translateY(0)';
+          });
+        } else {
+          grid.appendChild(img);
+        }
       });
     }
     fillGrid(mainGrid, libraryIcons, '/media/icons-refresh/icon-svgs/');
@@ -2283,7 +2295,7 @@ function initFigcliDemo(el) {
 
         // Update similarities rail on submit
         const simIcons = similarityMap[item.name] || [];
-        fillGrid(railGrid, simIcons, '/media/icons-refresh/icon-svgs/');
+        fillGrid(railGrid, simIcons, '/media/icons-refresh/icon-svgs/', true);
 
         // Open code stack (first time animates, then stays open)
         if (!codeStackOpened) {
