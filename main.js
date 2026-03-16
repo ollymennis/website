@@ -2277,7 +2277,8 @@ function initFigcliDemo(el) {
       titleEl.textContent = 'SVG GENERATOR';
       typePrompt(item.name, () => {
         // "Submit" — transition to streaming
-        titleEl.textContent = 'GENERATING \u201C' + item.name.toUpperCase() + '\u201D';
+        const prefix = demo.offsetWidth <= 500 ? '' : 'GENERATING ';
+        titleEl.textContent = prefix + '\u201C' + item.name.toUpperCase() + '\u201D';
         demo.classList.add('is-streaming');
 
         // Update similarities rail on submit
