@@ -2085,23 +2085,21 @@ function initFigcliDemo(el) {
     function fillGrid(grid, icons, basePath, stagger) {
       if (!grid) return;
       grid.innerHTML = '';
-      icons.forEach((name, i) => {
+      icons.forEach(name => {
         const img = document.createElement('img');
         img.src = basePath + encodeURIComponent(name) + '.svg';
         img.alt = '';
-        if (stagger) {
-          img.style.opacity = '0';
-          img.style.transform = 'translateY(4px)';
-          img.style.transition = 'opacity 180ms ease, transform 180ms ease';
-          img.style.transitionDelay = (i * 30) + 'ms';
-          grid.appendChild(img);
-          requestAnimationFrame(() => {
-            img.style.opacity = '1';
-            img.style.transform = 'translateY(0)';
-          });
-        } else {
-          grid.appendChild(img);
-        }
+        grid.appendChild(img);
+      });
+      if (!stagger) return;
+      // Rapid stagger swap: swap each icon one at a time like icon-intro-row
+      const imgs = Array.from(grid.children);
+      imgs.forEach((img, i) => {
+        const finalSrc = img.src;
+        // Start with a random icon, then swap to the real one
+        const tempIdx = Math.floor(Math.random() * libraryIcons.length);
+        img.src = basePath + encodeURIComponent(libraryIcons[tempIdx]) + '.svg';
+        setTimeout(() => { img.src = finalSrc; }, (i + 1) * 80);
       });
     }
     fillGrid(mainGrid, libraryIcons, '/media/icons-refresh/icon-svgs/');
