@@ -2567,9 +2567,9 @@ body.drawing a:hover {
   .figcli-library-grid { max-height: var(--icon); }
   @keyframes figcliCodePushIn {
     from { width: 0; flex-basis: 0; opacity: 0.2; }
-    to { width: 50%; flex-basis: 50%; opacity: 1; }
+    to { width: 40%; flex-basis: 40%; opacity: 1; }
   }
-  .figcli-code-stack.is-open { width: 50%; flex: 0 0 50%; }
+  .figcli-code-stack.is-open { width: 40%; flex: 0 0 40%; }
 }
 
 @media (max-width: 400px) {
