@@ -2071,7 +2071,7 @@ function initFigcliDemo(el) {
 
     // Similarities icons per prompt (~ rail)
     const similarityMap = {
-      'agave': ['categoryHome', 'categoryDiy', 'categoryCafe', 'coffee', 'fpoShrimp', 'categoryGrocery', 'categoryBar', 'categoryFurniture', 'categoryKids', 'categorySports'],
+      'agave': ['categoryGrocery', 'categoryTravel', 'categoryFoodDrinkAlt', 'savingsApy', 'categoryHome', 'categoryCafe', 'coffee', 'fpoShrimp', 'categoryBar', 'categoryDiy'],
       'submarine': ['categoryTransportation', 'categoryTravel', 'international', 'location', 'fast', 'next', 'categoryTech', 'categoryTourism', 'categorySports', 'idea'],
       'noguchi lamp': ['categoryFurniture', 'categoryHome', 'categoryDiy', 'idea', 'categoryTech', 'categoryRent', 'categoryMedia24', 'categoryEntertainment', 'categoryBar', 'coffee'],
       'muji pen': ['categoryDiy', 'categoryTech', 'documentQuill', 'documentPaystub', 'note', 'idea', 'categoryHome', 'categoryFurniture', 'coffee', 'categoryBar'],
