@@ -2559,6 +2559,11 @@ body.drawing a:hover {
 
 /* Dark theme */
 @media (max-width: 500px) {
+  .figcli-screen { font-size: 0.55rem; }
+  .figcli-canvas-title { font-size: 0.7rem; }
+  .figcli-code-tab { font-size: 0.7rem; }
+  .figcli-library-title { font-size: 0.7rem; }
+  .figcli-prompt-text { font-size: 0.8rem; }
   .figcli-library-grid { max-height: var(--icon); }
   @keyframes figcliCodePushIn {
     from { width: 0; flex-basis: 0; opacity: 0.2; }
