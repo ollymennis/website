@@ -1063,7 +1063,7 @@ function initGenDemo(el) {
         code += '<path d="' + p.getAttribute('d') + '"';
         const fill = p.getAttribute('fill');
         if (fill && fill !== 'none') code += ' fill="' + fill + '"';
-        code += ' stroke="#FF00FF" stroke-width="2" stroke-linejoin="round"/>';
+        code += ' stroke="#F73B23" stroke-width="2" stroke-linejoin="round"/>';
       });
       code += '</svg>';
       return code;
@@ -1073,7 +1073,7 @@ function initGenDemo(el) {
       const doc = new DOMParser().parseFromString(svgText, 'image/svg+xml');
       return Array.from(doc.querySelectorAll('path')).map((p, i) => {
         const result = { label: labels[i] || 'path-' + (i + 1), d: p.getAttribute('d') };
-        if (p.getAttribute('fill') === '#FF00FF') result.fill = '#FF00FF';
+        if (p.getAttribute('fill') === '#FF00FF') result.fill = '#F73B23';
         return result;
       });
     }
@@ -1162,10 +1162,10 @@ function initGenDemo(el) {
           const [tx, ty] = LOADING_PATH[trail[i]];
           const op = 0.6 - (i * 0.06);
           if (op <= 0) continue;
-          html += `<rect x="${OX + tx}" y="${OY + ty}" width="1" height="1" fill="#FF00FF" opacity="${op}"/>`;
+          html += `<rect x="${OX + tx}" y="${OY + ty}" width="1" height="1" fill="#F73B23" opacity="${op}"/>`;
         }
         const [cx, cy] = LOADING_PATH[idx];
-        html += `<rect x="${OX + cx}" y="${OY + cy}" width="1" height="1" fill="#FF00FF" opacity="1"/>`;
+        html += `<rect x="${OX + cx}" y="${OY + cy}" width="1" height="1" fill="#F73B23" opacity="1"/>`;
         loadingG.innerHTML = html;
       }, 120);
     }
@@ -1183,7 +1183,7 @@ function initGenDemo(el) {
           return `<g class="pl-path" data-label="${p.label}"><path d="${p.d}" fill="${p.fill}" class="pl-magenta"/><path d="${p.d}" fill="none" stroke="#009CFF" stroke-width="0.12" stroke-linejoin="round"/></g>`;
         }
         const fill = ' fill="none"';
-        return `<g class="pl-path" data-label="${p.label}"><path d="${p.d}" stroke="#FF00FF" stroke-width="2" stroke-linejoin="round"${fill} class="pl-magenta"/><path d="${p.d}" stroke="#009CFF" stroke-width="0.12" stroke-linejoin="round" fill="none"/></g>`;
+        return `<g class="pl-path" data-label="${p.label}"><path d="${p.d}" stroke="#F73B23" stroke-width="2" stroke-linejoin="round"${fill} class="pl-magenta"/><path d="${p.d}" stroke="#009CFF" stroke-width="0.12" stroke-linejoin="round" fill="none"/></g>`;
       }).join('');
     }
 
@@ -2121,8 +2121,8 @@ function initFigcliDemo(el) {
       item.paths.forEach(p => {
         code += '  <!-- ' + p.label + ' -->\n';
         code += '  <path d="' + p.d + '"';
-        if (p.fill) code += '\n    fill="#FF00FF"';
-        code += '\n    stroke="#FF00FF" stroke-width="2"\n    stroke-linejoin="round"/>\n';
+        if (p.fill) code += '\n    fill="#F73B23"';
+        code += '\n    stroke="#F73B23" stroke-width="2"\n    stroke-linejoin="round"/>\n';
       });
       code += '</svg>';
       return code;
@@ -2134,9 +2134,9 @@ function initFigcliDemo(el) {
         const path = document.createElementNS(SVGNS, 'path');
         path.setAttribute('d', p.d);
         if (p.fill) {
-          path.setAttribute('fill', '#FF00FF');
+          path.setAttribute('fill', '#F73B23');
         } else {
-          path.setAttribute('stroke', '#FF00FF');
+          path.setAttribute('stroke', '#F73B23');
           path.setAttribute('stroke-width', '2');
           path.setAttribute('stroke-linejoin', 'round');
           path.setAttribute('fill', 'none');
@@ -2196,14 +2196,14 @@ function initFigcliDemo(el) {
           const r = document.createElementNS(SVGNS, 'rect');
           r.setAttribute('x', OX+tx); r.setAttribute('y', OY+ty);
           r.setAttribute('width', '1'); r.setAttribute('height', '1');
-          r.setAttribute('fill', '#FF00FF'); r.setAttribute('opacity', op);
+          r.setAttribute('fill', '#F73B23'); r.setAttribute('opacity', op);
           loadingG.appendChild(r);
         }
         const [cx, cy] = LOADING_PATH[idx];
         const cr = document.createElementNS(SVGNS, 'rect');
         cr.setAttribute('x', OX+cx); cr.setAttribute('y', OY+cy);
         cr.setAttribute('width', '1'); cr.setAttribute('height', '1');
-        cr.setAttribute('fill', '#FF00FF'); cr.setAttribute('opacity', '1');
+        cr.setAttribute('fill', '#F73B23'); cr.setAttribute('opacity', '1');
         loadingG.appendChild(cr);
       }, 120);
     }
