@@ -2346,6 +2346,10 @@ body.drawing a:hover {
   overflow: hidden;
 }
 
+.figcli-code-panel:last-child {
+  border-bottom: none;
+}
+
 .figcli-code-panel-active {
   flex: 1 1 auto;
   display: flex;
