@@ -2242,6 +2242,21 @@ function initFigcliDemo(el) {
       }, tickMs);
     }
 
+    function deletePrompt(callback) {
+      const text = promptText.textContent;
+      if (!text.length) { if (callback) callback(); return; }
+      let len = text.length;
+      typeInterval = setInterval(() => {
+        len--;
+        promptText.textContent = text.slice(0, len);
+        if (len <= 0) {
+          clearInterval(typeInterval);
+          typeInterval = null;
+          if (callback) setTimeout(callback, 200);
+        }
+      }, 40);
+    }
+
     function typePrompt(text, callback) {
       promptText.textContent = '';
       let i = 0;
@@ -2278,15 +2293,14 @@ function initFigcliDemo(el) {
       const item = QUEUE[queueIdx];
       const svgCode = formatSvgCode(item);
 
-      // Clear previous result
-      resultG.style.display = 'none';
-      while (resultG.firstChild) resultG.removeChild(resultG.firstChild);
-      if (codeOut) codeOut.textContent = '';
-
-      // Type the prompt
+      // Delete previous prompt, then type new one
       titleEl.textContent = 'SVG GENERATOR';
+      deletePrompt(() => {
       typePrompt(item.name, () => {
-        // "Submit" — transition to streaming
+        // "Submit" — clear previous and start streaming
+        resultG.style.display = 'none';
+        while (resultG.firstChild) resultG.removeChild(resultG.firstChild);
+        if (codeOut) codeOut.textContent = '';
         const prefix = demo.offsetWidth <= 500 ? '' : 'GENERATING ';
         titleEl.textContent = prefix + '\u201C' + item.name.toUpperCase() + '\u201D';
         demo.classList.add('is-streaming');
@@ -2319,6 +2333,7 @@ function initFigcliDemo(el) {
         startLoading();
         startStreaming(svgCode, delay);
         setTimeout(() => showResult(item, svgCode), delay);
+      });
       });
     }
 
