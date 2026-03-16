@@ -2560,6 +2560,11 @@ body.drawing a:hover {
 /* Dark theme */
 @media (max-width: 500px) {
   .figcli-library-grid { max-height: var(--icon); }
+  @keyframes figcliCodePushIn {
+    from { width: 0; flex-basis: 0; opacity: 0.2; }
+    to { width: 50%; flex-basis: 50%; opacity: 1; }
+  }
+  .figcli-code-stack.is-open { width: 50%; flex: 0 0 50%; }
 }
 
 @media (max-width: 400px) {
@@ -2567,11 +2572,6 @@ body.drawing a:hover {
   .figcli-library-title { margin-bottom: 0; }
   .figcli-screen { grid-template-rows: 1fr auto 36px; }
   .figcli-input-row { grid-template-columns: 0px minmax(0, 1fr); }
-  @keyframes figcliCodePushIn {
-    from { width: 0; flex-basis: 0; opacity: 0.2; }
-    to { width: 50%; flex-basis: 50%; opacity: 1; }
-  }
-  .figcli-code-stack.is-open { width: 50%; flex: 0 0 50%; }
 }
 
 [data-theme="dark"] .figcli-demo {
