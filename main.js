@@ -2219,7 +2219,7 @@ function initFigcliDemo(el) {
       if (!codeOut) return;
       codeOut.textContent = '';
       let charIdx = 0;
-      const charsPerTick = 2;
+      const charsPerTick = 1;
       const totalTicks = Math.ceil(svgCode.length / charsPerTick);
       const tickMs = duration / totalTicks;
       codeInterval = setInterval(() => {
