@@ -2374,7 +2374,7 @@ body.drawing a:hover {
   flex: 1;
   margin: 0 !important;
   padding: 0 10px 6px !important;
-  font-size: 0.25rem;
+  font-size: 0.2rem;
   line-height: 1.35;
   overflow: hidden;
   white-space: pre-wrap;
@@ -2386,7 +2386,7 @@ body.drawing a:hover {
 
 .figcli-code-out {
   font-family: var(--mono);
-  font-size: 0.25rem;
+  font-size: 0.2rem;
   line-height: 1.35;
   background: transparent !important;
   border: none !important;
