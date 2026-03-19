@@ -414,11 +414,17 @@ const selectedPassages = new Set();
 let mouseMoved = false;
 const selectionTimers = new Map();
 
-window.addEventListener('mousemove', (e) => {
-  mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
-  mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+function updateMouse(x, y) {
+  mouse.x = (x / window.innerWidth) * 2 - 1;
+  mouse.y = -(y / window.innerHeight) * 2 + 1;
   mouseMoved = true;
-});
+}
+
+window.addEventListener('mousemove', (e) => updateMouse(e.clientX, e.clientY));
+window.addEventListener('touchmove', (e) => {
+  const t = e.touches[0];
+  updateMouse(t.clientX, t.clientY);
+}, { passive: true });
 
 function updateSelectionVisuals() {
   if (selectedPassages.size === 0) {
@@ -441,35 +447,65 @@ function updateSelectionVisuals() {
   });
 }
 
-let mouseDownPos = { x: 0, y: 0 };
-window.addEventListener('mousedown', (e) => { mouseDownPos.x = e.clientX; mouseDownPos.y = e.clientY; });
-window.addEventListener('click', (e) => {
-  if (!corpus || !passagePositions.length) return;
-  const dx = e.clientX - mouseDownPos.x, dy = e.clientY - mouseDownPos.y;
-  if (dx * dx + dy * dy > 25) return;
-
+function findNearestPassage() {
   raycaster.setFromCamera(mouse, camera);
   let minDist = Infinity, nearest = -1;
   passagePositions.forEach((pos, i) => {
     const d = raycaster.ray.distanceToPoint(pos);
     if (d < PASSAGE_SPREAD * 2.5 && d < minDist) { minDist = d; nearest = i; }
   });
+  return nearest;
+}
 
-  if (nearest >= 0) {
-    if (selectedPassages.has(nearest)) {
+function toggleSelection(nearest) {
+  if (selectedPassages.has(nearest)) {
+    selectedPassages.delete(nearest);
+    clearTimeout(selectionTimers.get(nearest));
+    selectionTimers.delete(nearest);
+  } else {
+    selectedPassages.add(nearest);
+    selectionTimers.set(nearest, setTimeout(() => {
       selectedPassages.delete(nearest);
-      clearTimeout(selectionTimers.get(nearest));
       selectionTimers.delete(nearest);
-    } else {
-      selectedPassages.add(nearest);
-      selectionTimers.set(nearest, setTimeout(() => {
-        selectedPassages.delete(nearest);
-        selectionTimers.delete(nearest);
-        updateSelectionVisuals();
-      }, 5000));
-    }
-    updateSelectionVisuals();
+      updateSelectionVisuals();
+    }, 5000));
   }
+  updateSelectionVisuals();
+}
+
+// Desktop click
+let mouseDownPos = { x: 0, y: 0 };
+window.addEventListener('mousedown', (e) => { mouseDownPos.x = e.clientX; mouseDownPos.y = e.clientY; });
+window.addEventListener('click', (e) => {
+  if (!corpus || !passagePositions.length) return;
+  const dx = e.clientX - mouseDownPos.x, dy = e.clientY - mouseDownPos.y;
+  if (dx * dx + dy * dy > 25) return;
+  const nearest = findNearestPassage();
+  if (nearest >= 0) toggleSelection(nearest);
+});
+
+// Mobile tap — update mouse coords then select
+let touchStartPos = { x: 0, y: 0 };
+window.addEventListener('touchstart', (e) => {
+  const t = e.touches[0];
+  touchStartPos.x = t.clientX;
+  touchStartPos.y = t.clientY;
+}, { passive: true });
+window.addEventListener('touchend', (e) => {
+  if (!corpus || !passagePositions.length) return;
+  const t = e.changedTouches[0];
+  const dx = t.clientX - touchStartPos.x, dy = t.clientY - touchStartPos.y;
+  if (dx * dx + dy * dy > 25) return; // was a drag, not a tap
+  updateMouse(t.clientX, t.clientY);
+  // Update raycaster cursor position immediately
+  raycaster.setFromCamera(mouse, camera);
+  const _dir = new THREE.Vector3();
+  camera.getWorldDirection(_dir);
+  cursorPlane.normal.copy(_dir);
+  cursorPlane.constant = -cursorPlane.normal.dot(controls.target);
+  raycaster.ray.intersectPlane(cursorPlane, cursorWorld);
+  const nearest = findNearestPassage();
+  if (nearest >= 0) toggleSelection(nearest);
 });
 
 // ─── LIGHTING ───────────────────────────────────────────
