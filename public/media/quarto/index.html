@@ -497,7 +497,6 @@ window.addEventListener('touchend', (e) => {
   const dx = t.clientX - touchStartPos.x, dy = t.clientY - touchStartPos.y;
   if (dx * dx + dy * dy > 25) return; // was a drag, not a tap
   updateMouse(t.clientX, t.clientY);
-  // Update raycaster cursor position immediately
   raycaster.setFromCamera(mouse, camera);
   const _dir = new THREE.Vector3();
   camera.getWorldDirection(_dir);

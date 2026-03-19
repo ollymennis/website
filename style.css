@@ -2581,6 +2581,10 @@ body.drawing a:hover {
   .figcli-input-row { grid-template-columns: 0px minmax(0, 1fr); }
 }
 
+@media (max-width: 700px) {
+  .quarto-embed { height: min(100vw, 400px); }
+}
+
 [data-theme="dark"] .figcli-demo {
   --figcli-cream: #1a1a1a;
   --figcli-ink: #e0d6c8;
