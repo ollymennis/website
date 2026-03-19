@@ -25,3 +25,14 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Unused/legacy directories
+web/
+webfonts/
+src/
+public/fonts/CommitMonoV143/
+
+# Unlinked project assets
+public/media/arcade/
+public/media/svg maker/tomato.mp4
+public/projects/11-system-playground.md
