@@ -1,7 +1,7 @@
 # quarto
 _an embedding visualizer_
 
-quarto maps hundreds of shakespeare's passages into a shared vector space using embeddings. passages that are semantically similar cluster together
+quarto maps shakespeare passages into a shared vector space using embeddings. passages that are semantically similar cluster together
 
 <iframe src="/media/quarto/index.html" class="quarto-embed" style="width:100%;height:500px;border:none;border-radius:12px" loading="lazy"></iframe>
 <hr />
