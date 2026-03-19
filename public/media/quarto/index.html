@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { overflow: hidden; background: #f4ede4; width: 100%; height: 100%; }
+  canvas { display: block; }
+  #texture-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 1; mix-blend-mode: multiply; opacity: 0.06;
+  }
+  #vignette {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 2;
+    background: radial-gradient(ellipse at center, transparent 30%, rgba(210,200,185,0.5) 100%);
+  }
+  .passage-label {
+    position: fixed; pointer-events: none; z-index: 55;
+    font-family: monospace; font-weight: 400; font-size: 13px;
+    color: rgba(60,45,35,0.6); letter-spacing: 0.5px;
+    line-height: 1.4;
+    white-space: nowrap;
+    display: none;
+  }
+  .passage-label.visible { display: block; }
+  .passage-label .source {
+    display: block; font-size: 9px; color: rgba(80,60,50,0.4);
+    letter-spacing: 1.5px; text-transform: uppercase; margin-top: 2px;
+  }
+  .passage-label.highlight {
+    color: rgba(40,25,15,0.9); z-index: 56;
+    max-width: 240px; white-space: normal;
+    text-transform: uppercase; letter-spacing: 1.5px; font-size: 11px;
+  }
+  .passage-label.dim { color: rgba(80,60,50,0.1); }
+</style>
+</head>
+<body>
+<canvas id="texture-overlay"></canvas>
+<div id="vignette"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.163.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.163.0/examples/jsm/"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+
+// ─── PCA ─────────────────────────────────────────────────
+function computePCA(embeddings, dims = 3) {
+  const n = embeddings.length;
+  const d = embeddings[0].length;
+  const mean = new Float64Array(d);
+  for (const emb of embeddings) for (let i = 0; i < d; i++) mean[i] += emb[i];
+  for (let i = 0; i < d; i++) mean[i] /= n;
+
+  const centered = embeddings.map(emb => {
+    const c = new Float64Array(d);
+    for (let i = 0; i < d; i++) c[i] = emb[i] - mean[i];
+    return c;
+  });
+
+  const K = [];
+  for (let i = 0; i < n; i++) {
+    K[i] = new Float64Array(n);
+    for (let j = 0; j <= i; j++) {
+      let dot = 0;
+      for (let k = 0; k < d; k++) dot += centered[i][k] * centered[j][k];
+      K[i][j] = dot; K[j][i] = dot;
+    }
+  }
+
+  const eigenvectors = [];
+  const eigenvalues = [];
+  const KWork = K.map(row => Float64Array.from(row));
+
+  for (let ev = 0; ev < dims; ev++) {
+    let v = new Float64Array(n);
+    for (let i = 0; i < n; i++) v[i] = Math.random() - 0.5;
+    for (let iter = 0; iter < 200; iter++) {
+      const Kv = new Float64Array(n);
+      for (let i = 0; i < n; i++)
+        for (let j = 0; j < n; j++) Kv[i] += KWork[i][j] * v[j];
+      let norm = 0;
+      for (let i = 0; i < n; i++) norm += Kv[i] * Kv[i];
+      norm = Math.sqrt(norm);
+      for (let i = 0; i < n; i++) v[i] = Kv[i] / norm;
+    }
+    let Kv = new Float64Array(n);
+    for (let i = 0; i < n; i++)
+      for (let j = 0; j < n; j++) Kv[i] += KWork[i][j] * v[j];
+    let lambda = 0;
+    for (let i = 0; i < n; i++) lambda += v[i] * Kv[i];
+    eigenvectors.push(v);
+    eigenvalues.push(lambda);
+    for (let i = 0; i < n; i++)
+      for (let j = 0; j < n; j++)
+        KWork[i][j] -= lambda * v[i] * v[j];
+  }
+
+  const basis = [];
+  for (let k = 0; k < dims; k++) {
+    const u = new Float64Array(d);
+    const sqrtLam = Math.sqrt(Math.abs(eigenvalues[k]) + 1e-10);
+    for (let i = 0; i < n; i++) {
+      const w = eigenvectors[k][i] / sqrtLam;
+      for (let j = 0; j < d; j++) u[j] += w * centered[i][j];
+    }
+    basis.push(u);
+  }
+
+  const positions = embeddings.map(emb => {
+    const coords = [];
+    for (let k = 0; k < dims; k++) {
+      let val = 0;
+      for (let i = 0; i < d; i++) val += (emb[i] - mean[i]) * basis[k][i];
+      coords.push(val);
+    }
+    return coords;
+  });
+
+  return { positions, mean, basis };
+}
+
+// ─── SETUP ───────────────────────────────────────────────
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.0;
+document.body.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0xf4ede4);
+
+const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 500);
+camera.position.set(0, 1.5, 10);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.03;
+controls.rotateSpeed = 0.4;
+controls.zoomSpeed = 0.6;
+controls.minDistance = 2;
+controls.maxDistance = 120;
+controls.autoRotate = true;
+controls.autoRotateSpeed = 0.3;
+controls.enablePan = true;
+controls.panSpeed = 0.3;
+
+// ─── POST-PROCESSING ────────────────────────────────────
+const composer = new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene, camera));
+const bloom = new UnrealBloomPass(
+  new THREE.Vector2(window.innerWidth, window.innerHeight),
+  0.25, 0.8, 0.6
+);
+composer.addPass(bloom);
+
+// Paper texture
+{
+  const texCanvas = document.getElementById('texture-overlay');
+  texCanvas.width = window.innerWidth;
+  texCanvas.height = window.innerHeight;
+  const ctx = texCanvas.getContext('2d');
+  const imgData = ctx.createImageData(texCanvas.width, texCanvas.height);
+  const d = imgData.data;
+  for (let i = 0; i < d.length; i += 4) {
+    const v = Math.random() * 255;
+    d[i] = d[i+1] = d[i+2] = v; d[i+3] = 255;
+  }
+  ctx.putImageData(imgData, 0, 0);
+}
+
+// ─── SOFT BLOB TEXTURE ──────────────────────────────────
+function createBlobTexture() {
+  const size = 128, canvas = document.createElement('canvas');
+  canvas.width = size; canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  const grad = ctx.createRadialGradient(size/2, size/2, 0, size/2, size/2, size/2);
+  grad.addColorStop(0, 'rgba(255,255,255,1)');
+  grad.addColorStop(0.25, 'rgba(255,255,255,0.85)');
+  grad.addColorStop(0.5, 'rgba(255,255,255,0.4)');
+  grad.addColorStop(0.75, 'rgba(255,255,255,0.1)');
+  grad.addColorStop(1, 'rgba(255,255,255,0)');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, size, size);
+  return new THREE.CanvasTexture(canvas);
+}
+const blobTex = createBlobTexture();
+
+// ─── CORPUS & SCENE ─────────────────────────────────────
+let corpus = null;
+let pcaResult = null;
+let passagePositions = [];
+let passageLabels = [];
+let passageParticleStart = [];
+let particleData = [];
+let blobGeo, blobMat, blobPoints;
+let passageAnchorIdx = [];
+const PARTICLES_PER_PASSAGE = 18;
+const PASSAGE_SPREAD = 1.2;
+const SCALE = 15;
+const categoryColors = {};
+
+async function loadCorpus() {
+  const res = await fetch('/media/quarto/corpus.json');
+  corpus = await res.json();
+  corpus.categories.forEach(c => { categoryColors[c.id] = new THREE.Color(c.color); });
+
+  const embeddings = corpus.passages.map(p => p.embedding);
+  pcaResult = computePCA(embeddings, 3);
+  passagePositions = pcaResult.positions.map(coords =>
+    new THREE.Vector3(coords[0] * SCALE, coords[1] * SCALE, coords[2] * SCALE)
+  );
+
+  buildParticles();
+  buildDiagram();
+  buildLabels();
+}
+
+function buildParticles() {
+  const totalParticles = corpus.passages.length * PARTICLES_PER_PASSAGE;
+  const positions = new Float32Array(totalParticles * 3);
+  const colors = new Float32Array(totalParticles * 3);
+  const sizes = new Float32Array(totalParticles);
+
+  let idx = 0;
+  corpus.passages.forEach((passage, pIdx) => {
+    const center = passagePositions[pIdx];
+    const color = categoryColors[passage.category] || new THREE.Color(0x888888);
+    passageParticleStart.push(idx);
+
+    for (let i = 0; i < PARTICLES_PER_PASSAGE; i++) {
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos(2 * Math.random() - 1);
+      const r = PASSAGE_SPREAD * Math.pow(Math.random(), 0.5);
+
+      const x = center.x + r * Math.sin(phi) * Math.cos(theta);
+      const y = center.y + r * Math.sin(phi) * Math.sin(theta);
+      const z = center.z + r * Math.cos(phi);
+
+      positions[idx * 3] = x;
+      positions[idx * 3 + 1] = y;
+      positions[idx * 3 + 2] = z;
+
+      const c = color.clone();
+      const hsl = {};
+      c.getHSL(hsl);
+      c.setHSL(
+        hsl.h + (Math.random() - 0.5) * 0.04,
+        Math.min(1, hsl.s + (Math.random() - 0.5) * 0.15),
+        Math.min(1, Math.max(0, hsl.l + (Math.random() - 0.5) * 0.12))
+      );
+      colors[idx * 3] = c.r;
+      colors[idx * 3 + 1] = c.g;
+      colors[idx * 3 + 2] = c.b;
+
+      const distFromCenter = r / PASSAGE_SPREAD;
+      sizes[idx] = Math.max(1.2, 2.5 + Math.random() * 3.0 - distFromCenter * 1.5);
+
+      particleData.push({
+        index: idx, passage: pIdx,
+        basePos: new THREE.Vector3(x, y, z),
+        targetPos: new THREE.Vector3(x, y, z),
+        homePos: new THREE.Vector3(x, y, z),
+        pos: new THREE.Vector3(x, y, z),
+        vel: new THREE.Vector3(
+          (Math.random() - 0.5) * 0.002,
+          (Math.random() - 0.5) * 0.002,
+          (Math.random() - 0.5) * 0.002
+        ),
+        scale: sizes[idx], targetScale: sizes[idx], baseScale: sizes[idx],
+        phase: Math.random() * Math.PI * 2,
+      });
+      idx++;
+    }
+  });
+
+  // Find anchor particle per passage
+  for (let pIdx = 0; pIdx < corpus.passages.length; pIdx++) {
+    const start = passageParticleStart[pIdx];
+    let bestIdx = start, bestSat = 0;
+    const tmp = new THREE.Color();
+    const hsl = {};
+    for (let j = 0; j < PARTICLES_PER_PASSAGE; j++) {
+      const ci = (start + j) * 3;
+      tmp.setRGB(colors[ci], colors[ci+1], colors[ci+2]);
+      tmp.getHSL(hsl);
+      if (hsl.s > bestSat) { bestSat = hsl.s; bestIdx = start + j; }
+    }
+    passageAnchorIdx.push(bestIdx);
+  }
+
+  blobGeo = new THREE.BufferGeometry();
+  blobGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  blobGeo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+  blobGeo.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+
+  blobMat = new THREE.ShaderMaterial({
+    uniforms: {
+      map: { value: blobTex },
+      scale: { value: window.innerHeight * 0.5 },
+    },
+    vertexShader: `
+      attribute float size;
+      varying vec3 vColor;
+      uniform float scale;
+      void main() {
+        vColor = color;
+        vec4 mvPos = modelViewMatrix * vec4(position, 1.0);
+        gl_PointSize = size * (scale / -mvPos.z);
+        gl_Position = projectionMatrix * mvPos;
+      }
+    `,
+    fragmentShader: `
+      uniform sampler2D map;
+      varying vec3 vColor;
+      void main() {
+        vec4 tex = texture2D(map, gl_PointCoord);
+        if (tex.a < 0.01) discard;
+        gl_FragColor = vec4(vColor * tex.rgb, tex.a);
+      }
+    `,
+    transparent: true,
+    depthWrite: false,
+    blending: THREE.NormalBlending,
+    vertexColors: true,
+  });
+
+  blobPoints = new THREE.Points(blobGeo, blobMat);
+  scene.add(blobPoints);
+}
+
+function buildLabels() {
+  corpus.passages.forEach((passage, i) => {
+    const el = document.createElement('div');
+    el.className = 'passage-label';
+    el.dataset.idx = i;
+    document.body.appendChild(el);
+    passageLabels.push(el);
+  });
+}
+
+function buildDiagram() {
+  const diagramGroup = new THREE.Group();
+  scene.add(diagramGroup);
+
+  const diagramMat = new THREE.LineBasicMaterial({
+    color: 0x664433, transparent: true, opacity: 0.6, depthWrite: false,
+  });
+  const diagramMatFine = new THREE.LineBasicMaterial({
+    color: 0x664433, transparent: true, opacity: 0.4, depthWrite: false,
+  });
+
+  [6, 12, 20, 30].forEach((r, idx) => {
+    const pts = [];
+    for (let i = 0; i <= 80; i++) {
+      const a = (i / 80) * Math.PI * 2;
+      pts.push(new THREE.Vector3(Math.cos(a) * r, 0, Math.sin(a) * r));
+    }
+    diagramGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), idx < 2 ? diagramMat : diagramMatFine));
+  });
+
+  [new THREE.Vector3(1,0,0), new THREE.Vector3(0,1,0), new THREE.Vector3(0,0,1)].forEach(dir => {
+    const pts = [dir.clone().multiplyScalar(-40), dir.clone().multiplyScalar(40)];
+    diagramGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), diagramMat));
+  });
+
+  for (let i = 0; i < 3; i++) {
+    const ring = new THREE.Mesh(
+      new THREE.TorusGeometry(8 + i * 5, 0.012, 6, 100),
+      new THREE.MeshBasicMaterial({ color: 0x664433, transparent: true, opacity: 0.5, depthWrite: false })
+    );
+    ring.rotation.x = Math.random() * Math.PI;
+    ring.rotation.y = Math.random() * Math.PI;
+    scene.add(ring);
+  }
+}
+
+// ─── TEXT SCRAMBLE ───────────────────────────────────────
+function scrambleText(el, target) {
+  if (el._scrambleTimer) clearInterval(el._scrambleTimer);
+  el._scrambleTarget = target;
+  let i = 0;
+  el.textContent = '';
+  el._scrambleTimer = setInterval(() => {
+    i++;
+    el.textContent = target.slice(0, i);
+    if (i >= target.length) clearInterval(el._scrambleTimer);
+  }, 22);
+}
+
+// ─── CLICK SELECT ────────────────────────────────────────
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+const cursorWorld = new THREE.Vector3();
+const cursorPlane = new THREE.Plane(new THREE.Vector3(0,0,1), 0);
+const cursorRadius = 2.0;
+const cursorStrength = 1.5;
+const selectedPassages = new Set();
+let mouseMoved = false;
+const selectionTimers = new Map();
+
+window.addEventListener('mousemove', (e) => {
+  mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+  mouseMoved = true;
+});
+
+function updateSelectionVisuals() {
+  if (selectedPassages.size === 0) {
+    particleData.forEach(p => { p.targetScale = p.baseScale; });
+    passageLabels.forEach(el => el.classList.remove('visible', 'highlight', 'dim'));
+    return;
+  }
+  particleData.forEach(p => {
+    p.targetScale = selectedPassages.has(p.passage) ? p.baseScale * 1.5 : p.baseScale * 0.35;
+  });
+  passageLabels.forEach((el, i) => {
+    el.classList.remove('visible', 'highlight', 'dim');
+    if (selectedPassages.has(i)) {
+      el.innerHTML = corpus.passages[i].source;
+      el.classList.add('visible', 'highlight');
+    } else {
+      el.innerHTML = '';
+      el.classList.add('dim');
+    }
+  });
+}
+
+let mouseDownPos = { x: 0, y: 0 };
+window.addEventListener('mousedown', (e) => { mouseDownPos.x = e.clientX; mouseDownPos.y = e.clientY; });
+window.addEventListener('click', (e) => {
+  if (!corpus || !passagePositions.length) return;
+  const dx = e.clientX - mouseDownPos.x, dy = e.clientY - mouseDownPos.y;
+  if (dx * dx + dy * dy > 25) return;
+
+  raycaster.setFromCamera(mouse, camera);
+  let minDist = Infinity, nearest = -1;
+  passagePositions.forEach((pos, i) => {
+    const d = raycaster.ray.distanceToPoint(pos);
+    if (d < PASSAGE_SPREAD * 2.5 && d < minDist) { minDist = d; nearest = i; }
+  });
+
+  if (nearest >= 0) {
+    if (selectedPassages.has(nearest)) {
+      selectedPassages.delete(nearest);
+      clearTimeout(selectionTimers.get(nearest));
+      selectionTimers.delete(nearest);
+    } else {
+      selectedPassages.add(nearest);
+      selectionTimers.set(nearest, setTimeout(() => {
+        selectedPassages.delete(nearest);
+        selectionTimers.delete(nearest);
+        updateSelectionVisuals();
+      }, 5000));
+    }
+    updateSelectionVisuals();
+  }
+});
+
+// ─── LIGHTING ───────────────────────────────────────────
+scene.add(new THREE.AmbientLight(0xd4c8b8, 1.5));
+const pointLight = new THREE.PointLight(0xfff8f0, 1.5, 100);
+pointLight.position.set(0, 15, 0); scene.add(pointLight);
+const pointLight2 = new THREE.PointLight(0xf0e0c8, 1.0, 80);
+pointLight2.position.set(-15, -5, 10); scene.add(pointLight2);
+
+// Dust
+const dustGeo = new THREE.BufferGeometry();
+const dustPos = new Float32Array(200 * 3);
+for (let i = 0; i < 200; i++) {
+  const r = 30 + Math.random() * 120;
+  const theta = Math.random() * Math.PI * 2;
+  const phi = Math.acos(2 * Math.random() - 1);
+  dustPos[i*3] = r*Math.sin(phi)*Math.cos(theta);
+  dustPos[i*3+1] = r*Math.sin(phi)*Math.sin(theta);
+  dustPos[i*3+2] = r*Math.cos(phi);
+}
+dustGeo.setAttribute('position', new THREE.Float32BufferAttribute(dustPos, 3));
+scene.add(new THREE.Points(dustGeo, new THREE.PointsMaterial({
+  size: 0.12, color: 0xb8a898, transparent: true, opacity: 0.25, depthWrite: false, sizeAttenuation: true,
+})));
+
+// ─── ANIMATION LOOP ─────────────────────────────────────
+const clock = new THREE.Clock();
+let bloomTarget = 0.1;
+const _camDir = new THREE.Vector3();
+const _projV = new THREE.Vector3();
+const FRAME_INTERVAL = 1 / 30;
+let frameAccum = 0;
+
+function animate() {
+  requestAnimationFrame(animate);
+  const rawDt = clock.getDelta();
+  frameAccum += rawDt;
+  if (frameAccum < FRAME_INTERVAL) return;
+  frameAccum -= FRAME_INTERVAL;
+  if (!blobGeo) { controls.update(); composer.render(); return; }
+
+  const elapsed = clock.getElapsedTime();
+  const posArr = blobGeo.attributes.position.array;
+  const sizeArr = blobGeo.attributes.size.array;
+  const cursorRadiusSq = cursorRadius * cursorRadius;
+
+  for (let i = 0; i < particleData.length; i++) {
+    const p = particleData[i];
+    p.scale += (p.targetScale - p.scale) * 0.06;
+    p.basePos.lerp(p.targetPos, 0.02 + Math.sin(p.phase) * 0.005);
+
+    const orbit = elapsed * 0.12 + p.phase;
+    p.pos.x = p.basePos.x + Math.sin(orbit) * 0.2 + p.vel.x * elapsed * 6;
+    p.pos.y = p.basePos.y + Math.sin(elapsed * 0.3 + p.phase) * 0.15 + Math.cos(orbit * 0.7) * 0.12;
+    p.pos.z = p.basePos.z + Math.cos(orbit) * 0.2 + p.vel.z * elapsed * 6;
+    p.pos.lerp(p.basePos, 0.001);
+
+    const dx = p.pos.x - cursorWorld.x;
+    const dy = p.pos.y - cursorWorld.y;
+    const dz = p.pos.z - cursorWorld.z;
+    const distSq = dx*dx + dy*dy + dz*dz;
+    let cx = 0, cy = 0, cz = 0, scaleBoost = 1;
+    if (distSq < cursorRadiusSq && distSq > 0.01) {
+      const dist = Math.sqrt(distSq);
+      const falloff = 1 - dist / cursorRadius;
+      const str = falloff * falloff * cursorStrength;
+      cx = dx/dist * str; cy = dy/dist * str; cz = dz/dist * str;
+      scaleBoost = 1 + falloff * 0.4;
+    }
+
+    posArr[i*3] = p.pos.x + cx;
+    posArr[i*3+1] = p.pos.y + cy;
+    posArr[i*3+2] = p.pos.z + cz;
+    sizeArr[i] = p.scale * (1 + Math.sin(elapsed + p.phase) * 0.06) * scaleBoost;
+  }
+
+  blobGeo.attributes.position.needsUpdate = true;
+  blobGeo.attributes.size.needsUpdate = true;
+
+  // Project cursor
+  if (mouseMoved) {
+    raycaster.setFromCamera(mouse, camera);
+    camera.getWorldDirection(_camDir);
+    cursorPlane.normal.copy(_camDir);
+    cursorPlane.constant = -cursorPlane.normal.dot(controls.target);
+    raycaster.ray.intersectPlane(cursorPlane, cursorWorld);
+    mouseMoved = false;
+
+    // Hover detection
+    let hoverNearest = -1, hoverMinDist = Infinity;
+    passagePositions.forEach((pos, i) => {
+      const d = raycaster.ray.distanceToPoint(pos);
+      if (d < PASSAGE_SPREAD * 2.5 && d < hoverMinDist) {
+        hoverMinDist = d; hoverNearest = i;
+      }
+    });
+
+    for (let i = 0; i < passageLabels.length; i++) {
+      const el = passageLabels[i];
+      if (selectedPassages.has(i)) continue;
+      if (i === hoverNearest) {
+        const src = corpus.passages[i].source;
+        if (el._scrambleTarget !== src) {
+          el.classList.add('visible');
+          scrambleText(el, src);
+        }
+      } else {
+        if (el.classList.contains('visible')) {
+          el.classList.remove('visible');
+          el.textContent = '';
+          el._scrambleTarget = '';
+          if (el._scrambleTimer) { clearInterval(el._scrambleTimer); el._scrambleTimer = null; }
+        }
+      }
+    }
+  }
+
+  // Project labels to screen
+  {
+    const w = window.innerWidth, h = window.innerHeight;
+    for (let i = 0; i < passageLabels.length; i++) {
+      const el = passageLabels[i];
+      if (!el.classList.contains('visible') && !el.classList.contains('highlight')) continue;
+      _projV.copy(passagePositions[i]).project(camera);
+      if (_projV.z > 1) { el.style.visibility = 'hidden'; continue; }
+      el.style.visibility = '';
+      el.style.left = ((_projV.x * 0.5 + 0.5) * w) + 'px';
+      el.style.top = ((-_projV.y * 0.5 + 0.5) * h - 20) + 'px';
+    }
+  }
+
+  bloom.strength += (bloomTarget - bloom.strength) * 0.03;
+  controls.update();
+  composer.render();
+}
+
+// ─── RESIZE ─────────────────────────────────────────────
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  composer.setSize(window.innerWidth, window.innerHeight);
+  if (blobMat) blobMat.uniforms.scale.value = window.innerHeight * 0.5;
+  composer.render();
+});
+
+// ─── INIT ───────────────────────────────────────────────
+loadCorpus().then(() => {
+  console.log(`Loaded ${corpus.passages.length} passages`);
+}).catch(err => console.error('Failed to load corpus:', err));
+
+animate();
+</script>
+</body>
+</html>
