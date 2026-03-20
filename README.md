@@ -2,6 +2,11 @@
 
 personal portfolio site. vanilla html/css/js, built with vite.
 
+
+https://github.com/user-attachments/assets/312ec98e-c7ba-418f-86e2-6adc748f06cf
+
+
+
 ## setup
 
 ```
