@@ -102,6 +102,24 @@
   .project-display .placeholder { margin-top: 0.6rem; display: flex; flex-direction: column; gap: 0.3rem; }
   .placeholder-line { height: 0.4rem; background: var(--border); border-radius: 0; opacity: 0.4; }
   @keyframes header-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+  .mirror-wrap { position: relative; margin-top: 0.5rem; }
+  .mirror-frame {
+    position: absolute; border: 1px solid var(--border); border-radius: 3px;
+    opacity: 0; display: flex;
+    animation: mirror-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .mirror-nav {
+    display: flex; flex-direction: column; gap: 1px; padding: 3px;
+    flex-shrink: 0; opacity: 0;
+    animation: mirror-in 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .mirror-nav-line {
+    height: 1px; background: var(--border); opacity: 0.6;
+  }
+  .mirror-panel {
+    position: relative; flex: 1;
+  }
+  @keyframes mirror-in { from { opacity: 0; } to { opacity: 0.5; } }
 
   .sticker {
     position: fixed; max-width: 16px; max-height: 16px;
@@ -213,12 +231,23 @@ items.forEach(item => {
       [100, 100, 95, 55].forEach((w, i) => {
         ph += `<div class="placeholder-line" style="width:${w}%;animation:header-in 250ms cubic-bezier(0.16,1,0.3,1) ${120+i*40}ms both"></div>`;
       });
+      ph += '</div>';
+      // Single ghost frame with side panel
+      const navLines = Array.from({length: 5}, () =>
+        `<div class="mirror-nav-line" style="width:${8 + Math.random() * 10}px"></div>`
+      ).join('');
+      const mirror = `<div class="mirror-wrap" style="width:min(120px,100%);aspect-ratio:3/2">` +
+        `<div class="mirror-frame" style="position:relative;width:100%;height:100%;animation-delay:400ms">` +
+        `<div class="mirror-nav" style="animation-delay:700ms">${navLines}</div>` +
+        `<div class="mirror-panel"></div>` +
+        `</div></div>`;
+      contentHTML = `<h2>${title}</h2><p>${sub}</p>${ph}${mirror}`;
     } else {
       ph = '<div class="placeholder">';
       for (let i = 0; i < 4; i++) ph += `<div class="placeholder-line" style="width:${lines[i]}%;animation:header-in 250ms cubic-bezier(0.16,1,0.3,1) ${120+i*40}ms both"></div>`;
+      ph += '</div>';
+      contentHTML = `<h2>${title}</h2><p>${sub}</p>${ph}`;
     }
-    ph += '</div>';
-    contentHTML = `<h2>${title}</h2><p>${sub}</p>${ph}`;
     projectDisplay.innerHTML = contentHTML;
     projectDisplay.classList.remove('active');
     void projectDisplay.offsetWidth;
