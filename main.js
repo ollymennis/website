@@ -1803,16 +1803,21 @@ window.addEventListener('touchend', () => { if (_pgDrag) _pgDragEnd(); });
 
 function _pgDragMove(cx, cy) {
   if (!_pgDrag) return;
-  const { img, startLeft, startTop, startX, startY } = _pgDrag;
-  img.style.left = (startLeft + cx - startX) + 'px';
-  img.style.top = (startTop + cy - startY) + 'px';
+  const { img, label, startLeft, startTop, startX, startY } = _pgDrag;
+  const newLeft = startLeft + cx - startX;
+  const newTop = startTop + cy - startY;
+  img.style.left = newLeft + 'px';
+  img.style.top = newTop + 'px';
+  label.style.left = newLeft + 'px';
+  label.style.top = (newTop - 5) + 'px';
 }
 
 function _pgDragEnd() {
   if (!_pgDrag) return;
-  const { img, pg } = _pgDrag;
+  const { img, pg, label } = _pgDrag;
   _pgDrag = null;
   img.style.cursor = "url('/icons/mouse-hover.svg'), grab";
+  if (label) label.style.display = 'none';
 
   const pgRect = pg.getBoundingClientRect();
   const imgRect = img.getBoundingClientRect();
@@ -1857,6 +1862,11 @@ function initStickerPlayground(el) {
 
     let pgZ = 100;
 
+    // Filename label
+    const label = document.createElement('div');
+    label.style.cssText = 'position:absolute;font-family:var(--mono);font-size:var(--text-sm);color:var(--fg);background:var(--bg);padding:0.15rem 0.35rem;pointer-events:none;white-space:nowrap;border-radius:0;z-index:9999;display:none;';
+    pg.appendChild(label);
+
     stickerSrcs.forEach(src => {
       const img = document.createElement('img');
       img.src = src;
@@ -1867,6 +1877,8 @@ function initStickerPlayground(el) {
       img.style.top = (20 + Math.random() * (pg.offsetHeight - 70)) + 'px';
       pg.appendChild(img);
 
+      const filename = src.split('/').pop();
+
       function startDrag(cx, cy) {
         if (_pgDrag) return;
         pgZ++;
@@ -1875,13 +1887,17 @@ function initStickerPlayground(el) {
         img.style.transform = '';
         img.style.opacity = '';
         _pgDrag = {
-          img, pg,
+          img, pg, label,
           startLeft: parseInt(img.style.left) || 0,
           startTop: parseInt(img.style.top) || 0,
           startX: cx,
           startY: cy,
         };
         img.style.cursor = "url('/icons/mouse-click.svg'), grabbing";
+        label.textContent = filename;
+        label.style.display = 'block';
+        label.style.left = img.style.left;
+        label.style.top = (parseInt(img.style.top) - 5) + 'px';
       }
 
       img.addEventListener('mousedown', e => { e.preventDefault(); e.stopPropagation(); startDrag(e.clientX, e.clientY); });
