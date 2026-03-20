@@ -103,7 +103,7 @@
   .project-display {
     display: none; position: fixed;
     top: 0; left: clamp(100px, 30%, 180px); right: 0; bottom: 0;
-    padding: 2.5rem 1.5rem; background: var(--bg); z-index: 150;
+    padding: 2.5rem 0 0 1.5rem; background: var(--bg); z-index: 150;
   }
   .project-display.active {
     display: block;
@@ -276,7 +276,7 @@ items.forEach(item => {
 
     if (idx === 8) {
       // "this" gets a nested mini version with intro from markdown
-      contentHTML = `<h2>${title}</h2><p>${sub}</p><p class="intro-text" id="this-intro"></p><iframe src="/media/this/mini.html" style="width:100%;height:calc(100% - 5rem);border:1px solid var(--border);border-radius:6px;margin-top:0.6rem" loading="lazy"></iframe>`;
+      contentHTML = `<h2>${title}</h2><p>${sub}</p><p class="intro-text" id="this-intro"></p><iframe src="/media/this/mini.html" style="width:100%;height:calc(100% - 5rem);border:1px solid var(--border);border-right:none;border-radius:6px 0 0 6px;margin-top:0.6rem" loading="lazy"></iframe>`;
     } else {
       const lines = [85, 60, 72, 90, 45, 68, 80, 55, 75];
       let placeholderHTML = '<div class="placeholder">';
