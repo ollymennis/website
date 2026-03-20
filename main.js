@@ -1872,9 +1872,7 @@ function initStickerPlayground(el) {
       img.src = src;
       img.draggable = false;
       img.className = 'playground-sticker';
-      img.style.cssText = 'position:absolute;max-width:50px;max-height:50px;width:auto;height:auto;cursor:url("/icons/mouse-hover.svg"),grab;user-select:none;-webkit-user-select:none;';
-      img.style.left = (20 + Math.random() * (pg.offsetWidth - 70)) + 'px';
-      img.style.top = (20 + Math.random() * (pg.offsetHeight - 70)) + 'px';
+      img.style.cssText = 'position:absolute;max-width:50px;max-height:50px;width:auto;height:auto;cursor:url("/icons/mouse-hover.svg"),grab;user-select:none;-webkit-user-select:none;opacity:0;';
       pg.appendChild(img);
 
       const filename = src.split('/').pop();
@@ -1902,6 +1900,21 @@ function initStickerPlayground(el) {
 
       img.addEventListener('mousedown', e => { e.preventDefault(); e.stopPropagation(); startDrag(e.clientX, e.clientY); });
       img.addEventListener('touchstart', e => { e.preventDefault(); e.stopPropagation(); startDrag(e.touches[0].clientX, e.touches[0].clientY); }, { passive: false });
+    });
+
+    // Defer positioning until layout is settled, then scatter with bounce-in
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        const w = pg.offsetWidth || 300;
+        const h = pg.offsetHeight || 300;
+        pg.querySelectorAll('.playground-sticker').forEach((s, i) => {
+          s.style.left = (20 + Math.random() * Math.max(w - 70, 30)) + 'px';
+          s.style.top = (20 + Math.random() * Math.max(h - 70, 30)) + 'px';
+          s.style.transition = 'transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease';
+          s.style.transitionDelay = (i * 60) + 'ms';
+          s.style.opacity = '1';
+        });
+      }, 100);
     });
   });
 }
