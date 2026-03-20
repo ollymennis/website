@@ -122,10 +122,18 @@
     opacity: 0; animation: header-in 250ms cubic-bezier(0.16, 1, 0.3, 1) 80ms both;
   }
   .project-display .placeholder {
-    margin-top: 1rem; width: 100%; display: flex; flex-direction: column; gap: 0.5rem;
+    margin-top: 1rem; width: 100%; max-width: 320px; display: flex; flex-direction: column; gap: 0.5rem;
   }
   .placeholder-line {
     height: 0.6rem; background: var(--border); border-radius: 0; opacity: 0.4;
+  }
+  @media (max-width: 600px) {
+    .project-display .placeholder { max-width: 200px; }
+    .placeholder-line { height: 0.5rem; }
+  }
+  @media (max-width: 400px) {
+    .project-display .placeholder { max-width: 140px; }
+    .placeholder-line { height: 0.4rem; gap: 0.3rem; }
   }
   @keyframes header-in {
     from { opacity: 0; transform: translateY(6px); }
@@ -138,6 +146,10 @@
   .project-display iframe {
     opacity: 0;
     animation: mini-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) 200ms both;
+  }
+
+  @media (max-width: 500px) {
+    .nested-mini { aspect-ratio: 3/4 !important; }
   }
 
   /* ─── STICKERS ─── */
@@ -299,7 +311,7 @@ items.forEach(item => {
     const lines = layouts[idx] || [85, 60, 72, 90];
 
     function buildSkeleton(lines) {
-      let s = '<div class="placeholder" style="max-width:min(320px, 100%)">';
+      let s = '<div class="placeholder">';
       lines.forEach((w, i) => {
         if (w === 0) { s += '<div style="height:0.4rem"></div>'; return; }
         s += `<div class="placeholder-line" style="width:${w}%;animation:header-in 250ms cubic-bezier(0.16,1,0.3,1) ${120+i*40}ms both"></div>`;
@@ -309,7 +321,7 @@ items.forEach(item => {
     }
 
     if (idx === 8) {
-      contentHTML = `<h2>${title}</h2><p>${sub}</p>${buildSkeleton(lines)}<iframe src="/media/this/mini.html" style="width:min(320px, 100%);aspect-ratio:4/3;height:auto;border:1px solid var(--border);border-radius:6px;margin-top:1.2rem" loading="lazy"></iframe>`;
+      contentHTML = `<h2>${title}</h2><p>${sub}</p>${buildSkeleton(lines)}<iframe class="nested-mini" src="/media/this/mini.html" style="width:min(320px, 100%);aspect-ratio:4/3;height:auto;border:1px solid var(--border);border-radius:6px;margin-top:1.2rem" loading="lazy"></iframe>`;
     } else {
       contentHTML = `<h2>${title}</h2><p>${sub}</p>${buildSkeleton(lines)}`;
     }
