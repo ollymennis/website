@@ -1832,8 +1832,8 @@ function _pgDragEnd() {
     img.style.pointerEvents = 'none';
     setTimeout(() => {
       img.style.transition = 'none';
-      img.style.left = (20 + Math.random() * (pg.offsetWidth - 70)) + 'px';
-      img.style.top = (20 + Math.random() * (pg.offsetHeight - 70)) + 'px';
+      img.style.left = (20 + Math.random() * Math.max(pg.offsetWidth - 70, 30)) + 'px';
+      img.style.top = (60 + Math.random() * Math.max(pg.offsetHeight - 140, 30)) + 'px';
       void img.offsetWidth;
       img.style.transition = 'transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease';
       img.style.transform = 'scale(1)';
@@ -1909,7 +1909,7 @@ function initStickerPlayground(el) {
         const h = pg.offsetHeight || 300;
         pg.querySelectorAll('.playground-sticker').forEach((s, i) => {
           s.style.left = (20 + Math.random() * Math.max(w - 70, 30)) + 'px';
-          s.style.top = (20 + Math.random() * Math.max(h - 70, 30)) + 'px';
+          s.style.top = (60 + Math.random() * Math.max(h - 140, 30)) + 'px';
           s.style.transition = 'transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease';
           s.style.transitionDelay = (i * 60) + 'ms';
           s.style.opacity = '1';
