@@ -1157,6 +1157,12 @@ main {
   border-radius: 18px;
 }
 
+.project-body .playground-sticker {
+  width: auto;
+  border-radius: 0;
+  display: inline;
+}
+
 .gallery {
   display: flex;
   flex-direction: column;

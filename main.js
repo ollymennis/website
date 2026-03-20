@@ -449,6 +449,7 @@ function initProjectDemos(el) {
   initIconInspector(el);
   initDotLottie(el);
   initFigcliDemo(el);
+  initStickerPlayground(el);
 }
 
 // Render header immediately from data attributes
@@ -1784,6 +1785,111 @@ handleHash();
 delete document.documentElement.dataset.initSection;
 window.addEventListener('hashchange', handleHash);
 
+// --- Sticker Playground ---
+// Shared state for playground drag — only one playground sticker can be dragged at a time
+let _pgDrag = null;
+
+window.addEventListener('mousemove', e => {
+  if (!_pgDrag) return;
+  _pgDragMove(e.clientX, e.clientY);
+});
+window.addEventListener('mouseup', () => { if (_pgDrag) _pgDragEnd(); });
+window.addEventListener('touchmove', e => {
+  if (!_pgDrag) return;
+  e.preventDefault();
+  _pgDragMove(e.touches[0].clientX, e.touches[0].clientY);
+}, { passive: false });
+window.addEventListener('touchend', () => { if (_pgDrag) _pgDragEnd(); });
+
+function _pgDragMove(cx, cy) {
+  if (!_pgDrag) return;
+  const { img, startLeft, startTop, startX, startY } = _pgDrag;
+  img.style.left = (startLeft + cx - startX) + 'px';
+  img.style.top = (startTop + cy - startY) + 'px';
+}
+
+function _pgDragEnd() {
+  if (!_pgDrag) return;
+  const { img, pg } = _pgDrag;
+  _pgDrag = null;
+  img.style.cursor = "url('/icons/mouse-hover.svg'), grab";
+
+  const pgRect = pg.getBoundingClientRect();
+  const imgRect = img.getBoundingClientRect();
+  const cx = imgRect.left + imgRect.width / 2;
+  const cy = imgRect.top + imgRect.height / 2;
+  const outside = cx < pgRect.left || cx > pgRect.right || cy < pgRect.top || cy > pgRect.bottom;
+
+  if (outside) {
+    img.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+    img.style.transform = 'scale(0)';
+    img.style.opacity = '0';
+    img.style.pointerEvents = 'none';
+    setTimeout(() => {
+      img.style.transition = 'none';
+      img.style.left = (20 + Math.random() * (pg.offsetWidth - 70)) + 'px';
+      img.style.top = (20 + Math.random() * (pg.offsetHeight - 70)) + 'px';
+      void img.offsetWidth;
+      img.style.transition = 'transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease';
+      img.style.transform = 'scale(1)';
+      img.style.opacity = '1';
+      img.style.pointerEvents = '';
+    }, 350);
+  }
+}
+
+function initStickerPlayground(el) {
+  const playgrounds = el.querySelectorAll('.sticker-playground');
+  playgrounds.forEach(pg => {
+    if (pg.dataset.initialized) return;
+    pg.dataset.initialized = 'true';
+
+    const stickerSrcs = [
+      '/stickers/baca-pup.png',
+      '/stickers/yarn.png',
+      '/stickers/goggles.png',
+      '/stickers/yuzu.png',
+      '/stickers/weebo.png',
+      '/stickers/penny.png',
+      '/stickers/kazuo.png',
+      '/stickers/knicks.png',
+    ];
+
+    let pgZ = 100;
+
+    stickerSrcs.forEach(src => {
+      const img = document.createElement('img');
+      img.src = src;
+      img.draggable = false;
+      img.className = 'playground-sticker';
+      img.style.cssText = 'position:absolute;max-width:50px;max-height:50px;width:auto;height:auto;cursor:url("/icons/mouse-hover.svg"),grab;user-select:none;-webkit-user-select:none;';
+      img.style.left = (20 + Math.random() * (pg.offsetWidth - 70)) + 'px';
+      img.style.top = (20 + Math.random() * (pg.offsetHeight - 70)) + 'px';
+      pg.appendChild(img);
+
+      function startDrag(cx, cy) {
+        if (_pgDrag) return;
+        pgZ++;
+        img.style.zIndex = pgZ;
+        img.style.transition = 'none';
+        img.style.transform = '';
+        img.style.opacity = '';
+        _pgDrag = {
+          img, pg,
+          startLeft: parseInt(img.style.left) || 0,
+          startTop: parseInt(img.style.top) || 0,
+          startX: cx,
+          startY: cy,
+        };
+        img.style.cursor = "url('/icons/mouse-click.svg'), grabbing";
+      }
+
+      img.addEventListener('mousedown', e => { e.preventDefault(); e.stopPropagation(); startDrag(e.clientX, e.clientY); });
+      img.addEventListener('touchstart', e => { e.preventDefault(); e.stopPropagation(); startDrag(e.touches[0].clientX, e.touches[0].clientY); }, { passive: false });
+    });
+  });
+}
+
 // --- Draggable Stickers ---
 let stickerZ = 100;
 
@@ -1886,7 +1992,7 @@ function endScribble() {
 }
 
 function isInteractive(el) {
-  return el.closest('button, a, .nav-btn, .contact-item, .sticker, .project-display');
+  return el.closest('button, a, .nav-btn, .contact-item, .sticker, .playground-sticker, .project-display');
 }
 
 document.addEventListener('mousedown', (e) => { if (!isInteractive(e.target)) startScribble(e.clientX, e.clientY); });
