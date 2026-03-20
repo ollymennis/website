@@ -8,7 +8,7 @@ quarto maps shakespeare passages into a shared vector space using embeddings. pa
 
 ### how it works
 
-each passage is embedded into a 1,536-dimensional vector using cohere's embed-v4.0 model. those vectors are reduced to 3 dimensions via client-side PCA, giving each passage a position in 3D space that reflects its semantic meaning
+each passage is embedded into a 1,536-dimensional vector using cohere's embed-v4.0 model
 
 the visualization renders ~1,900 particles across 106 passage clusters using three.js with custom shaders, bloom post-processing, and cursor-reactive physics
 
