@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  @font-face {
+    font-family: 'JetBrains Mono';
+    src: url('/fonts/JetBrainsMono/JetBrainsMono-Regular.woff2') format('woff2');
+    font-weight: 400;
+  }
+  @font-face {
+    font-family: 'JetBrains Mono';
+    src: url('/fonts/JetBrainsMono/JetBrainsMono-Bold.woff2') format('woff2');
+    font-weight: 700;
+  }
+  @font-face {
+    font-family: 'JetBrains Mono';
+    src: url('/fonts/JetBrainsMono/JetBrainsMono-Italic.woff2') format('woff2');
+    font-weight: 400;
+    font-style: italic;
+  }
+
+  :root {
+    --bg: #FFF8F0;
+    --fg: #032620;
+    --fg-muted: #4a6b64;
+    --border: #d4d3d0;
+    --mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; cursor: inherit; -webkit-tap-highlight-color: transparent; }
+  html {
+    overflow: hidden; background: var(--bg); width: 100%; height: 100%;
+    font-size: 9px; cursor: url('/icons/mouse.svg'), auto;
+  }
+  body {
+    overflow: hidden; background: var(--bg); width: 100%; height: 100%;
+    font-family: var(--mono); color: var(--fg); font-size: 9px;
+    -webkit-font-smoothing: antialiased;
+    user-select: none; -webkit-user-select: none;
+    cursor: url('/icons/mouse.svg'), auto;
+  }
+
+  /* ─── NAV ─── */
+  main { padding: 1.5rem; }
+  .nav { display: flex; flex-direction: column; gap: 0.6rem; }
+  .nav-btn {
+    display: block; width: fit-content; background: none; border: none;
+    font-family: var(--mono); font-size: 1rem; font-weight: 400;
+    color: var(--fg); cursor: url('/icons/mouse-hover.svg'), pointer; text-align: left;
+    padding: 0.1rem 0; position: relative; outline: none;
+    transition: background 80ms, color 80ms, padding-left 120ms 60ms;
+  }
+  .nav-btn:active, .project-item:active { cursor: url('/icons/mouse-click.svg'), pointer !important; }
+  .nav-btn.active {
+    background: var(--fg); color: var(--bg);
+    padding-left: 0.7rem; padding-right: 0.2rem;
+  }
+  .nav-btn:hover:not(.active)::after {
+    content: '';
+    position: absolute; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg width='3' height='3' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='1' height='1' fill='%23032620'/%3E%3C/svg%3E");
+    background-size: 2px 2px;
+    pointer-events: none;
+  }
+
+  /* ─── CONTENT ─── */
+  .content-area { margin-top: 1.5rem; margin-left: 0.7rem; font-size: 1rem; line-height: 1.5; }
+  .content-panel { display: none; }
+  .content-panel.active { display: block; }
+
+  /* ─── BIO ─── */
+  .bio-quote { max-width: 320px; }
+  .bio-quotemark { display: block; font-size: 1.6rem; line-height: 1; margin-bottom: 0.1rem; }
+  .bio-text { font-style: italic; font-weight: 700; }
+  .bio-attribution { margin-top: 0.5rem; }
+
+  /* ─── WORK LAYOUT ─── */
+  .work-layout { display: flex; gap: 1.5rem; }
+  .contact-list { display: flex; flex-direction: column; gap: 0.6rem; flex-shrink: 0; }
+  .project-item {
+    font-family: var(--mono); font-size: inherit; color: var(--fg);
+    background: none; border: none; cursor: url('/icons/mouse-hover.svg'), pointer; padding: 0; text-align: left;
+    outline: none; opacity: 0; transform: translateY(8px);
+  }
+  .project-item.in {
+    animation: item-enter 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  @keyframes item-enter {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .project-item:hover { text-decoration: underline; text-underline-offset: 2px; }
+  .project-item.highlighted {
+    font-weight: 700; text-decoration: none;
+  }
+  .project-item.highlighted .project-title { margin-left: 0.4rem; }
+  .project-title { transition: margin-left 120ms ease; }
+
+  /* ─── PROJECT DISPLAY ─── */
+  .project-display {
+    display: none; position: fixed;
+    top: 0; left: clamp(100px, 30%, 180px); right: 0; bottom: 0;
+    padding: 1.5rem; background: var(--bg); z-index: 150;
+  }
+  .project-display.active {
+    display: block;
+    animation: panel-in 200ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  @keyframes panel-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  .project-display h2 {
+    font-size: 1.2rem; font-weight: 400; margin-bottom: 0.3rem;
+    opacity: 0; animation: header-in 250ms cubic-bezier(0.16, 1, 0.3, 1) 40ms both;
+  }
+  .project-display p {
+    font-size: 0.85rem; color: var(--fg-muted); font-style: italic;
+    opacity: 0; animation: header-in 250ms cubic-bezier(0.16, 1, 0.3, 1) 80ms both;
+  }
+  .project-display .placeholder {
+    margin-top: 1rem; width: 100%; display: flex; flex-direction: column; gap: 0.5rem;
+  }
+  .placeholder-line {
+    height: 0.6rem; background: var(--border); border-radius: 2px; opacity: 0.4;
+  }
+  @keyframes header-in {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ─── STICKERS ─── */
+  .sticker {
+    position: fixed; max-width: 30px; max-height: 30px;
+    width: auto; height: auto; z-index: 100;
+    user-select: none;
+    cursor: url('/icons/mouse-hover.svg'), grab;
+    visibility: hidden;
+    transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease;
+  }
+  .sticker.sticker-out {
+    transform: scale(0) !important;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* ─── SCRIBBLE ─── */
+  #scribble-canvas {
+    position: fixed; inset: 0; width: 100%; height: 100%;
+    z-index: 200; pointer-events: none;
+  }
+</style>
+</head>
+<body>
+
+<canvas id="scribble-canvas"></canvas>
+
+<main>
+  <nav class="nav">
+    <button class="nav-btn active" data-section="about">about</button>
+    <button class="nav-btn" data-section="work-work">work work</button>
+    <button class="nav-btn" data-section="information">information</button>
+  </nav>
+
+  <div class="content-area">
+    <div class="content-panel active" data-panel="about">
+      <blockquote class="bio-quote">
+        <span class="bio-quotemark">&ldquo;</span>
+        <p class="bio-text">molly ennis is the strongest generalist of our time. so strong, in fact, that people have occasionally mistaken her for a specialist.</p>
+        <p class="bio-attribution">&mdash; someone else who is not molly ennis</p>
+      </blockquote>
+    </div>
+
+    <div class="content-panel" data-panel="work-work">
+      <div class="work-layout">
+        <div class="contact-list">
+          <button class="project-item" data-index="0" data-title="moneybot" data-sub="giving an AI financial assistant a face"><span class="project-num">01</span> <span class="project-title">moneybot</span></button>
+          <button class="project-item" data-index="1" data-title="icons-mcp" data-sub="an icon server for AI agents"><span class="project-num">02</span> <span class="project-title">icons-mcp</span></button>
+          <button class="project-item" data-index="2" data-title="svg maker" data-sub="generating production SVGs with AI"><span class="project-num">03</span> <span class="project-title">svg maker</span></button>
+          <button class="project-item" data-index="3" data-title="asset cabinet" data-sub="semantic search for icon libraries"><span class="project-num">04</span> <span class="project-title">asset cabinet</span></button>
+          <button class="project-item" data-index="4" data-title="quarto" data-sub="an embedding visualizer"><span class="project-num">05</span> <span class="project-title">quarto</span></button>
+          <button class="project-item" data-index="5" data-title="1,000 things" data-sub="an icon system at scale"><span class="project-num">06</span> <span class="project-title">1,000 things</span></button>
+          <button class="project-item" data-index="6" data-title="loading" data-sub="motion design explorations"><span class="project-num">07</span> <span class="project-title">loading</span></button>
+          <button class="project-item" data-index="7" data-title="hands" data-sub="coming soon"><span class="project-num">08</span> <span class="project-title">hands</span></button>
+          <button class="project-item" data-index="8" data-title="this" data-sub="how this website works"><span class="project-num">09</span> <span class="project-title">this</span></button>
+        </div>
+        <div class="project-display" id="project-display"></div>
+      </div>
+    </div>
+
+    <div class="content-panel" data-panel="information">
+      <div class="contact-list">
+        <span class="project-item in" style="animation-delay:0s;opacity:1;transform:none">01 resume</span>
+        <span class="project-item in" style="animation-delay:0s;opacity:1;transform:none">02 github</span>
+        <span class="project-item in" style="animation-delay:0s;opacity:1;transform:none">03 email</span>
+      </div>
+    </div>
+  </div>
+</main>
+
+<img class="sticker" src="/stickers/baca-pup.png" alt="" style="max-width:35px;max-height:35px" draggable="false" />
+<img class="sticker" src="/stickers/yarn.png" alt="" draggable="false" />
+<img class="sticker" src="/stickers/goggles.png" alt="" draggable="false" />
+<img class="sticker" src="/stickers/yuzu.png" alt="" style="max-width:20px;max-height:20px" draggable="false" />
+<img class="sticker" src="/stickers/weebo.png" alt="" style="max-width:20px;max-height:20px" draggable="false" />
+
+<script>
+// ─── NAV ─────────────────────────────────────────────────
+const navBtns = document.querySelectorAll('.nav-btn');
+const panels = document.querySelectorAll('.content-panel');
+const projectDisplay = document.getElementById('project-display');
+let currentSection = 'about';
+let currentProject = -1;
+
+navBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    const section = btn.dataset.section;
+    if (section === currentSection) return;
+
+    navBtns.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    panels.forEach(p => p.classList.remove('active'));
+    document.querySelector(`[data-panel="${section}"]`).classList.add('active');
+    currentSection = section;
+
+    // Close project display
+    projectDisplay.classList.remove('active');
+    projectDisplay.innerHTML = '';
+    currentProject = -1;
+    items.forEach(it => it.classList.remove('highlighted'));
+
+    // Stagger items in
+    if (section === 'work-work') {
+      const items = document.querySelectorAll('[data-panel="work-work"] .project-item');
+      items.forEach((it, i) => {
+        it.classList.remove('in');
+        setTimeout(() => it.classList.add('in'), i * 40);
+      });
+    }
+
+    // Toggle stickers
+    stickers.forEach(s => {
+      if (section === 'work-work') s.classList.add('sticker-out');
+      else s.classList.remove('sticker-out');
+    });
+  });
+});
+
+// ─── PROJECT LIST ────────────────────────────────────────
+const items = document.querySelectorAll('[data-panel="work-work"] .project-item');
+
+items.forEach(item => {
+  item.addEventListener('click', () => {
+    const idx = parseInt(item.dataset.index);
+
+    if (currentProject === idx) {
+      // Close
+      projectDisplay.classList.remove('active');
+      projectDisplay.innerHTML = '';
+      currentProject = -1;
+      items.forEach(it => it.classList.remove('highlighted'));
+      return;
+    }
+
+    currentProject = idx;
+    items.forEach(it => it.classList.remove('highlighted'));
+    item.classList.add('highlighted');
+
+    // Build fake project content
+    const title = item.dataset.title;
+    const sub = item.dataset.sub;
+    const lines = [85, 60, 72, 90, 45, 68, 80, 55, 75];
+    let placeholderHTML = '<div class="placeholder">';
+    for (let i = 0; i < 6; i++) {
+      placeholderHTML += `<div class="placeholder-line" style="width:${lines[i % lines.length]}%;animation:header-in 250ms cubic-bezier(0.16,1,0.3,1) ${120 + i * 40}ms both"></div>`;
+    }
+    placeholderHTML += '</div>';
+
+    projectDisplay.innerHTML = `<h2>${title}</h2><p>${sub}</p>${placeholderHTML}`;
+    projectDisplay.classList.remove('active');
+    // Force reflow for re-animation
+    void projectDisplay.offsetWidth;
+    projectDisplay.classList.add('active');
+  });
+});
+
+// ─── STICKERS ────────────────────────────────────────────
+const stickers = document.querySelectorAll('.sticker');
+let stickerZ = 100;
+let stickerDragging = false;
+
+stickers.forEach(sticker => {
+  // Randomize position, avoiding the content box (top-left region)
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  const CONTENT_W = vw * 0.4;
+  const CONTENT_H = vh * 0.5;
+  let x, y;
+  do {
+    x = Math.random() * (vw - 40);
+    y = Math.random() * (vh - 40);
+  } while (x < CONTENT_W && y < CONTENT_H);
+  sticker.style.left = x + 'px';
+  sticker.style.top = y + 'px';
+  sticker.style.visibility = 'visible';
+
+  let dragging = false, offsetX = 0, offsetY = 0;
+
+  function startDrag(clientX, clientY) {
+    dragging = true;
+    stickerZ++;
+    sticker.style.zIndex = stickerZ;
+    offsetX = clientX - sticker.getBoundingClientRect().left;
+    offsetY = clientY - sticker.getBoundingClientRect().top;
+    sticker.style.cursor = "url('/icons/mouse-click.svg'), grabbing";
+    stickerDragging = true;
+  }
+  function moveDrag(clientX, clientY) {
+    if (!dragging) return;
+    sticker.style.left = (clientX - offsetX) + 'px';
+    sticker.style.top = (clientY - offsetY) + 'px';
+  }
+  function endDrag() {
+    if (!dragging) return;
+    dragging = false;
+    stickerDragging = false;
+    sticker.style.cursor = "url('/icons/mouse-hover.svg'), grab";
+  }
+
+  sticker.addEventListener('mousedown', e => { e.preventDefault(); startDrag(e.clientX, e.clientY); });
+  document.addEventListener('mousemove', e => moveDrag(e.clientX, e.clientY));
+  document.addEventListener('mouseup', endDrag);
+  sticker.addEventListener('touchstart', e => { e.preventDefault(); startDrag(e.touches[0].clientX, e.touches[0].clientY); }, { passive: false });
+  document.addEventListener('touchmove', e => { if (dragging) { e.preventDefault(); moveDrag(e.touches[0].clientX, e.touches[0].clientY); } }, { passive: false });
+  document.addEventListener('touchend', endDrag);
+});
+
+// ─── SCRIBBLE CANVAS ─────────────────────────────────────
+const canvas = document.getElementById('scribble-canvas');
+const ctx = canvas.getContext('2d');
+let strokes = [];
+let drawing = false;
+
+function resizeCanvas() {
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = window.innerWidth * dpr;
+  canvas.height = window.innerHeight * dpr;
+  canvas.style.width = window.innerWidth + 'px';
+  canvas.style.height = window.innerHeight + 'px';
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+function isInteractive(el) {
+  return el && el.closest('button, a, .sticker, .nav, .project-item, .project-display');
+}
+
+// Scribble listens on document, canvas stays pointer-events:none so clicks pass through
+document.addEventListener('mousedown', e => {
+  if (stickerDragging || isInteractive(e.target)) return;
+  drawing = true;
+  strokes.push({ points: [{ x: e.clientX, y: e.clientY }], endTime: null });
+});
+document.addEventListener('mousemove', e => {
+  if (!drawing) return;
+  strokes[strokes.length - 1].points.push({ x: e.clientX, y: e.clientY });
+});
+document.addEventListener('mouseup', () => {
+  if (!drawing) return;
+  drawing = false;
+  strokes[strokes.length - 1].endTime = performance.now();
+});
+
+function renderScribble() {
+  requestAnimationFrame(renderScribble);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const now = performance.now();
+  const fadeDuration = 600;
+  const eraseDelay = 600;
+
+  strokes = strokes.filter(s => {
+    if (!s.endTime) return true;
+    return now - s.endTime < eraseDelay + fadeDuration;
+  });
+
+  for (const s of strokes) {
+    let alpha = 1;
+    if (s.endTime) {
+      const elapsed = now - s.endTime - eraseDelay;
+      if (elapsed > 0) alpha = 1 - elapsed / fadeDuration;
+    }
+    if (alpha <= 0) continue;
+
+    ctx.globalAlpha = alpha;
+    ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--fg').trim();
+    ctx.lineWidth = 1.5;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.beginPath();
+    for (let i = 0; i < s.points.length; i++) {
+      if (i === 0) ctx.moveTo(s.points[i].x, s.points[i].y);
+      else ctx.lineTo(s.points[i].x, s.points[i].y);
+    }
+    ctx.stroke();
+  }
+  ctx.globalAlpha = 1;
+}
+renderScribble();
+</script>
+</body>
+</html>
