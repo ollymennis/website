@@ -125,11 +125,19 @@
     margin-top: 1rem; width: 100%; display: flex; flex-direction: column; gap: 0.5rem;
   }
   .placeholder-line {
-    height: 0.6rem; background: var(--border); border-radius: 2px; opacity: 0.4;
+    height: 0.6rem; background: var(--border); border-radius: 0; opacity: 0.4;
   }
   @keyframes header-in {
     from { opacity: 0; transform: translateY(6px); }
     to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes mini-in {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  .project-display iframe {
+    opacity: 0;
+    animation: mini-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) 200ms both;
   }
 
   /* ─── STICKERS ─── */
@@ -241,11 +249,10 @@ navBtns.forEach(btn => {
       });
     }
 
-    // Toggle stickers
-    stickers.forEach(s => {
-      if (section === 'work-work') s.classList.add('sticker-out');
-      else s.classList.remove('sticker-out');
-    });
+    // Bring stickers back when navigating to about or information
+    if (section === 'about' || section === 'information') {
+      stickers.forEach(s => s.classList.remove('sticker-out'));
+    }
   });
 });
 
@@ -265,6 +272,9 @@ items.forEach(item => {
       return;
     }
 
+    // Animate stickers off
+    stickers.forEach(s => s.classList.add('sticker-out'));
+
     currentProject = idx;
     items.forEach(it => it.classList.remove('highlighted'));
     item.classList.add('highlighted');
@@ -274,24 +284,37 @@ items.forEach(item => {
     const sub = item.dataset.sub;
     let contentHTML;
 
+    // Per-project skeleton text lines
+    const layouts = {
+      0: [100, 100, 60],                    // moneybot
+      1: [100, 100, 100, 95, 50, 0, 100, 100, 80], // icons-mcp
+      2: [100, 100, 45],                    // svg maker
+      3: [100, 100, 100, 60],               // asset cabinet
+      4: [100, 100, 60],                    // quarto
+      5: [100, 100, 100, 70],               // 1000 things
+      6: [100, 50],                          // loading
+      7: [],                                 // hands
+      8: [100, 100, 95, 55],                // this
+    };
+    const lines = layouts[idx] || [85, 60, 72, 90];
+
+    function buildSkeleton(lines) {
+      let s = '<div class="placeholder" style="max-width:min(320px, 100%)">';
+      lines.forEach((w, i) => {
+        if (w === 0) { s += '<div style="height:0.4rem"></div>'; return; }
+        s += `<div class="placeholder-line" style="width:${w}%;animation:header-in 250ms cubic-bezier(0.16,1,0.3,1) ${120+i*40}ms both"></div>`;
+      });
+      s += '</div>';
+      return s;
+    }
+
     if (idx === 8) {
-      // "this" gets a nested mini version with intro from markdown
-      contentHTML = `<h2>${title}</h2><p>${sub}</p><p class="intro-text" id="this-intro"></p><iframe src="/media/this/mini.html" style="width:100%;height:calc(100% - 5rem);border:1px solid var(--border);border-right:none;border-radius:6px 0 0 6px;margin-top:0.6rem" loading="lazy"></iframe>`;
+      contentHTML = `<h2>${title}</h2><p>${sub}</p>${buildSkeleton(lines)}<iframe src="/media/this/mini.html" style="width:min(320px, 100%);aspect-ratio:4/3;height:auto;border:1px solid var(--border);border-radius:6px;margin-top:1.2rem" loading="lazy"></iframe>`;
     } else {
-      const lines = [85, 60, 72, 90, 45, 68, 80, 55, 75];
-      let placeholderHTML = '<div class="placeholder">';
-      for (let i = 0; i < 6; i++) {
-        placeholderHTML += `<div class="placeholder-line" style="width:${lines[i % lines.length]}%;animation:header-in 250ms cubic-bezier(0.16,1,0.3,1) ${120 + i * 40}ms both"></div>`;
-      }
-      placeholderHTML += '</div>';
-      contentHTML = `<h2>${title}</h2><p>${sub}</p>${placeholderHTML}`;
+      contentHTML = `<h2>${title}</h2><p>${sub}</p>${buildSkeleton(lines)}`;
     }
 
     projectDisplay.innerHTML = contentHTML;
-    if (idx === 8 && introText) {
-      const el = document.getElementById('this-intro');
-      if (el) el.textContent = introText;
-    }
     projectDisplay.classList.remove('active');
     void projectDisplay.offsetWidth;
     projectDisplay.classList.add('active');
