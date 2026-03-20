@@ -216,7 +216,7 @@ const SCALE = 15;
 const categoryColors = {};
 
 async function loadCorpus() {
-  const res = await fetch('/media/quarto/corpus.json');
+  const res = await fetch('/media/shakesphere/corpus.json');
   corpus = await res.json();
   corpus.categories.forEach(c => { categoryColors[c.id] = new THREE.Color(c.color); });
 

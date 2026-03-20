@@ -1,9 +1,9 @@
-# quarto
+# shakesphere
 _an embedding visualizer_
 
-quarto maps shakespeare passages into a shared vector space using embeddings. passages that are semantically similar cluster together
+shakesphere maps shakespeare passages into a shared vector space using embeddings. passages that are semantically similar cluster together
 
-<iframe src="/media/quarto/index.html" class="quarto-embed" style="width:100%;height:380px;border:none;border-radius:12px" loading="lazy"></iframe>
+<iframe src="/media/shakesphere/index.html" class="shakesphere-embed" style="width:100%;height:380px;border:none;border-radius:12px" loading="lazy"></iframe>
 <hr />
 
 ### how it works
@@ -16,4 +16,4 @@ the visualization renders ~1,900 particles across 106 passage clusters using thr
 
 the full version includes a semantic search input — type any phrase and an API call embeds your query, projects it into the same space, and highlights the three most similar passages with cosine similarity scores
 
-<img src="/media/quarto/screenshot.png" alt="quarto" />
+<img src="/media/shakesphere/screenshot.png" alt="shakesphere" />

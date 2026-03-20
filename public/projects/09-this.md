@@ -1,7 +1,7 @@
 # this
 _f(x) = f_
 
-this is this and you are here in this in here - reading markdown that was fetched, parsed, and wired up with interactive demos at runtime. no framework, no build step. 
+this is this and you are here in this in here - reading markdown that was fetched, parsed, and wired up with interactive demos at runtime. no framework, no build step, no automatic spell check
 
 <iframe src="/media/this/index.html" class="this-embed" style="width:100%;height:380px;border:1px solid var(--border);border-radius:12px" loading="lazy"></iframe>
 
@@ -12,7 +12,7 @@ this is this and you are here in this in here - reading markdown that was fetche
 
 **asset cabinet** — another dynamic demo. they're fun to make
   
-**quarto** — the embedding sphere is a standalone three.js running in an iframe
+**shakesphere** — the embedding sphere is a standalone three.js running in an iframe
 
 **stickers** — all this technology and I still don't have a weebo?
 

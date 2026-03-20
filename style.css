@@ -2588,7 +2588,7 @@ body.drawing a:hover {
 }
 
 @media (max-width: 700px) {
-  .quarto-embed, .this-embed { height: min(100vw, 400px); }
+  .shakesphere-embed, .this-embed { height: min(100vw, 400px); }
 }
 
 [data-theme="dark"] .figcli-demo {
