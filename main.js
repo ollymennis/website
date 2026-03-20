@@ -1678,7 +1678,13 @@ function closeProjectDisplay() {
     sticker.style.transitionDelay = `${i * 40}ms`;
     sticker.classList.remove('sticker-out');
   });
-  projectContents.forEach(el => el.classList.remove('active'));
+  // Reset "this" demo to about page on close
+  projectContents.forEach(el => {
+    el.querySelectorAll('iframe').forEach(iframe => {
+      try { iframe.contentWindow.postMessage('reset', '*'); } catch(e) {}
+    });
+    el.classList.remove('active');
+  });
   highlightedProject = -1;
   activeProjectNum = null;
   projectItems.forEach(item => item.classList.remove('highlighted'));
