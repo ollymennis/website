@@ -3,7 +3,7 @@ _how this website works_
 
 this portfolio is a single HTML file, a custom markdown renderer, and a lot of wiring. every project you've seen so far loads its content from a `.md` file, parsed at runtime into interactive demos — no framework, no build step for content
 
-<iframe src="/media/this/index.html" class="this-embed" style="width:100%;height:500px;border:1px solid var(--border);border-radius:12px" loading="lazy"></iframe>
+<iframe src="/media/this/index.html" class="this-embed" style="width:100%;height:380px;border:1px solid var(--border);border-radius:12px" loading="lazy"></iframe>
 
 <hr />
 

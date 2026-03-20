@@ -3,7 +3,7 @@ _an embedding visualizer_
 
 quarto maps shakespeare passages into a shared vector space using embeddings. passages that are semantically similar cluster together
 
-<iframe src="/media/quarto/index.html" class="quarto-embed" style="width:100%;height:500px;border:none;border-radius:12px" loading="lazy"></iframe>
+<iframe src="/media/quarto/index.html" class="quarto-embed" style="width:100%;height:380px;border:none;border-radius:12px" loading="lazy"></iframe>
 <hr />
 
 ### how it works

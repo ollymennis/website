@@ -43,7 +43,7 @@
   }
 
   /* ─── NAV ─── */
-  main { padding: 1.5rem; }
+  main { padding: 2.5rem; }
   .nav { display: flex; flex-direction: column; gap: 0.6rem; }
   .nav-btn {
     display: block; width: fit-content; background: none; border: none;
@@ -75,6 +75,7 @@
   .bio-quotemark { display: block; font-size: 1.6rem; line-height: 1; margin-bottom: 0.1rem; }
   .bio-text { font-style: italic; font-weight: 700; }
   .bio-attribution { margin-top: 0.5rem; }
+  .intro-text { margin-top: 1rem; margin-bottom: 0.8rem; max-width: 320px; color: var(--fg); font-size: 0.9rem; line-height: 1.5; font-style: normal !important; }
 
   /* ─── WORK LAYOUT ─── */
   .work-layout { display: flex; gap: 1.5rem; }
@@ -268,19 +269,30 @@ items.forEach(item => {
     items.forEach(it => it.classList.remove('highlighted'));
     item.classList.add('highlighted');
 
-    // Build fake project content
+    // Build project content
     const title = item.dataset.title;
     const sub = item.dataset.sub;
-    const lines = [85, 60, 72, 90, 45, 68, 80, 55, 75];
-    let placeholderHTML = '<div class="placeholder">';
-    for (let i = 0; i < 6; i++) {
-      placeholderHTML += `<div class="placeholder-line" style="width:${lines[i % lines.length]}%;animation:header-in 250ms cubic-bezier(0.16,1,0.3,1) ${120 + i * 40}ms both"></div>`;
-    }
-    placeholderHTML += '</div>';
+    let contentHTML;
 
-    projectDisplay.innerHTML = `<h2>${title}</h2><p>${sub}</p>${placeholderHTML}`;
+    if (idx === 8) {
+      // "this" gets a nested mini version with intro from markdown
+      contentHTML = `<h2>${title}</h2><p>${sub}</p><p class="intro-text" id="this-intro"></p><iframe src="/media/this/mini.html" style="width:100%;height:calc(100% - 5rem);border:1px solid var(--border);border-radius:6px;margin-top:0.6rem" loading="lazy"></iframe>`;
+    } else {
+      const lines = [85, 60, 72, 90, 45, 68, 80, 55, 75];
+      let placeholderHTML = '<div class="placeholder">';
+      for (let i = 0; i < 6; i++) {
+        placeholderHTML += `<div class="placeholder-line" style="width:${lines[i % lines.length]}%;animation:header-in 250ms cubic-bezier(0.16,1,0.3,1) ${120 + i * 40}ms both"></div>`;
+      }
+      placeholderHTML += '</div>';
+      contentHTML = `<h2>${title}</h2><p>${sub}</p>${placeholderHTML}`;
+    }
+
+    projectDisplay.innerHTML = contentHTML;
+    if (idx === 8 && introText) {
+      const el = document.getElementById('this-intro');
+      if (el) el.textContent = introText;
+    }
     projectDisplay.classList.remove('active');
-    // Force reflow for re-animation
     void projectDisplay.offsetWidth;
     projectDisplay.classList.add('active');
   });
@@ -409,6 +421,20 @@ function renderScribble() {
   ctx.globalAlpha = 1;
 }
 renderScribble();
+
+// ─── LOAD INTRO FROM MARKDOWN ────────────────────────────
+let introText = '';
+fetch('/projects/09-this.md').then(r => r.text()).then(md => {
+  for (const line of md.split('\n')) {
+    const t = line.trim();
+    if (!t || t.startsWith('#') || t.startsWith('_') || t.startsWith('<')) continue;
+    introText = t;
+    break;
+  }
+  // Populate if panel is already open
+  const el = document.getElementById('this-intro');
+  if (el) el.textContent = introText;
+});
 </script>
 </body>
 </html>
