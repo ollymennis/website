@@ -12,10 +12,6 @@ each passage is embedded into a 1,536-dimensional vector using cohere's embed-v4
 
 the visualization renders ~1,900 particles across 106 passage clusters using three.js with custom shaders, bloom post-processing, and cursor-reactive physics
 
-### categories
-
-passages are tagged across seven themes: love & desire, wisdom & reflection, madness & despair, tragedy & death, comedy & wit, ambition & power, and magic & wonder. each category has a distinct color, but the spatial positioning comes entirely from the embeddings, not the labels
-
 ### the full version
 
 the full version includes a semantic search input — type any phrase and an API call embeds your query, projects it into the same space, and highlights the three most similar passages with cosine similarity scores
