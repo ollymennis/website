@@ -612,12 +612,11 @@ function initIconIntroRow(el) {
   el.querySelectorAll('.icon-intro-row').forEach(row => {
     if (row.dataset.initialized) return;
     row.dataset.initialized = '1';
-    const basePath = '/media/icons-refresh/icon-svgs/';
     const allNames = iconFiles.slice();
     const slots = Array.from(row.querySelectorAll('img'));
     let pool = [];
     function refill() {
-      pool = allNames.filter(n => !slots.some(s => s.src.includes(n)));
+      pool = allNames.filter(n => !slots.some(s => (s.dataset.icon || '') === n));
       for (let i = pool.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [pool[i], pool[j]] = [pool[j], pool[i]];
@@ -626,10 +625,14 @@ function initIconIntroRow(el) {
     function swapOne() {
       if (pool.length === 0) refill();
       const idx = Math.floor(Math.random() * slots.length);
-      slots[idx].src = basePath + pool.pop() + '.svg';
+      const name = pool.pop();
+      if (iconDataUrls[name]) {
+        slots[idx].src = iconDataUrls[name];
+        slots[idx].dataset.icon = name;
+      }
     }
     refill();
-    setInterval(swapOne, 150);
+    iconCacheReady.then(() => setInterval(swapOne, 150));
   });
 }
 
@@ -637,12 +640,11 @@ function initIconGrid(el) {
   el.querySelectorAll('.icon-grid').forEach(grid => {
     if (grid.dataset.initialized) return;
     grid.dataset.initialized = '1';
-    const basePath = '/media/icons-refresh/icon-svgs/';
     const allNames = iconFiles.slice();
     const slots = Array.from(grid.querySelectorAll('img'));
     let pool = [];
     function refill() {
-      pool = allNames.filter(n => !slots.some(s => s.src.includes(n)));
+      pool = allNames.filter(n => !slots.some(s => (s.dataset.icon || '') === n));
       for (let i = pool.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [pool[i], pool[j]] = [pool[j], pool[i]];
@@ -651,10 +653,14 @@ function initIconGrid(el) {
     function swapOne() {
       if (pool.length === 0) refill();
       const idx = Math.floor(Math.random() * slots.length);
-      slots[idx].src = basePath + pool.pop() + '.svg';
+      const name = pool.pop();
+      if (iconDataUrls[name]) {
+        slots[idx].src = iconDataUrls[name];
+        slots[idx].dataset.icon = name;
+      }
     }
     refill();
-    setInterval(swapOne, 150);
+    iconCacheReady.then(() => setInterval(swapOne, 150));
   });
 }
 
@@ -2095,6 +2101,19 @@ const iconFiles = [
   'savingsApy','savingsGoal','timeProgressStart','traffic'
 ];
 
+// Fetch all icon SVGs once as data URIs so swaps never re-download
+const iconDataUrls = {};
+const iconCacheReady = Promise.all(
+  iconFiles.map(name =>
+    fetch(`/media/icons-refresh/icon-svgs/${name}.svg`)
+      .then(r => r.text())
+      .then(text => {
+        iconDataUrls[name] = 'data:image/svg+xml,' + encodeURIComponent(text);
+      })
+      .catch(() => {})
+  )
+);
+
 let iconAnimSlots = null;
 let iconAnimPool = [];
 let iconInterval = null;
@@ -2115,14 +2134,17 @@ function swapAllSlots() {
     const delay = i * 120 + Math.random() * 80;
     setTimeout(() => {
       if (iconAnimPool.length === 0) {
-        iconAnimPool = iconFiles.filter(f => !iconAnimSlots.some(s => s.src.includes(f)));
+        iconAnimPool = iconFiles.filter(f => !iconAnimSlots.some(s => (s.dataset.icon || '') === f));
         shuffleArray(iconAnimPool);
       }
       const slot = iconAnimSlots[slotIdx];
-      const oldName = slot.src.split('/').pop().replace('.svg', '');
+      const oldName = slot.dataset.icon || '';
       const newName = iconAnimPool.pop();
-      iconAnimPool.unshift(oldName);
-      slot.src = `/media/icons-refresh/icon-svgs/${newName}.svg`;
+      if (oldName) iconAnimPool.unshift(oldName);
+      if (iconDataUrls[newName]) {
+        slot.src = iconDataUrls[newName];
+        slot.dataset.icon = newName;
+      }
     }, delay);
   });
 }
@@ -2131,11 +2153,13 @@ function startIconAnimation() {
   const container = document.getElementById('icon-row') || document.getElementById('icon-grid');
   if (!container) return;
   iconAnimSlots = Array.from(container.querySelectorAll('img'));
-  iconAnimPool = iconFiles.filter(f => !iconAnimSlots.some(s => s.src.includes(f)));
+  iconAnimPool = iconFiles.filter(f => !iconAnimSlots.some(s => (s.dataset.icon || '') === f));
   shuffleArray(iconAnimPool);
   if (iconInterval) return;
-  swapAllSlots();
-  iconInterval = setInterval(swapAllSlots, 1200);
+  iconCacheReady.then(() => {
+    swapAllSlots();
+    iconInterval = setInterval(swapAllSlots, 1200);
+  });
 }
 
 function stopIconAnimation() {

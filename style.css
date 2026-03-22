@@ -1227,7 +1227,8 @@ main {
   margin-bottom: -1px;
 }
 
-.project-body img[src$=".svg"] {
+.project-body img[src$=".svg"],
+.project-body img[src^="data:image/svg"] {
   border-radius: 0;
 }
 
