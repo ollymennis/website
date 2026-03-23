@@ -3,7 +3,7 @@ _f(x) = f_
 
 this is this and you are here in this in here - reading markdown that was fetched, parsed, and wired up with interactive demos at runtime. no framework, no build step, no automatic spell check
 
-<iframe src="/media/this/index.html" class="this-embed" style="width:100%;height:380px;border:1px solid var(--border);border-radius:12px" loading="lazy"></iframe>
+<iframe data-lazy-src="/media/this/index.html" class="this-embed" style="width:100%;height:380px;border:1px solid var(--border);border-radius:12px"></iframe>
 
 <hr />
 

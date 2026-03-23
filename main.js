@@ -473,6 +473,15 @@ async function loadProjectMd(el) {
   projectMdCache[mdPath] = html;
   el.innerHTML = html;
   initProjectDemos(el);
+  // If this project is already active (e.g. page refreshed with #hash),
+  // activate any lazy iframes now that the content is in the DOM
+  if (el.classList.contains('active')) {
+    el.querySelectorAll('iframe[data-lazy-src]').forEach(iframe => {
+      if (!iframe.src || iframe.src === 'about:blank' || iframe.src === location.href) {
+        iframe.src = iframe.dataset.lazySrc;
+      }
+    });
+  }
 }
 
 let teamPrimedTimeout = null;
@@ -1607,6 +1616,12 @@ function switchProject(num) {
   // Staggered body children entrance animation
   const activeContent = document.querySelector(`.project-content[data-project-content="${num}"]`);
   if (activeContent) {
+    // Activate lazy-loaded iframes only when their project is selected
+    activeContent.querySelectorAll('iframe[data-lazy-src]').forEach(iframe => {
+      if (!iframe.src || iframe.src === 'about:blank' || iframe.src === location.href) {
+        iframe.src = iframe.dataset.lazySrc;
+      }
+    });
     activeContent.classList.remove('project-body-in');
     const bodyChildren = activeContent.querySelectorAll('.project-body > *');
     bodyChildren.forEach(child => {
