@@ -306,20 +306,10 @@ contactItems.forEach(item => {
     });
   } else {
     item.addEventListener('mouseenter', () => { text.textContent = item.dataset.hover; });
-    item.addEventListener('mouseleave', () => { if (!emailCopied || item.id !== 'copy-email') text.textContent = item.dataset.default; });
+    item.addEventListener('mouseleave', () => { text.textContent = item.dataset.default; });
   }
 });
 
-let emailCopied = false;
-let emailTimeout = null;
-document.getElementById('copy-email').addEventListener('click', () => {
-  navigator.clipboard.writeText('ollymennis@gmail.com').catch(() => {});
-  const emailText = document.querySelector('#copy-email .contact-text');
-  emailText.innerHTML = '01 <span style="opacity: 0.5;">copied ollymennis@gmail.com</span>';
-  emailCopied = true;
-  clearTimeout(emailTimeout);
-  emailTimeout = setTimeout(() => { emailText.textContent = '01 email'; emailCopied = false; }, 3000);
-});
 
 // --- Dark mode ---
 let darkMode = false;
