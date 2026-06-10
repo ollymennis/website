@@ -16,8 +16,9 @@ describe('nav buttons', () => {
     const btns = doc.querySelectorAll('.nav-btn');
     const sections = Array.from(btns).map(b => b.dataset.section);
     expect(sections).toContain('about');
-    expect(sections).toContain('work-work');
-    expect(sections).toContain('information');
+    // work-work and information nav buttons are hidden for now (commented out in index.html)
+    expect(sections).not.toContain('work-work');
+    expect(sections).not.toContain('information');
   });
 });
 

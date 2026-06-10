@@ -1798,9 +1798,12 @@ function handleHash() {
     switchInfoProject(parseInt(infoMatch.dataset.infoProject));
   }
 }
-handleHash();
+// Hash/slug deep-linking disabled for now — only the about section is active.
+// Restore by re-enabling the two lines below (and the inline script in index.html).
+// handleHash();
+// window.addEventListener('hashchange', handleHash);
+if (location.hash) history.replaceState(null, '', location.pathname);
 delete document.documentElement.dataset.initSection;
-window.addEventListener('hashchange', handleHash);
 
 // --- Sticker Playground ---
 // Shared state for playground drag — only one playground sticker can be dragged at a time
